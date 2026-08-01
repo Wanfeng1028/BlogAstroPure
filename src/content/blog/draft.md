@@ -5,6 +5,7 @@ updatedDate: '2025-07-10'
 description: 'Draft page for any purpose'
 tags:
   - Draft
+category: '草稿'
 language: 'English'
 # Remove or set false to turn draft page into normal ones
 draft: true

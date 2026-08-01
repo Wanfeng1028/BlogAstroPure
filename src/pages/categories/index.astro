@@ -1,0 +1,51 @@
+---
+import { getBlogCollection, getUniqueCategoriesWithCount } from 'astro-pure/server'
+import { Button } from 'astro-pure/user'
+import PageLayout from '@/layouts/BaseLayout.astro'
+
+const allPosts = await getBlogCollection()
+const allCategories = getUniqueCategoriesWithCount(allPosts).sort((a, b) => b[1] - a[1])
+const totalCategories = allCategories.length
+
+const meta = {
+  description: '这里汇总了我写过的所有文章分类',
+  title: '全部分类'
+}
+---
+
+<PageLayout {meta}>
+  <Button title='返回' href='/blog' variant='back' />
+  <main class='mt-6 lg:mt-10'>
+    <div id='content-header' class='animate mb-8'>
+      <h1 class='text-3xl font-medium'>分类</h1>
+      <p class='mt-2 text-muted-foreground'>共 {totalCategories} 个分类</p>
+    </div>
+
+    <div id='content' class='animate'>
+      {
+        allCategories.length > 0 ? (
+          <ul class='flex flex-wrap gap-3'>
+            {allCategories.map(([category, val]) => (
+              <li>
+                <a
+                  href={`/categories/${category}`}
+                  data-astro-prefetch
+                  class='group flex items-center gap-x-2 rounded-xl border border-border bg-card px-4 py-2 no-underline transition-all hover:border-primary hover:shadow-sm'
+                >
+                  <span class='font-medium text-foreground transition-colors group-hover:text-primary'>
+                    {category}
+                  </span>
+                  <span class='rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground'>
+                    {val}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p class='text-muted-foreground'>暂无分类</p>
+        )
+      }
+    </div>
+  </main>
+</PageLayout>

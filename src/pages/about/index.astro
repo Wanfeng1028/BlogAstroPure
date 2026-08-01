@@ -4,13 +4,19 @@ import PageLayout from '@/layouts/CommonPage.astro'
 
 const headings = [
   { depth: 2, slug: 'about-me', text: '关于我' },
-  { depth: 2, slug: 'education', text: '教育背景' },
-  { depth: 2, slug: 'experience', text: '工作经历' },
+  { depth: 2, slug: 'journey', text: '经历' },
   { depth: 2, slug: 'hobbies', text: '兴趣爱好' },
   { depth: 2, slug: 'tools', text: '工具与技术栈' },
   { depth: 2, slug: 'social', text: '社交账号' },
   { depth: 2, slug: 'projects', text: '开源项目' },
   { depth: 2, slug: 'gossips', text: '碎碎念' }
+]
+
+const journeyEvents = [
+  { date: '2022', content: '进入<strong>杭州师范大学</strong>，地理信息科学专业（GIS 开发、遥感智能识别、计算机视觉）' },
+  { date: '2026.02', content: '浙江建投数字技术有限公司 · 前端开发实习' },
+  { date: '2026.06', content: '本科毕业，开始二学位（数据科学与大数据技术）+ 考研' },
+  { date: '现在', content: '学习 Go 后端 & Agent 方向' }
 ]
 ---
 
@@ -25,10 +31,19 @@ const headings = [
       />
       <div>
         <h2 class='mb-1 text-2xl font-medium'>晚风</h2>
-        <p class='text-muted-foreground'>前端工程师 · 全栈开发者 · 学生</p>
-        <p class='mt-1 text-sm text-primary'>每个优秀的人都有一段沉默的时光，那段时光是付出了很多努力，却得不到结果的日子，我们把它叫做扎根。</p>
+        <p class='text-muted-foreground'>全栈开发者 · 学生</p>
+        <div class='mt-2 flex flex-wrap gap-1.5'>
+          <span class='rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary'>GIS</span>
+          <span class='rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary'>Go</span>
+          <span class='rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary'>Agent</span>
+          <span class='rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary'>Vue / React</span>
+        </div>
       </div>
     </div>
+
+    <p class='mt-4 text-sm italic text-muted-foreground'>
+      每个优秀的人都有一段沉默的时光，那段时光是付出了很多努力，却得不到结果的日子，我们把它叫做扎根。
+    </p>
 
     <h3 class='mt-8 mb-3 text-lg font-medium'>个人简介</h3>
     <p>
@@ -43,37 +58,12 @@ const headings = [
     <p class='text-sm text-muted-foreground'>
       联系我：
       <a href='mailto:wanfeng572@gmail.com' class='text-primary hover:underline'>wanfeng572@gmail.com</a>
-      <span class='mx-1'>·</span>
-      微信：【TODO: 填微信号】
     </p>
   </section>
 
-  {/* education */}
-  <h2 id='education' class='mt-10'>教育背景</h2>
-
-  <h3 class='mt-4 mb-2 text-base font-medium'>杭州师范大学 · 本科</h3>
-  <ul>
-    <li><strong>时间：</strong>2022 - 2026</li>
-    <li><strong>专业：</strong>地理信息科学</li>
-    <li><strong>方向：</strong>GIS 开发、遥感智能识别、计算机视觉</li>
-  </ul>
-
-  <h3 class='mt-4 mb-2 text-base font-medium'>杭州师范大学 · 二学位</h3>
-  <ul>
-    <li><strong>时间：</strong>2026 - 至今</li>
-    <li><strong>专业：</strong>数据科学与大数据技术</li>
-    <li><strong>方向：</strong>考研ing</li>
-  </ul>
-
-  {/* experience */}
-  <h2 id='experience' class='mt-10'>工作 & 实习经历</h2>
-
-  <h3 class='mt-4 mb-2 text-base font-medium'>浙江建投数字技术有限公司</h3>
-  <ul>
-    <li><strong>时间：</strong>2026.02 - 2026.05</li>
-    <li><strong>职位：</strong>前端开发实习生</li>
-    <li><strong>工作内容：</strong>前端开发相关工作</li>
-  </ul>
+  {/* journey - timeline */}
+  <h2 id='journey' class='mt-10'>经历</h2>
+  <Timeline events={journeyEvents} />
 
   {/* hobbies */}
   <h2 id='hobbies' class='mt-10'>兴趣爱好</h2>
@@ -81,56 +71,54 @@ const headings = [
     <li>📷 摄影（想学）</li>
     <li>🎸 会弹点吉他，希望之后可以把吉他重新捡起来</li>
     <li>🏀 偶尔打篮球，但大三之后没体育课就很少运动了</li>
-    <li>【TODO: 爱好第 4 条】</li>
   </ul>
 
   {/* tools */}
   <h2 id='tools' class='mt-10'>工具与技术栈</h2>
 
-  <h3 class='mt-4 mb-2 text-base font-medium'>前端</h3>
-  <ul>
-    <li>Vue3、React、Angular（刚接触）</li>
-  </ul>
+  <div class='not-prose mt-4'>
+    <img
+      src='https://skillicons.dev/icons?i=vue,react,angular,go,java,nodejs,ts,js,docker,git,linux,vscode&theme=light'
+      alt='Tech Stack'
+      class='max-w-full'
+      loading='lazy'
+    />
+  </div>
 
-  <h3 class='mt-4 mb-2 text-base font-medium'>后端</h3>
-  <ul>
-    <li>Go（现在主要在学）</li>
-    <li>Java（大二学过，之后可能重新捡起来）</li>
-    <li>Node.js（在计划中）</li>
-  </ul>
-
-  <h3 class='mt-4 mb-2 text-base font-medium'>AI Coding 工具</h3>
-  <ul>
-    <li>Codex</li>
-    <li>Claude Code</li>
-    <li>Qoder</li>
-  </ul>
-
-  <h3 class='mt-4 mb-2 text-base font-medium'>语言</h3>
-  <ul>
-    <li>Go、TypeScript、JavaScript</li>
-  </ul>
+  <h3 class='mt-6 mb-2 text-base font-medium'>AI Coding 工具</h3>
+  <div class='not-prose flex flex-wrap gap-2'>
+    <span class='rounded-md border px-2.5 py-1 text-sm'>Codex</span>
+    <span class='rounded-md border px-2.5 py-1 text-sm'>Claude Code</span>
+    <span class='rounded-md border px-2.5 py-1 text-sm'>Qoder</span>
+  </div>
 
   {/* social */}
   <h2 id='social' class='mt-10'>社交账号</h2>
-  <ul>
-    <li>
-      <strong>GitHub</strong>：
-      <a href='https://github.com/Wanfeng1028' target='_blank' rel='noopener'>github.com/Wanfeng1028</a>
-    </li>
-    <li>
-      <strong>Twitter / X</strong>：
-      <a href='https://x.com/wanfeng987654' target='_blank' rel='noopener'>x.com/wanfeng987654</a>
-    </li>
-    <li>
-      <strong>邮箱</strong>：
-      <a href='mailto:wanfeng572@gmail.com'>wanfeng572@gmail.com</a>
-    </li>
-    <li>
-      <strong>微信</strong>：
-      <img src='/src/assets/WeChat.jpg' alt='WeChat' class='mt-2 size-32 rounded-lg border object-cover' />
-    </li>
-  </ul>
+  <div class='not-prose mt-4 flex flex-wrap gap-3'>
+    <a href='https://github.com/Wanfeng1028' target='_blank' rel='noopener'
+      class='inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm transition-colors hover:bg-muted'>
+      <svg class='size-4' viewBox='0 0 24 24' fill='currentColor'><path d='M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z'/></svg>
+      GitHub
+    </a>
+    <a href='https://x.com/wanfeng987654' target='_blank' rel='noopener'
+      class='inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm transition-colors hover:bg-muted'>
+      <svg class='size-4' viewBox='0 0 24 24' fill='currentColor'><path d='M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z'/></svg>
+      Twitter / X
+    </a>
+    <a href='https://www.instagram.com/wanfeng8802/' target='_blank' rel='noopener'
+      class='inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm transition-colors hover:bg-muted'>
+      <svg class='size-4' viewBox='0 0 24 24' fill='currentColor'><path d='M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z'/></svg>
+      Instagram
+    </a>
+    <a href='mailto:wanfeng572@gmail.com'
+      class='inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm transition-colors hover:bg-muted'>
+      <svg class='size-4' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><rect x='2' y='4' width='20' height='16' rx='2'/><path d='m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'/></svg>
+      Email
+    </a>
+  </div>
+
+  <h3 class='mt-6 mb-2 text-base font-medium'>微信</h3>
+  <img src='/src/assets/WeChat.jpg' alt='WeChat' class='size-32 rounded-lg border object-cover' />
 
   {/* projects */}
   <h2 id='projects' class='mt-10'>开源项目</h2>
@@ -138,13 +126,13 @@ const headings = [
     <li>
       <strong><a href='https://github.com/Wanfeng1028/ParrotSoundReVue' target='_blank' rel='noopener'>ParrotSoundReVue</a></strong>
       —— 之前做的一个项目，去水了一个奖哈哈（轻点喷）
-      <br />
-      <span class='text-sm text-muted-foreground'>【TODO: 填时间和技术栈】</span>
     </li>
   </ul>
 
   {/* gossips */}
   <h2 id='gossips' class='mt-10'>碎碎念</h2>
-  <p>双非毕业生好难找工作。</p>
-  <p>二战考研确实太痛苦了，但有时候学到很晚又很爽。希望明年一战上岸吧，等考研结束之后可能会继续更新博客。</p>
+  <Collapse title='点击展开'>
+    <p>双非毕业生好难找工作。</p>
+    <p>二战考研确实太痛苦了，但有时候学到很晚又很爽。希望明年一战上岸吧，等考研结束之后可能会继续更新博客。</p>
+  </Collapse>
 </PageLayout>

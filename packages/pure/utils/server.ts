@@ -64,3 +64,27 @@ export function getUniqueTagsWithCount(collections: Collections): [string, numbe
     )
   ].sort((a, b) => b[1] - a[1])
 }
+
+/** Note: This function doesn't filter draft posts, pass it the result of getAllPosts above to do so. */
+export function getAllCategories(collections: Collections) {
+  return collections
+    .map((collection) =>
+      'category' in collection.data ? (collection.data.category as string | undefined) : undefined
+    )
+    .filter((c): c is string => !!c)
+}
+
+/** Note: This function doesn't filter draft posts, pass it the result of getAllPosts above to do so. */
+export function getUniqueCategories(collections: Collections) {
+  return [...new Set(getAllCategories(collections))]
+}
+
+/** Note: This function doesn't filter draft posts, pass it the result of getAllPosts above to do so. */
+export function getUniqueCategoriesWithCount(collections: Collections): [string, number][] {
+  return [
+    ...getAllCategories(collections).reduce(
+      (acc, c) => acc.set(c, (acc.get(c) || 0) + 1),
+      new Map<string, number>()
+    )
+  ].sort((a, b) => b[1] - a[1])
+}
