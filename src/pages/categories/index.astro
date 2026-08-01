@@ -1,11 +1,60 @@
 ---
-import { getBlogCollection, getUniqueCategoriesWithCount } from 'astro-pure/server'
+import { getBlogCollection } from 'astro-pure/server'
 import { Button } from 'astro-pure/user'
 import PageLayout from '@/layouts/BaseLayout.astro'
+import CatTree from '@/components/CatTree.astro'
+
+interface CatNode {
+  name: string
+  path: string
+  own: number
+  total: number
+  children: CatNode[]
+}
 
 const allPosts = await getBlogCollection()
-const allCategories = getUniqueCategoriesWithCount(allPosts).sort((a, b) => b[1] - a[1])
-const totalCategories = allCategories.length
+
+// 统计每个完整分类路径的文章数
+const counts = new Map<string, number>()
+for (const post of allPosts) {
+  const cat = 'category' in post.data ? (post.data.category as string | undefined) : undefined
+  if (cat) counts.set(cat, (counts.get(cat) || 0) + 1)
+}
+
+// 按斜杠分层构建树
+const root: CatNode[] = []
+const nodeMap = new Map<string, CatNode>()
+for (const [path, count] of counts) {
+  const parts = path.split('/')
+  let siblings = root
+  let acc = ''
+  for (const part of parts) {
+    acc = acc ? `${acc}/${part}` : part
+    let node = nodeMap.get(acc)
+    if (!node) {
+      node = { name: part, path: acc, own: 0, total: 0, children: [] }
+      nodeMap.set(acc, node)
+      siblings.push(node)
+    }
+    node.own += count
+    siblings = node.children
+  }
+}
+
+// 递归计算 total（自身 + 所有后代）
+function computeTotal(nodes: CatNode[]): number {
+  let sum = 0
+  for (const n of nodes) {
+    n.total = n.own + computeTotal(n.children)
+    n.children.sort((a, b) => b.total - a.total)
+    sum += n.total
+  }
+  return sum
+}
+computeTotal(root)
+root.sort((a, b) => b.total - a.total)
+
+const totalCategories = nodeMap.size
 
 const meta = {
   description: '这里汇总了我写过的所有文章分类',
@@ -23,25 +72,8 @@ const meta = {
 
     <div id='content' class='animate'>
       {
-        allCategories.length > 0 ? (
-          <ul class='flex flex-wrap gap-3'>
-            {allCategories.map(([category, val]) => (
-              <li>
-                <a
-                  href={`/categories/${category}`}
-                  data-astro-prefetch
-                  class='group flex items-center gap-x-2 rounded-xl border border-border bg-card px-4 py-2 no-underline transition-all hover:border-primary hover:shadow-sm'
-                >
-                  <span class='font-medium text-foreground transition-colors group-hover:text-primary'>
-                    {category}
-                  </span>
-                  <span class='rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground'>
-                    {val}
-                  </span>
-                </a>
-              </li>
-            ))}
-          </ul>
+        root.length > 0 ? (
+          <CatTree nodes={root} />
         ) : (
           <p class='text-muted-foreground'>暂无分类</p>
         )

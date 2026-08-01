@@ -5,7 +5,7 @@ description: 'Markdown is a lightweight markup language.'
 tags:
   - Markdown
 heroImage: { src: './thumbnail.jpg', color: '#B4C6DA' }
-category: '教程'
+category: '教程/Markdown'
 language: 'English'
 ---
 

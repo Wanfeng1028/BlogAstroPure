@@ -7,7 +7,7 @@ tags:
   - Music
   - Technology
 heroImage: { src: './thumbnail.jpg', color: '#4891B2' }
-category: '随笔'
+category: '随笔/音乐'
 language: 'English'
 ---
 

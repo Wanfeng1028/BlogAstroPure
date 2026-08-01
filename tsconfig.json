@@ -14,6 +14,10 @@
     "strictNullChecks": true,
     // Paths
     "paths": {
+      "astro-pure": ["./packages/pure/index.ts"],
+      "astro-pure/user": ["./packages/pure/components/user/index.ts"],
+      "astro-pure/advanced": ["./packages/pure/components/advanced/index.ts"],
+      "astro-pure/types": ["./packages/pure/types/index.ts"],
       "@/assets/*": ["./src/assets/*"],
       "@/public/*": ["./public/*"],
       "@/components/*": ["./src/components/*"],
