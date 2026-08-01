@@ -5,60 +5,67 @@ import { Icon } from '../user'
 ---
 
 <header-component
-  class='group sticky top-0 z-50 max-md:z-30 mb-8 flex items-center justify-between rounded-none border-0 border-b border-border bg-background px-1 max-sm:py-1'
+  class='group sticky top-4 z-50 max-md:z-30 mb-6 flex items-center justify-between rounded-2xl border border-border bg-background/90 px-4 py-2 shadow-sm backdrop-blur-md sm:px-6'
 >
   <a
-    class='z-30 text-xl font-medium group-[.not-top]:ms-2 sm:group-[.not-top]:ms-3'
-    style='transition:margin-inline 0.3s'
+    class='text-lg font-medium tracking-tight text-foreground transition-colors hover:text-primary'
     href='/'
-    aria-label='Brand'>{config.title}</a
+    aria-label='Brand'
   >
+    {config.title}
+  </a>
 
-  <div class='flex items-center gap-x-2'>
+  <div class='flex items-center gap-1'>
     {/* Menu links */}
-    <div
+    <nav
       id='headerExpandContent'
-      class='end-0 start-0 top-12 grid border border-transparent group-[.not-top]:rounded-xl group-[.expanded]:opacity-100 dark:group-[.expanded.not-top]:bg-muted max-sm:absolute max-sm:opacity-0 max-sm:group-[.not-top]:border-border max-sm:group-[.expanded.not-top]:bg-background max-sm:group-[.not-top]:px-4 max-sm:group-[.not-top]:py-2 sm:grid-rows-1'
+      class='flex items-center'
+      aria-label='Main navigation'
     >
-      <div class='flex flex-col items-center justify-center overflow-hidden sm:flex-row'>
+      <div class='flex items-center gap-0.5'>
         {
           config.header.menu.map((item) => (
             <a
               href={item.link}
-              class='w-full flex-none grow py-2 text-right font-medium transition-none hover:text-primary sm:w-fit sm:px-3'
-              aria-label='Nav menu item'
+              class='nav-link relative rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-muted/80'
+              aria-label={item.title}
               data-astro-prefetch
             >
               {item.title}
             </a>
           ))
         }
-        <div class='flex w-full grow flex-row justify-end gap-x-3 sm:w-fit sm:gap-x-5'>
-          <a class='px-1 py-2 transition-none sm:px-2' href='/search' title='Search'>
-            <span class='sr-only'>Search</span>
-            <Icon name='search' class='size-5' />
-          </a>
-        </div>
       </div>
-    </div>
+    </nav>
 
-    {/* buttons */}
-    <div class='z-30 flex gap-x-4 group-[.not-top]:gap-x-2' style='transition:gap 0.3s'>
+    {/* Action buttons */}
+    <div class='ml-1 flex items-center gap-0.5'>
+      <a
+        class='rounded-full p-2 text-muted-foreground transition-colors hover:bg-muted/80 hover:text-foreground'
+        href='/search'
+        title='Search'
+        aria-label='Search'
+      >
+        <span class='sr-only'>Search</span>
+        <Icon name='search' class='size-[18px]' />
+      </a>
       <button
         id='toggleDarkMode'
-        class='group/dark box-content size-5 rounded-md border p-1.5 transition-colors hover:bg-border sm:group-[.not-top]:rounded-xl'
+        class='rounded-full p-2 text-muted-foreground transition-colors hover:bg-muted/80 hover:text-foreground'
+        aria-label='Toggle dark mode'
       >
         <span class='sr-only'>Dark Theme</span>
-        <Icon class='system size-5 group-hover/dark:text-primary' name='computer' />
-        <Icon class='light hidden size-5 group-hover/dark:text-primary' name='sun' />
-        <Icon class='dark hidden size-5 group-hover/dark:text-primary' name='moon' />
+        <Icon class='system size-[18px]' name='computer' />
+        <Icon class='light hidden size-[18px]' name='sun' />
+        <Icon class='dark hidden size-[18px]' name='moon' />
       </button>
       <button
         id='toggleMenu'
-        class='rounded-md border p-1.5 transition-colors hover:bg-border sm:hidden sm:group-[.not-top]:rounded-xl'
+        class='rounded-full p-2 text-muted-foreground transition-colors hover:bg-muted/80 hover:text-foreground sm:hidden'
+        aria-label='Menu'
       >
         <span class='sr-only'>Menu</span>
-        <Icon class='size-5' name='menu' />
+        <Icon class='size-[18px]' name='menu' />
       </button>
     </div>
   </div>
@@ -110,89 +117,50 @@ import { Icon } from '../user'
 
 <style>
   header-component {
-    transition:
-      padding 0.3s,
-      transform 0.3s,
-      margin-inline 0.3s,
-      border 0.15s,
-      background-color 0.15s;
+    transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
 
     &.not-top {
-      --un-border-opacity: 1;
-      border-color: hsl(var(--border) / var(--un-border-opacity));
-      --un-bg-opacity: 1;
-      background-color: hsl(var(--background) / var(--un-bg-opacity));
-      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      box-shadow:
+        0 1px 2px 0 rgba(0, 0, 0, 0.04),
+        0 4px 12px -2px rgba(0, 0, 0, 0.08);
     }
     &[data-show='false']:not(.expanded) {
       transform: translateY(-5rem);
     }
   }
-  :global(.dark) header-component.not-top {
-    background-color: hsl(var(--muted) / var(--un-bg-opacity));
-  }
 
-  /* header menu */
-  @media (max-width: 640px) {
-    #headerExpandContent {
-      grid-template-rows: 0fr;
-      transition:
-        opacity 0.3s,
-        padding 0.3s,
-        border-color 0.15s,
-        grid-template-rows 0.3s;
-    }
-    .expanded #headerExpandContent {
-      grid-template-rows: 1fr;
-    }
-    .expanded.not-top #headerExpandContent {
-      box-shadow:
-        rgb(255, 255, 255) 0px 0px 0px 0px,
-        rgba(24, 24, 27, 0.08) 0px 0px 0px 1px,
-        rgba(39, 39, 42, 0.08) 0px 10px 15px -3px,
-        rgba(39, 39, 42, 0.08) 0px 4px 6px -4px;
-    }
-
-    /* header component after */
-    header-component #headerExpandContent::after {
-      box-sizing: content-box;
+  /* Active nav link underline */
+  .nav-link {
+    position: relative;
+    &::after {
       content: '';
       position: absolute;
-      inset-inline: calc(-1rem - 1px);
-      bottom: 0;
-      top: -5rem;
-      z-index: -1;
-      transition: 0.3s;
-      visibility: hidden;
-      opacity: 0;
-      border-bottom: 1px solid transparent;
+      bottom: 2px;
+      left: 50%;
+      transform: translateX(-50%) scaleX(0);
+      width: 60%;
+      height: 2px;
+      border-radius: 999px;
+      background-color: hsl(var(--primary) / var(--un-bg-opacity, 1));
+      transition: transform 0.2s ease;
     }
-    header-component:not(.not-top) #headerExpandContent::after {
-      visibility: visible;
-      bottom: -1rem;
-      opacity: 1;
-      background-color: hsl(var(--muted) / var(--un-bg-opacity, 1));
-      border-bottom-color: hsl(var(--border) / var(--un-border-opacity, 1));
+    &:hover::after,
+    &.active::after {
+      transform: translateX(-50%) scaleX(1);
     }
   }
 
-  /* dark light mode toggle */
+  /* Dark mode */
   #toggleDarkMode {
     &[data-theme='dark'] {
-      & .system {
-        display: none;
-      }
-      & .dark {
-        display: block;
-      }
+      & .system { display: none; }
+      & .dark { display: block; }
+      & .light { display: none; }
     }
     &[data-theme='light'] {
-      & .system {
-        display: none;
-      }
-      .light {
-        display: block;
-      }
+      & .system { display: none; }
+      & .light { display: block; }
+      & .dark { display: none; }
     }
   }
 </style>
