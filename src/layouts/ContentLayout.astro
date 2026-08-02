@@ -20,11 +20,27 @@ const { meta, highlightColor, back = '/', ...props } = Astro.props
   <main class='mt-6 items-start gap-x-10 md:flex'>
     {/* Sidebar */}
     <aside
-      class='animate top-20 min-w-48 basis-60 overflow-y-scroll max-md:hidden z-40 fixed md:sticky md:order-2 lg:shrink-0 max-md:border max-md:px-4 max-md:py-3 max-md:bg-muted max-md:rounded-xl'
+      class='animate relative top-20 min-w-48 basis-60 overflow-y-scroll max-md:hidden z-40 fixed md:sticky md:order-2 lg:shrink-0 max-md:border max-md:px-4 max-md:py-3 max-md:bg-muted max-md:rounded-xl'
       style='height:calc(100vh - 7rem);'
       id='sidebar'
     >
-      <slot name='sidebar' />
+      <div class='mb-2 flex justify-end max-md:hidden' id='sidebar-collapse-bar'>
+        <button
+          id='sidebar-collapse-btn'
+          type='button'
+          aria-label='收起目录'
+          title='收起目录'
+          class='flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground'
+        >
+          <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m9 18 6-6-6-6' /></svg>
+        </button>
+      </div>
+      <div id='sidebar-content'>
+        <slot name='sidebar' />
+      </div>
+      <button id='sidebar-strip' type='button' aria-label='展开目录' title='展开目录'>
+        <span>目录</span>
+      </button>
     </aside>
     <div
       id='sidebar-shade'
@@ -99,11 +115,76 @@ const { meta, highlightColor, back = '/', ...props } = Astro.props
   sidebarButton?.addEventListener('click', () => {
     toggleSidebar()
   })
+
+  // Desktop: collapse / expand sidebar with persistence
+  const collapseBtn = document.getElementById('sidebar-collapse-btn')
+  const strip = document.getElementById('sidebar-strip')
+  const COLLAPSE_KEY = 'sidebar-collapsed'
+
+  function applyCollapsed(collapsed: boolean) {
+    if (!sidebar) return
+    sidebar.classList.toggle('collapsed', collapsed)
+    try {
+      localStorage.setItem(COLLAPSE_KEY, collapsed ? '1' : '0')
+    } catch {
+      /* ignore storage errors */
+    }
+  }
+
+  if (sidebar) {
+    let initial = false
+    try {
+      initial = localStorage.getItem(COLLAPSE_KEY) === '1'
+    } catch {
+      /* ignore storage errors */
+    }
+    applyCollapsed(initial)
+  }
+
+  collapseBtn?.addEventListener('click', () => applyCollapsed(true))
+  strip?.addEventListener('click', () => applyCollapsed(false))
 </script>
 <style>
   @media (min-width: 769px) {
     #sidebar-shade {
       display: none !important;
+    }
+
+    #sidebar-strip {
+      display: none;
+    }
+
+    aside.collapsed {
+      min-width: 2.75rem !important;
+      flex-basis: 2.75rem !important;
+      width: 2.75rem;
+      overflow: hidden;
+      scrollbar-width: none;
+    }
+    aside.collapsed::-webkit-scrollbar {
+      display: none;
+    }
+    aside.collapsed #sidebar-collapse-bar,
+    aside.collapsed #sidebar-content {
+      display: none;
+    }
+    aside.collapsed #sidebar-strip {
+      display: flex;
+      position: absolute;
+      inset: 0;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--color-muted-foreground, #888);
+      transition: color 0.2s;
+    }
+    aside.collapsed #sidebar-strip:hover {
+      color: var(--color-foreground, #111);
+    }
+    #sidebar-strip span {
+      writing-mode: vertical-rl;
+      letter-spacing: 0.35em;
+      font-size: 0.8rem;
     }
   }
   @media (max-width: 769px) {

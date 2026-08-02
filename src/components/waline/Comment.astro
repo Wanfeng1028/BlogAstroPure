@@ -113,6 +113,11 @@ const { class: className } = Astro.props
     display: inline-block;
   }
 
+  /* Hide comment editor & list, keep only reaction */
+  #waline :global(.wl-panel, .wl-cards, .wl-list, .wl-operation) {
+    display: none;
+  }
+
   /* Reaction buttons */
   #waline :global(.wl-reaction-title, .wl-reaction-text) {
     display: none;

@@ -168,6 +168,24 @@ const rules: Rule<object>[] = [
       '-webkit-box-orient': 'vertical',
       '-webkit-line-clamp': d
     })
+  ],
+  // presetMini doesn't ship backdrop-filter, so provide the few we use manually
+  [
+    /^backdrop-blur(?:-(md|sm|lg|xl))?$/,
+    ([, size]) => {
+      const value: Record<string, string> = {
+        sm: '4px',
+        md: '12px',
+        lg: '16px',
+        xl: '24px'
+      }
+      const blur = `blur(${size ? value[size] : '8px'})`
+      return {
+        '--un-backdrop-blur': blur,
+        '-webkit-backdrop-filter': 'var(--un-backdrop-blur)',
+        'backdrop-filter': 'var(--un-backdrop-blur)'
+      }
+    }
   ]
 ]
 

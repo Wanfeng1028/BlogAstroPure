@@ -5,14 +5,25 @@ import { Icon } from '../user'
 ---
 
 <header-component
-  class='group sticky top-4 z-50 max-md:z-30 mb-6 flex items-center justify-between rounded-2xl border border-border bg-background/90 px-4 py-2 shadow-sm backdrop-blur-md sm:px-6'
+  class='group sticky top-4 z-50 max-md:z-30 mb-6 flex items-center justify-between rounded-2xl px-4 py-2 backdrop-blur-md sm:px-6'
 >
   <a
-    class='text-lg font-medium tracking-tight text-foreground transition-colors hover:text-primary'
+    class='flex items-center gap-3 transition-colors hover:opacity-80'
     href='/'
     aria-label='Brand'
   >
-    {config.title}
+    <span class='brand-avatar-wrap'>
+      <img
+        src={config.logo?.src ?? '/src/assets/touxiang.png'}
+        alt={config.title}
+        class='size-8 object-cover'
+        width='32'
+        height='32'
+      />
+      <span class='brand-avatar-glow' aria-hidden='true' />
+      <span class='brand-avatar-ring' aria-hidden='true' />
+    </span>
+    <span class='text-lg font-medium tracking-tight text-foreground'>{config.title}</span>
   </a>
 
   <div class='flex items-center gap-1'>
@@ -116,17 +127,78 @@ import { Icon } from '../user'
 </script>
 
 <style>
+  @keyframes google-ring-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @property --header-ring-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+  }
+
+  @keyframes header-ring-spin {
+    to { --header-ring-angle: 360deg; }
+  }
+
   header-component {
-    transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+    --header-ring-angle: 0deg;
+    border: 2px solid transparent;
+    background:
+      linear-gradient(hsl(var(--background) / 0.92), hsl(var(--background) / 0.92)) padding-box,
+      conic-gradient(
+          from var(--header-ring-angle),
+          #4285f4,
+          #34a853,
+          #fbbc05,
+          #ea4335,
+          #4285f4
+        )
+        border-box;
+    animation: header-ring-spin 1.5s linear infinite;
+    transition: box-shadow 0.2s;
 
     &.not-top {
-      box-shadow:
-        0 1px 2px 0 rgba(0, 0, 0, 0.04),
-        0 4px 12px -2px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.12);
     }
     &[data-show='false']:not(.expanded) {
       transform: translateY(-5rem);
     }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    header-component {
+      animation: none;
+    }
+  }
+
+  /* Brand avatar ring */
+  .brand-avatar-wrap {
+    position: relative;
+    display: inline-flex;
+  }
+  .brand-avatar-wrap img {
+    position: relative;
+    z-index: 1;
+    border-radius: 9999px;
+  }
+  .brand-avatar-ring {
+    position: absolute;
+    inset: -2px;
+    border-radius: 9999px;
+    background: conic-gradient(from 0deg, #4285f4, #34a853, #fbbc05, #ea4335, #4285f4);
+    animation: google-ring-spin 3s linear infinite;
+    z-index: 0;
+  }
+  .brand-avatar-glow {
+    position: absolute;
+    inset: -4px;
+    border-radius: 9999px;
+    background: conic-gradient(from 0deg, #4285f4, #34a853, #fbbc05, #ea4335, #4285f4);
+    filter: blur(4px);
+    opacity: 0.5;
+    animation: google-ring-spin 3s linear infinite;
+    z-index: -1;
   }
 
   /* Active nav link underline */
