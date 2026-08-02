@@ -1,0 +1,76 @@
+---
+import type { GetStaticPaths, Page } from 'astro'
+import type { CollectionEntry } from 'astro:content'
+
+import { Paginator, PostPreview } from 'astro-pure/components/pages'
+import { getBlogCollection, sortMDByDate } from 'astro-pure/server'
+import { Button } from 'astro-pure/user'
+import PageLayout from '@/layouts/BaseLayout.astro'
+import config from '@/site-config'
+
+export const prerender = true
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const collections = sortMDByDate(await getBlogCollection('murmurs'))
+  const collectionsCount = collections.length
+  return paginate(collections, {
+    pageSize: config.content.blogPageSize,
+    props: { collectionsCount }
+  })
+}) satisfies GetStaticPaths
+
+interface Props {
+  page: Page<CollectionEntry<'murmurs'>>
+  collectionsCount: number
+}
+
+const { page, collectionsCount } = Astro.props
+
+const meta = {
+  description: '一些随想和碎碎念',
+  title: 'Murmurs'
+}
+
+const paginationProps = {
+  ...(page.url.prev && {
+    prevUrl: {
+      text: `← 上一页`,
+      url: page.url.prev
+    }
+  }),
+  ...(page.url.next && {
+    nextUrl: {
+      text: `下一页 →`,
+      url: page.url.next
+    }
+  })
+}
+---
+
+<PageLayout {meta}>
+  <Button title='Back' href='/' variant='back' />
+  <main class='mt-6 lg:mt-10'>
+    <div id='content-header' class='animate'>
+      <h1 class='mb-6 mt-6 text-3xl font-medium sm:mt-10'>Murmurs</h1>
+    </div>
+    {
+      page.data.length === 0 ? (
+        <p>暂无内容。</p>
+      ) : (
+        <section aria-label='碎碎念列表' class='animate' id='content'>
+          <div class='mb-3 flex flex-col justify-between text-sm sm:mb-5 sm:flex-row'>
+            <span class='text-muted-foreground'>
+              第 {page.currentPage} 页 - 共 {collectionsCount} 条
+            </span>
+          </div>
+          <ul class='flex flex-col gap-y-4 text-start'>
+            {page.data.map((post) => (
+              <PostPreview {post} detailed />
+            ))}
+          </ul>
+          <Paginator {...paginationProps} />
+        </section>
+      )
+    }
+  </main>
+</PageLayout>

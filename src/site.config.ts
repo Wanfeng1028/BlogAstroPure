@@ -26,7 +26,7 @@ export const theme: ThemeUserConfig = {
   },
   /** Set a logo image to show in the homepage. */
   logo: {
-    src: '/src/assets/touxiang.png',
+    src: '/images/touxiang.png',
     alt: '晚风'
   },
 
@@ -49,6 +49,7 @@ export const theme: ThemeUserConfig = {
   header: {
     menu: [
       { title: '博客', link: '/blog' },
+      { title: '碎碎念', link: '/murmurs' },
       { title: '归档', link: '/archives' },
       { title: '分类', link: '/categories' },
       { title: '标签', link: '/tags' },

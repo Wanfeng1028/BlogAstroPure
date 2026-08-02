@@ -58,4 +58,31 @@ const docs = defineCollection({
     })
 })
 
-export const collections = { blog, docs }
+// Define murmurs (碎碎念) collection
+const murmurs = defineCollection({
+  loader: glob({ base: './src/content/murmurs', pattern: '**/*.{md,mdx}' }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string().max(60),
+      description: z.string().max(160),
+      publishDate: z.coerce.date(),
+      updatedDate: z.coerce.date().optional(),
+      heroImage: z
+        .object({
+          src: image(),
+          alt: z.string().optional(),
+          inferSize: z.boolean().optional(),
+          width: z.number().optional(),
+          height: z.number().optional(),
+          color: z.string().optional()
+        })
+        .optional(),
+      tags: z.array(z.string()).default([]).transform(removeDupsAndLowerCase),
+      category: z.string().optional(),
+      language: z.string().optional(),
+      draft: z.boolean().default(false),
+      comment: z.boolean().default(true)
+    })
+})
+
+export const collections = { blog, docs, murmurs }

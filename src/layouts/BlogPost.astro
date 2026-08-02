@@ -12,8 +12,8 @@ import PageLayout from '@/layouts/ContentLayout.astro'
 import { Comment, PageInfo } from '@/components/waline'
 
 interface Props {
-  post: CollectionEntry<'blog'>
-  posts: CollectionEntry<'blog'>[]
+  post: CollectionEntry<'blog'> | CollectionEntry<'murmurs'>
+  posts: (CollectionEntry<'blog'> | CollectionEntry<'murmurs'>)[]
   headings: MarkdownHeading[]
   remarkPluginFrontmatter: Record<string, unknown>
 }
