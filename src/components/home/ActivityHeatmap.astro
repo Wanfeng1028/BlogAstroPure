@@ -1,0 +1,286 @@
+---
+/**
+ * GitHub-style contribution heatmap with interactive year switching.
+ * Props: data - Record<'YYYY-MM-DD', count>
+ */
+interface Props {
+  data: Record<string, number>
+}
+
+const { data } = Astro.props
+const total = Object.values(data).reduce((a, b) => a + b, 0)
+const currentYear = new Date().getFullYear()
+const years = [currentYear, currentYear - 1, currentYear - 2]
+---
+
+<div class='gh-heatmap' id='gh-heatmap'>
+  <div class='gh-header'>
+    <h2 class='gh-title'><span id='gh-total'>{total}</span> contributions in the last year</h2>
+    <div class='gh-years'>
+      {years.map((y, i) => (
+        <button type='button' class:list={['gh-year-btn', { active: i === 0 }]} data-year={y}>
+          {y}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <div class='gh-scroll'>
+    <div class='gh-graph'>
+      <div class='gh-days'>
+        <span></span><span>Mon</span><span></span><span>Wed</span><span></span><span>Fri</span><span></span>
+      </div>
+      <div class='gh-main'>
+        <div class='gh-months' id='gh-months'></div>
+        <div class='gh-weeks' id='gh-weeks'></div>
+      </div>
+    </div>
+  </div>
+
+  <div class='gh-footer'>
+    <a href='https://github.com/Wanfeng1028' target='_blank' rel='noopener' class='gh-learn'>
+      Learn how we count contributions
+    </a>
+    <div class='gh-legend'>
+      <span>Less</span>
+      <div class='gh-cell lv-0'></div>
+      <div class='gh-cell lv-1'></div>
+      <div class='gh-cell lv-2'></div>
+      <div class='gh-cell lv-3'></div>
+      <div class='gh-cell lv-4'></div>
+      <span>More</span>
+    </div>
+  </div>
+</div>
+
+<script type='application/json' id='gh-data' set:html={JSON.stringify(data)} />
+
+<script>
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+
+  function level(n: number): number {
+    if (n === 0) return 0
+    if (n <= 2) return 1
+    if (n <= 4) return 2
+    if (n <= 7) return 3
+    return 4
+  }
+
+  function renderYear(year: number, data: Record<string, number>) {
+    const weeksEl = document.getElementById('gh-weeks')!
+    const monthsEl = document.getElementById('gh-months')!
+    const totalEl = document.getElementById('gh-total')!
+
+    // Build calendar: Jan 1 → Dec 31 of selected year
+    const jan1 = new Date(year, 0, 1)
+    const dec31 = new Date(year, 11, 31)
+    const today = new Date()
+    const end = dec31 < today ? dec31 : today
+
+    // Align start to Sunday
+    const start = new Date(jan1)
+    start.setDate(start.getDate() - start.getDay())
+
+    const weeks: { date: Date; count: number }[][] = []
+    const cursor = new Date(start)
+    let week: { date: Date; count: number }[] = []
+    let yearTotal = 0
+
+    while (cursor <= end) {
+      const key = cursor.toISOString().slice(0, 10)
+      const count = data[key] || 0
+      if (cursor.getFullYear() === year) yearTotal += count
+      week.push({ date: new Date(cursor), count })
+      if (week.length === 7) {
+        weeks.push(week)
+        week = []
+      }
+      cursor.setDate(cursor.getDate() + 1)
+    }
+    if (week.length) weeks.push(week)
+
+    // Month labels
+    const monthLabels: { label: string; col: number }[] = []
+    let prevMonth = -1
+    weeks.forEach((w, i) => {
+      const firstDay = w[0].date
+      if (firstDay.getFullYear() !== year && firstDay.getMonth() !== 0) return
+      const m = firstDay.getMonth()
+      if (m !== prevMonth && firstDay.getFullYear() === year) {
+        monthLabels.push({ label: MONTHS[m], col: i })
+        prevMonth = m
+      }
+    })
+
+    // Render months
+    monthsEl.innerHTML = monthLabels
+      .map(({ label, col }) => `<span style="left:${col * 15}px">${label}</span>`)
+      .join('')
+
+    // Render weeks
+    weeksEl.innerHTML = weeks
+      .map(
+        (w) =>
+          `<div class="gh-week">${w
+            .map(
+              ({ date, count }) =>
+                `<div class="gh-cell lv-${level(count)}" title="${date.toISOString().slice(0, 10)} · ${count}"></div>`
+            )
+            .join('')}</div>`
+      )
+      .join('')
+
+    totalEl.textContent = String(yearTotal)
+  }
+
+  // Init
+  const dataEl = document.getElementById('gh-data')
+  const data: Record<string, number> = JSON.parse(dataEl?.textContent || '{}')
+  const currentYear = new Date().getFullYear()
+
+  renderYear(currentYear, data)
+
+  // Year buttons
+  document.querySelectorAll('.gh-year-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.gh-year-btn').forEach((b) => b.classList.remove('active'))
+      btn.classList.add('active')
+      renderYear(Number((btn as HTMLElement).dataset.year), data)
+    })
+  })
+</script>
+
+<style>
+  .gh-heatmap {
+    width: 100%;
+  }
+
+  .gh-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .gh-title {
+    font-size: 14px;
+    font-weight: 400;
+    color: hsl(var(--foreground));
+    margin: 0;
+  }
+  .gh-years {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .gh-year-btn {
+    font-size: 12px;
+    padding: 2px 12px;
+    border-radius: 12px;
+    border: none;
+    background: transparent;
+    color: hsl(var(--muted-foreground));
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .gh-year-btn:hover {
+    background: hsl(var(--muted));
+  }
+  .gh-year-btn.active {
+    color: #fff;
+    background: #1f6feb;
+    font-weight: 500;
+  }
+
+  .gh-scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  .gh-graph {
+    display: flex;
+    gap: 8px;
+  }
+
+  .gh-days {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding-top: 22px;
+    width: 28px;
+    flex-shrink: 0;
+  }
+  .gh-days span {
+    height: 12px;
+    line-height: 12px;
+    font-size: 11px;
+    color: hsl(var(--muted-foreground));
+    text-align: right;
+    padding-right: 6px;
+  }
+
+  .gh-main {
+    display: flex;
+    flex-direction: column;
+  }
+  .gh-months {
+    position: relative;
+    height: 18px;
+    margin-bottom: 4px;
+  }
+  .gh-months span {
+    position: absolute;
+    top: 0;
+    font-size: 11px;
+    color: hsl(var(--muted-foreground));
+    white-space: nowrap;
+  }
+
+  .gh-weeks {
+    display: flex;
+    gap: 3px;
+  }
+  .gh-week {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .gh-cell {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+  }
+  .gh-cell.lv-0 { background: #ebedf0; }
+  .gh-cell.lv-1 { background: #9be9a8; }
+  .gh-cell.lv-2 { background: #40c463; }
+  .gh-cell.lv-3 { background: #30a14e; }
+  .gh-cell.lv-4 { background: #216e39; }
+
+  :global(.dark) .gh-cell.lv-0 { background: #161b22; }
+  :global(.dark) .gh-cell.lv-1 { background: #0e4429; }
+  :global(.dark) .gh-cell.lv-2 { background: #006d32; }
+  :global(.dark) .gh-cell.lv-3 { background: #26a641; }
+  :global(.dark) .gh-cell.lv-4 { background: #39d353; }
+
+  .gh-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+  }
+  .gh-learn {
+    font-size: 11px;
+    color: hsl(var(--muted-foreground));
+    text-decoration: none;
+  }
+  .gh-learn:hover {
+    color: hsl(var(--foreground));
+    text-decoration: underline;
+  }
+  .gh-legend {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    color: hsl(var(--muted-foreground));
+  }
+</style>

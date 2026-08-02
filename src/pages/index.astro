@@ -1,10 +1,10 @@
 ---
-import { Image } from 'astro:assets'
-
 import { PostPreview } from 'astro-pure/components/pages'
 import { getBlogCollection, sortMDByDate } from 'astro-pure/server'
-import { Button, Icon, Label } from 'astro-pure/user'
+import { Button } from 'astro-pure/user'
 import PageLayout from '@/layouts/BaseLayout.astro'
+import ActivityHeatmap from '@/components/home/ActivityHeatmap.astro'
+import ProfileLinks from '@/components/home/ProfileLinks.astro'
 import Section from '@/components/home/Section.astro'
 import config from '@/site-config'
 
@@ -12,14 +12,40 @@ const MAX_POSTS = 10
 const allPosts = await getBlogCollection()
 const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS)
 
-const imagePath = config.logo.src
-const images = import.meta.glob<{ default: ImageMetadata }>(
-  '/src/assets/*.{jpeg,jpg,png,gif,avif,webp}'
-)
-if (!images[imagePath])
-  throw new Error(
-    `"${imagePath}" does not exist in glob: "src/assets/*.{jpeg,jpg,png,gif,avif,webp}"`
-  )
+// Build activity heatmap data: blog posts + GitHub push events
+const activityData: Record<string, number> = {}
+
+// Blog post dates
+for (const post of allPosts) {
+  const d = post.data.publishDate
+  if (d) {
+    const key = new Date(d).toISOString().slice(0, 10)
+    activityData[key] = (activityData[key] || 0) + 2
+  }
+}
+
+// GitHub public events (push = commits)
+try {
+  for (let page = 1; page <= 3; page++) {
+    const res = await fetch(
+      `https://api.github.com/users/Wanfeng1028/events/public?per_page=100&page=${page}`,
+      { headers: { 'User-Agent': 'AstroBlog' }, signal: AbortSignal.timeout(5000) }
+    )
+    if (!res.ok) break
+    const events: { type: string; created_at: string; payload?: { commits?: unknown[] } }[] =
+      await res.json()
+    if (!events.length) break
+    for (const ev of events) {
+      if (ev.type === 'PushEvent') {
+        const key = ev.created_at.slice(0, 10)
+        const commits = ev.payload?.commits?.length || 1
+        activityData[key] = (activityData[key] || 0) + commits
+      }
+    }
+  }
+} catch {
+  // GitHub API unavailable during build — blog data only
+}
 ---
 
 <PageLayout meta={{ title: '首页' }} highlightColor='#659EB9'>
@@ -28,8 +54,8 @@ if (!images[imagePath])
       <div class='avatar-ring-wrap'>
         <div class='avatar-ring'></div>
         <div class='avatar-ring-glow'></div>
-        <Image
-          src={images[imagePath]()}
+        <img
+          src={config.logo.src}
           alt={config.logo.alt || '头像'}
           class='h-28 w-auto rounded-full'
           loading='eager'
@@ -39,15 +65,13 @@ if (!images[imagePath])
 
       <div class='flex flex-col items-center gap-y-4'>
         <h1 class='text-3xl font-medium'>{config.author}</h1>
-        <div class='flex flex-wrap justify-center gap-x-7 gap-y-3'>
-          <Label title='GitHub' as='a' href='https://github.com/Wanfeng1028' target='_blank'>
-            <Icon name='github' class='size-5' slot='icon' />
-          </Label>
-        </div>
+        <ProfileLinks />
       </div>
     </section>
 
     <div id='content' class='animate flex flex-col gap-y-10 md:w-4/5 lg:w-5/6'>
+      <ActivityHeatmap data={activityData} />
+
       <Section title='关于'>
         <p class='text-muted-foreground'>GIS 开发 / 全栈开发</p>
         <p class='text-muted-foreground'>
@@ -55,6 +79,81 @@ if (!images[imagePath])
           Agent 和 Go 后端开发。
         </p>
         <Button title='了解更多' class='w-fit self-end' href='/about' variant='ahead' />
+      </Section>
+
+      <Section title='Website List'>
+        <div class='not-prose grid gap-4 sm:grid-cols-2'>
+          <a href='https://github.com/Wanfeng1028/ParrotSoundReVue' target='_blank' rel='noopener'
+            class='group overflow-hidden rounded-xl border bg-muted/40 transition-colors hover:bg-muted'>
+            <div class='flex h-28 items-center justify-center bg-muted/60'>
+              <span class='text-3xl'>🦜</span>
+            </div>
+            <div class='p-4'>
+              <p class='text-sm font-semibold'>ParrotSoundReVue</p>
+              <p class='mt-1 text-xs text-muted-foreground'>基于 Vue 的智能语音识别应用</p>
+            </div>
+          </a>
+          <a href='https://github.com/Wanfeng1028/BlogAstroPure' target='_blank' rel='noopener'
+            class='group overflow-hidden rounded-xl border bg-muted/40 transition-colors hover:bg-muted'>
+            <div class='flex h-28 items-center justify-center bg-muted/60'>
+              <span class='text-3xl'>📝</span>
+            </div>
+            <div class='p-4'>
+              <p class='text-sm font-semibold'>BlogAstroPure</p>
+              <p class='mt-1 text-xs text-muted-foreground'>基于 Astro 的个人博客</p>
+            </div>
+          </a>
+          <a href='https://github.com/Wanfeng1028/GeoFrontend2.0' target='_blank' rel='noopener'
+            class='group overflow-hidden rounded-xl border bg-muted/40 transition-colors hover:bg-muted'>
+            <div class='flex h-28 items-center justify-center bg-muted/60'>
+              <span class='text-3xl'>🌍</span>
+            </div>
+            <div class='p-4'>
+              <p class='text-sm font-semibold'>GeoFrontend2.0</p>
+              <p class='mt-1 text-xs text-muted-foreground'>GIS 工作台前端</p>
+            </div>
+          </a>
+          <a href='https://github.com/Wanfeng1028' target='_blank' rel='noopener'
+            class='group flex flex-col items-center justify-center rounded-xl border border-dashed p-4 text-center transition-colors hover:bg-muted/40'>
+            <p class='text-sm font-semibold'>More projects</p>
+            <p class='mt-1 text-xs text-muted-foreground'>GitHub 上查看更多 →</p>
+          </a>
+        </div>
+      </Section>
+
+      <Section title='Skills'>
+        <div class='not-prose flex flex-col gap-4'>
+          <div>
+            <p class='mb-2 text-sm font-medium text-muted-foreground'>Languages</p>
+            <div class='flex flex-wrap gap-2'>
+              <span class='rounded-full bg-muted px-3 py-1 text-sm'>TypeScript</span>
+              <span class='rounded-full bg-muted px-3 py-1 text-sm'>JavaScript</span>
+              <span class='rounded-full bg-muted px-3 py-1 text-sm'>Go</span>
+              <span class='rounded-full bg-muted px-3 py-1 text-sm'>Python</span>
+              <span class='rounded-full bg-muted px-3 py-1 text-sm'>Java</span>
+            </div>
+          </div>
+          <div>
+            <p class='mb-2 text-sm font-medium text-muted-foreground'>Frontend</p>
+            <div class='flex flex-wrap gap-2'>
+              <span class='rounded-full bg-muted px-3 py-1 text-sm'>Vue</span>
+              <span class='rounded-full bg-muted px-3 py-1 text-sm'>React</span>
+              <span class='rounded-full bg-muted px-3 py-1 text-sm'>Angular</span>
+              <span class='rounded-full bg-muted px-3 py-1 text-sm'>Astro</span>
+              <span class='rounded-full bg-muted px-3 py-1 text-sm'>Vite</span>
+            </div>
+          </div>
+          <div>
+            <p class='mb-2 text-sm font-medium text-muted-foreground'>Backend & Tools</p>
+            <div class='flex flex-wrap gap-2'>
+              <span class='rounded-full bg-muted px-3 py-1 text-sm'>Node.js</span>
+              <span class='rounded-full bg-muted px-3 py-1 text-sm'>Gin</span>
+              <span class='rounded-full bg-muted px-3 py-1 text-sm'>Docker</span>
+              <span class='rounded-full bg-muted px-3 py-1 text-sm'>PostgreSQL</span>
+              <span class='rounded-full bg-muted px-3 py-1 text-sm'>Git</span>
+            </div>
+          </div>
+        </div>
       </Section>
       {
         allPostsByDate.length > 0 && (
