@@ -9,15 +9,15 @@ const totalTags = allTags.length
 
 const meta = {
   description: '这里汇总了我写过的所有话题标签',
-  title: '全部标签'
+  title: 'Tags'
 }
 ---
 
 <PageLayout {meta}>
-  <Button title='返回' href='/blog' variant='back' />
+  <Button title='Back' href='/blog' variant='back' />
   <main class='mt-6 lg:mt-10'>
     <div id='content-header' class='animate mb-8'>
-      <h1 class='text-3xl font-medium'>标签</h1>
+      <h1 class='text-3xl font-medium'>Tags</h1>
       <p class='mt-2 text-muted-foreground'>共 {totalTags} 个标签</p>
     </div>
 
