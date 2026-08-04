@@ -99,22 +99,31 @@ const years = [currentYear, currentYear - 1, currentYear - 2]
     }
     if (week.length) weeks.push(week)
 
-    // Month labels
+    // Month labels — anchor on the first week that contains day 1-7 of the month
+    const MONTH_WIDTH = 15 // 12px cell + 3px gap per week column
     const monthLabels: { label: string; col: number }[] = []
-    let prevMonth = -1
+    let prevCol = -100
     weeks.forEach((w, i) => {
-      const firstDay = w[0].date
-      if (firstDay.getFullYear() !== year && firstDay.getMonth() !== 0) return
-      const m = firstDay.getMonth()
-      if (m !== prevMonth && firstDay.getFullYear() === year) {
-        monthLabels.push({ label: MONTHS[m], col: i })
-        prevMonth = m
+      // Find any day in this week that is in the year and within days 1..7
+      const anchor = w.find(
+        (d) =>
+          d.date.getFullYear() === year &&
+          d.date.getDate() >= 1 &&
+          d.date.getDate() <= 7
+      )
+      if (!anchor) return
+      const m = anchor.date.getMonth()
+      const label = MONTHS[m]
+      // Keep a minimum distance from the previous label to prevent overlap
+      if (i - prevCol >= 3) {
+        monthLabels.push({ label, col: i })
+        prevCol = i
       }
     })
 
     // Render months
     monthsEl.innerHTML = monthLabels
-      .map(({ label, col }) => `<span style="left:${col * 15}px">${label}</span>`)
+      .map(({ label, col }) => `<span style="left:${col * MONTH_WIDTH}px">${label}</span>`)
       .join('')
 
     // Render weeks
@@ -150,7 +159,7 @@ const years = [currentYear, currentYear - 1, currentYear - 2]
   })
 </script>
 
-<style>
+<style is:global>
   .gh-heatmap {
     width: 100%;
   }
@@ -198,6 +207,7 @@ const years = [currentYear, currentYear - 1, currentYear - 2]
   .gh-graph {
     display: flex;
     gap: 8px;
+    min-width: max-content;
   }
 
   .gh-days {
@@ -220,6 +230,8 @@ const years = [currentYear, currentYear - 1, currentYear - 2]
   .gh-main {
     display: flex;
     flex-direction: column;
+    flex-shrink: 0;
+    width: max-content;
   }
   .gh-months {
     position: relative;
@@ -237,11 +249,13 @@ const years = [currentYear, currentYear - 1, currentYear - 2]
   .gh-weeks {
     display: flex;
     gap: 3px;
+    flex-shrink: 0;
   }
   .gh-week {
     display: flex;
     flex-direction: column;
     gap: 3px;
+    flex-shrink: 0;
   }
 
   .gh-cell {
