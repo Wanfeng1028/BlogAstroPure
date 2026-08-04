@@ -12,6 +12,16 @@ const MAX_POSTS = 10
 const allPosts = await getBlogCollection()
 const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS)
 
+// Skills 分类（icons 为 skillicons.dev 图标名，逗号分隔）
+const skills = [
+  { title: 'OS', icons: 'apple,linux,windows,ubuntu,debian,arch' },
+  {
+    title: 'Language & Frameworks',
+    icons: 'ts,js,go,python,java,vue,react,angular,astro,vite,nodejs,gin'
+  },
+  { title: 'Tool', icons: 'docker,postgres,git,vscode' }
+]
+
 // Build activity heatmap data: blog posts + GitHub push events
 const activityData: Record<string, number> = {}
 
@@ -107,56 +117,25 @@ try {
               <p class='mt-1 text-xs text-muted-foreground'>基于 Astro 的个人博客</p>
             </div>
           </a>
-          <a href='https://github.com/Wanfeng1028/GeoFrontend2.0' target='_blank' rel='noopener'
-            class='group overflow-hidden rounded-xl border bg-muted/40 transition-colors hover:bg-muted'>
-            <div class='flex h-28 items-center justify-center bg-muted/60'>
-              <span class='text-3xl'>🌍</span>
-            </div>
-            <div class='p-4'>
-              <p class='text-sm font-semibold'>GeoFrontend2.0</p>
-              <p class='mt-1 text-xs text-muted-foreground'>GIS 工作台前端</p>
-            </div>
-          </a>
-          <a href='https://github.com/Wanfeng1028' target='_blank' rel='noopener'
-            class='group flex flex-col items-center justify-center rounded-xl border border-dashed p-4 text-center transition-colors hover:bg-muted/40'>
-            <p class='text-sm font-semibold'>More projects</p>
-            <p class='mt-1 text-xs text-muted-foreground'>GitHub 上查看更多 →</p>
-          </a>
         </div>
+        <Button title='查看更多' class='w-fit self-end' href='https://github.com/Wanfeng1028' variant='ahead' />
       </Section>
 
       <Section title='Skills'>
-        <div class='not-prose flex flex-col gap-4'>
-          <div>
-            <p class='mb-2 text-sm font-medium text-muted-foreground'>Languages</p>
-            <div class='flex flex-wrap gap-2'>
-              <span class='rounded-full bg-muted px-3 py-1 text-sm'>TypeScript</span>
-              <span class='rounded-full bg-muted px-3 py-1 text-sm'>JavaScript</span>
-              <span class='rounded-full bg-muted px-3 py-1 text-sm'>Go</span>
-              <span class='rounded-full bg-muted px-3 py-1 text-sm'>Python</span>
-              <span class='rounded-full bg-muted px-3 py-1 text-sm'>Java</span>
-            </div>
-          </div>
-          <div>
-            <p class='mb-2 text-sm font-medium text-muted-foreground'>Frontend</p>
-            <div class='flex flex-wrap gap-2'>
-              <span class='rounded-full bg-muted px-3 py-1 text-sm'>Vue</span>
-              <span class='rounded-full bg-muted px-3 py-1 text-sm'>React</span>
-              <span class='rounded-full bg-muted px-3 py-1 text-sm'>Angular</span>
-              <span class='rounded-full bg-muted px-3 py-1 text-sm'>Astro</span>
-              <span class='rounded-full bg-muted px-3 py-1 text-sm'>Vite</span>
-            </div>
-          </div>
-          <div>
-            <p class='mb-2 text-sm font-medium text-muted-foreground'>Backend & Tools</p>
-            <div class='flex flex-wrap gap-2'>
-              <span class='rounded-full bg-muted px-3 py-1 text-sm'>Node.js</span>
-              <span class='rounded-full bg-muted px-3 py-1 text-sm'>Gin</span>
-              <span class='rounded-full bg-muted px-3 py-1 text-sm'>Docker</span>
-              <span class='rounded-full bg-muted px-3 py-1 text-sm'>PostgreSQL</span>
-              <span class='rounded-full bg-muted px-3 py-1 text-sm'>Git</span>
-            </div>
-          </div>
+        <div class='not-prose flex flex-col gap-5'>
+          {
+            skills.map((cat) => (
+              <div>
+                <p class='mb-2 text-sm font-semibold text-muted-foreground'>{cat.title}</p>
+                <img
+                  src={`https://skillicons.dev/icons?i=${cat.icons}&perline=15&theme=light`}
+                  alt={cat.title}
+                  class='max-w-full'
+                  loading='lazy'
+                />
+              </div>
+            ))
+          }
         </div>
       </Section>
       {
