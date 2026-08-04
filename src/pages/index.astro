@@ -65,8 +65,12 @@ try {
 
       <div class='flex flex-col items-center gap-y-4'>
         <h1 class='text-3xl font-medium'>{config.author}</h1>
-        <ProfileLinks />
+        <ProfileLinks showBadges={false} />
       </div>
+
+      <p class='mt-2 max-w-xl text-center text-xs font-bold italic leading-relaxed text-muted-foreground'>
+        每个优秀的人都有一段沉默的时光，那段时光是付出了很多努力，却得不到结果的日子，我们把它叫做扎根。
+      </p>
     </section>
 
     <div id='content' class='animate flex flex-col gap-y-10 md:w-4/5 lg:w-5/6'>

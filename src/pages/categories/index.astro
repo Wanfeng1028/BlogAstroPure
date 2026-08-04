@@ -1,8 +1,12 @@
 ---
-import { getBlogCollection } from 'astro-pure/server'
+import type { CollectionEntry } from 'astro:content'
+
+import { getBlogCollection, sortMDByDate } from 'astro-pure/server'
 import { Button } from 'astro-pure/user'
 import PageLayout from '@/layouts/BaseLayout.astro'
 import CatTree from '@/components/CatTree.astro'
+
+type Post = CollectionEntry<'blog'>
 
 interface CatNode {
   name: string
@@ -10,15 +14,20 @@ interface CatNode {
   own: number
   total: number
   children: CatNode[]
+  posts: Post[]
 }
 
-const allPosts = await getBlogCollection()
+const allPosts = (await getBlogCollection()) as Post[]
 
 // 统计每个完整分类路径的文章数
 const counts = new Map<string, number>()
+const postsByCat = new Map<string, Post[]>()
 for (const post of allPosts) {
   const cat = 'category' in post.data ? (post.data.category as string | undefined) : undefined
-  if (cat) counts.set(cat, (counts.get(cat) || 0) + 1)
+  if (!cat) continue
+  counts.set(cat, (counts.get(cat) || 0) + 1)
+  if (!postsByCat.has(cat)) postsByCat.set(cat, [])
+  postsByCat.get(cat)!.push(post)
 }
 
 // 按斜杠分层构建树
@@ -32,12 +41,20 @@ for (const [path, count] of counts) {
     acc = acc ? `${acc}/${part}` : part
     let node = nodeMap.get(acc)
     if (!node) {
-      node = { name: part, path: acc, own: 0, total: 0, children: [] }
+      node = { name: part, path: acc, own: 0, total: 0, children: [], posts: [] }
       nodeMap.set(acc, node)
       siblings.push(node)
     }
     node.own += count
     siblings = node.children
+  }
+}
+
+// 把文章挂到对应分类节点（按日期倒序）
+function attachPosts(nodes: CatNode[]): void {
+  for (const n of nodes) {
+    n.posts = sortMDByDate(postsByCat.get(n.path) ?? []) as Post[]
+    attachPosts(n.children)
   }
 }
 
@@ -51,6 +68,7 @@ function computeTotal(nodes: CatNode[]): number {
   }
   return sum
 }
+attachPosts(root)
 computeTotal(root)
 root.sort((a, b) => b.total - a.total)
 
@@ -83,15 +101,13 @@ const meta = {
 </PageLayout>
 
 <script>
-  // 分类树：点击箭头按钮展开/收起子级
+  // 分类树：点击箭头按钮展开/收起子级（子分类 + 文章）
   document.querySelectorAll('[data-cat-toggle]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const item = btn.closest('.cat-tree__item')
       if (!item) return
-      const panel = item.querySelector(':scope > .cat-tree--nested')
       const collapsed = item.classList.toggle('cat-tree__item--collapsed')
       btn.setAttribute('aria-expanded', String(!collapsed))
-      if (panel) (panel as HTMLElement).hidden = collapsed
     })
   })
 </script>

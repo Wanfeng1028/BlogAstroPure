@@ -1,5 +1,4 @@
 ---
-import { PostPreview } from 'astro-pure/components/pages'
 import { getBlogCollection, groupCollectionsByYear, sortMDByDate } from 'astro-pure/server'
 import { Button } from 'astro-pure/user'
 import PageLayout from '@/layouts/BaseLayout.astro'
@@ -9,6 +8,13 @@ export const prerender = true
 const allPosts = await getBlogCollection()
 const allPostsByDate = sortMDByDate(allPosts)
 const allPostsByYear = groupCollectionsByYear(allPostsByDate)
+const totalPosts = allPosts.length
+
+const dateFmt = new Intl.DateTimeFormat('zh-CN', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+})
 
 const meta = {
   description: 'A list of all the years of creating my posts',
@@ -20,30 +26,199 @@ const meta = {
   <Button title='Back' href='/blog' variant='back' />
 
   <main class='mt-6 lg:mt-10'>
-    <div id='content-header' class='animate'>
-      <h1 class='mb-6 text-3xl font-medium'>Archives</h1>
+    <div id='content-header' class='animate mb-10'>
+      <h1 class='mb-2 text-3xl font-medium'>Archives</h1>
+      <p class='text-muted-foreground'>共 {totalPosts} 篇文章 · {allPostsByYear.length} 个年份</p>
     </div>
 
     {allPosts.length === 0 && <p>No posts yet.</p>}
 
     <section id='content' class='animate' aria-label='Blog post list'>
-      {
-        allPostsByYear.map(([year, posts]) => (
-          <div class='relative mt-20'>
-            <h2 class='hidden' aria-hidden='true'>
-              <samp>{year}</samp>
-            </h2>
-            <p class='px-5 text-muted-foreground'>
-              {posts.length} post{posts.length > 1 && 's'}
-            </p>
-            <ul class='flex flex-col text-start'>
-              {posts.map((p) => (
-                <PostPreview post={p} class='border-0 bg-transparent py-2' />
-              ))}
-            </ul>
-          </div>
-        ))
-      }
+      <div class='archive'>
+        {
+          allPostsByYear.map(([year, posts]) => (
+            <div class='archive__year'>
+              <div class='archive__year-head'>
+                <span class='archive__year-num'>{year}</span>
+                <span class='archive__year-count'>{posts.length} 篇</span>
+              </div>
+
+              <ul class='archive__list'>
+                {
+                  posts.map((p) => (
+                    <li class='archive__item'>
+                      <a href={`/blog/${p.id}`} data-astro-prefetch class='archive__link'>
+                        <time class='archive__date'>{dateFmt.format(p.data.publishDate)}</time>
+                        <span class='archive__title'>
+                          {p.data.draft && <span class='archive__draft'>Draft</span>}
+                          {p.data.title}
+                        </span>
+                        <svg
+                          class='archive__arrow'
+                          viewBox='0 0 24 24'
+                          fill='none'
+                          stroke='currentColor'
+                          stroke-width='2'
+                          stroke-linecap='round'
+                          stroke-linejoin='round'
+                        ><line x1='5' y1='12' x2='19' y2='12'></line><polyline points='12 5 19 12 12 19'></polyline></svg>
+                      </a>
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+          ))
+        }
+      </div>
     </section>
   </main>
 </PageLayout>
+
+<style>
+  .archive {
+    position: relative;
+    margin-left: 1.5rem;
+  }
+  /* 竖向时间线 */
+  .archive::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.5rem;
+    bottom: 0.5rem;
+    width: 2px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, hsl(var(--primary) / 0.7), hsl(var(--border)));
+  }
+
+  .archive__year {
+    position: relative;
+    padding-left: 2.5rem;
+    margin-bottom: 3rem;
+  }
+  .archive__year:last-child {
+    margin-bottom: 0;
+  }
+
+  /* 年份节点 */
+  .archive__year-head {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.15rem;
+  }
+  .archive__year-head::before {
+    content: '';
+    position: absolute;
+    left: -2.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0.9rem;
+    height: 0.9rem;
+    border-radius: 999px;
+    background: hsl(var(--background));
+    border: 3px solid hsl(var(--primary));
+    box-shadow: 0 0 0 4px hsl(var(--primary) / 0.15);
+  }
+  .archive__year-num {
+    font-size: 2rem;
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: hsl(var(--foreground));
+  }
+  .archive__year-count {
+    font-size: 0.8rem;
+    color: hsl(var(--muted-foreground));
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: hsl(var(--muted));
+  }
+
+  .archive__item {
+    position: relative;
+  }
+  /* 每篇文章的小圆点 */
+  .archive__item::before {
+    content: '';
+    position: absolute;
+    left: -2.5rem;
+    top: 1.05rem;
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 999px;
+    background: hsl(var(--muted-foreground) / 0.45);
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  .archive__item:hover::before {
+    background: hsl(var(--primary));
+    transform: scale(1.35);
+  }
+
+  .archive__link {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.55rem 0.75rem;
+    border-radius: 0.75rem;
+    color: hsl(var(--foreground));
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .archive__link:hover {
+    background: hsl(var(--muted) / 0.5);
+    color: hsl(var(--primary));
+  }
+  .archive__date {
+    flex-shrink: 0;
+    min-width: 6.5rem;
+    font-size: 0.8rem;
+    color: hsl(var(--muted-foreground));
+  }
+  .archive__title {
+    font-weight: 500;
+  }
+  .archive__draft {
+    margin-right: 0.4rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.1rem 0.4rem;
+    border-radius: 999px;
+    color: hsl(0 72% 51%);
+    background: hsl(0 72% 51% / 0.12);
+  }
+  .archive__arrow {
+    flex-shrink: 0;
+    width: 1rem;
+    height: 1rem;
+    margin-left: auto;
+    align-self: center;
+    stroke: hsl(var(--muted-foreground));
+    transform: translateX(0);
+    transition: transform 0.2s ease, stroke 0.2s ease;
+  }
+  .archive__link:hover .archive__arrow {
+    transform: translateX(3px);
+    stroke: hsl(var(--primary));
+  }
+
+  @media (max-width: 480px) {
+    .archive {
+      margin-left: 1rem;
+    }
+    .archive__year {
+      padding-left: 2rem;
+    }
+    .archive__year-head::before {
+      left: -2rem;
+    }
+    .archive__item::before {
+      left: -2rem;
+    }
+    .archive__date {
+      min-width: 5.2rem;
+    }
+  }
+</style>

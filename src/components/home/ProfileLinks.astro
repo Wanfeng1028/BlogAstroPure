@@ -1,5 +1,11 @@
 ---
 // 个人社交按钮 + 技术栈徽章 + 微信二维码弹窗（首页与关于页共用）
+// showBadges: 是否显示技术栈徽章（首页关闭，关于页开启）
+interface Props {
+  showBadges?: boolean
+}
+
+const { showBadges = true } = Astro.props
 ---
 
 <div class='mt-3 flex flex-wrap justify-center gap-2'>
@@ -48,59 +54,63 @@
   </button>
 </div>
 
-<div class='mt-2 flex max-w-3xl flex-wrap items-center justify-center gap-1.5'>
-  <a href='https://github.com/topics/gis' target='_blank' rel='noopener'>
-    <img src='https://img.shields.io/badge/GIS-2da44e?style=flat' alt='GIS' />
-  </a>
-  <a href='https://github.com/topics/ai-agents' target='_blank' rel='noopener'>
-    <img src='https://img.shields.io/badge/Agent-8250df?style=flat' alt='Agent' />
-  </a>
-  <a href='https://github.com/topics/vue' target='_blank' rel='noopener'>
-    <img src='https://img.shields.io/badge/Vue-42b883?style=flat&logo=vue.js&logoColor=white' alt='Vue' />
-  </a>
-  <a href='https://github.com/topics/react' target='_blank' rel='noopener'>
-    <img src='https://img.shields.io/badge/React-61dafb?style=flat&logo=react&logoColor=white' alt='React' />
-  </a>
-  <a href='https://github.com/topics/angular' target='_blank' rel='noopener'>
-    <img src='https://img.shields.io/badge/Angular-dd0031?style=flat&logo=angular&logoColor=white' alt='Angular' />
-  </a>
-  <a href='https://github.com/topics/go' target='_blank' rel='noopener'>
-    <img src='https://img.shields.io/badge/Go-00ADD8?style=flat&logo=go&logoColor=white' alt='Go' />
-  </a>
-  <a href='https://github.com/topics/java' target='_blank' rel='noopener'>
-    <img src='https://img.shields.io/badge/Java-ED8B00?style=flat&logo=openjdk&logoColor=white' alt='Java' />
-  </a>
-  <a href='https://github.com/topics/nodejs' target='_blank' rel='noopener'>
-    <img src='https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white' alt='Node.js' />
-  </a>
-  <a href='https://github.com/topics/typescript' target='_blank' rel='noopener'>
-    <img src='https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white' alt='TypeScript' />
-  </a>
-  <a href='https://github.com/topics/javascript' target='_blank' rel='noopener'>
-    <img src='https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black' alt='JavaScript' />
-  </a>
-  <a href='https://github.com/topics/docker' target='_blank' rel='noopener'>
-    <img src='https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white' alt='Docker' />
-  </a>
-  <a href='https://github.com/topics/git' target='_blank' rel='noopener'>
-    <img src='https://img.shields.io/badge/Git-F05032?style=flat&logo=git&logoColor=white' alt='Git' />
-  </a>
-  <a href='https://github.com/topics/linux' target='_blank' rel='noopener'>
-    <img src='https://img.shields.io/badge/Linux-FCC624?style=flat&logo=linux&logoColor=black' alt='Linux' />
-  </a>
-  <a href='https://github.com/topics/vscode' target='_blank' rel='noopener'>
-    <img src='https://img.shields.io/badge/VSCode-007ACC?style=flat&logo=visualstudiocode&logoColor=white' alt='VSCode' />
-  </a>
-  <a href='https://github.com/openai/codex' target='_blank' rel='noopener'>
-    <img src='https://img.shields.io/badge/Codex-000000?style=flat' alt='Codex' />
-  </a>
-  <a href='https://www.anthropic.com/claude-code' target='_blank' rel='noopener'>
-    <img src='https://img.shields.io/badge/Claude_Code-D97757?style=flat' alt='Claude Code' />
-  </a>
-  <a href='https://qoder.com' target='_blank' rel='noopener'>
-    <img src='https://img.shields.io/badge/Qoder-6366F1?style=flat' alt='Qoder' />
-  </a>
-</div>
+{
+  showBadges && (
+    <div class='mt-3 flex max-w-3xl flex-wrap items-center justify-center gap-1.5'>
+      <a href='https://github.com/topics/gis' target='_blank' rel='noopener'>
+        <img src='https://img.shields.io/badge/GIS-2da44e?style=flat' alt='GIS' />
+      </a>
+      <a href='https://github.com/topics/ai-agents' target='_blank' rel='noopener'>
+        <img src='https://img.shields.io/badge/Agent-8250df?style=flat' alt='Agent' />
+      </a>
+      <a href='https://github.com/topics/vue' target='_blank' rel='noopener'>
+        <img src='https://img.shields.io/badge/Vue-42b883?style=flat&logo=vue.js&logoColor=white' alt='Vue' />
+      </a>
+      <a href='https://github.com/topics/react' target='_blank' rel='noopener'>
+        <img src='https://img.shields.io/badge/React-61dafb?style=flat&logo=react&logoColor=white' alt='React' />
+      </a>
+      <a href='https://github.com/topics/angular' target='_blank' rel='noopener'>
+        <img src='https://img.shields.io/badge/Angular-dd0031?style=flat&logo=angular&logoColor=white' alt='Angular' />
+      </a>
+      <a href='https://github.com/topics/go' target='_blank' rel='noopener'>
+        <img src='https://img.shields.io/badge/Go-00ADD8?style=flat&logo=go&logoColor=white' alt='Go' />
+      </a>
+      <a href='https://github.com/topics/java' target='_blank' rel='noopener'>
+        <img src='https://img.shields.io/badge/Java-ED8B00?style=flat&logo=openjdk&logoColor=white' alt='Java' />
+      </a>
+      <a href='https://github.com/topics/nodejs' target='_blank' rel='noopener'>
+        <img src='https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white' alt='Node.js' />
+      </a>
+      <a href='https://github.com/topics/typescript' target='_blank' rel='noopener'>
+        <img src='https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white' alt='TypeScript' />
+      </a>
+      <a href='https://github.com/topics/javascript' target='_blank' rel='noopener'>
+        <img src='https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black' alt='JavaScript' />
+      </a>
+      <a href='https://github.com/topics/docker' target='_blank' rel='noopener'>
+        <img src='https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white' alt='Docker' />
+      </a>
+      <a href='https://github.com/topics/git' target='_blank' rel='noopener'>
+        <img src='https://img.shields.io/badge/Git-F05032?style=flat&logo=git&logoColor=white' alt='Git' />
+      </a>
+      <a href='https://github.com/topics/linux' target='_blank' rel='noopener'>
+        <img src='https://img.shields.io/badge/Linux-FCC624?style=flat&logo=linux&logoColor=black' alt='Linux' />
+      </a>
+      <a href='https://github.com/topics/vscode' target='_blank' rel='noopener'>
+        <img src='https://img.shields.io/badge/VSCode-007ACC?style=flat&logo=visualstudiocode&logoColor=white' alt='VSCode' />
+      </a>
+      <a href='https://github.com/openai/codex' target='_blank' rel='noopener'>
+        <img src='https://img.shields.io/badge/Codex-000000?style=flat' alt='Codex' />
+      </a>
+      <a href='https://www.anthropic.com/claude-code' target='_blank' rel='noopener'>
+        <img src='https://img.shields.io/badge/Claude_Code-D97757?style=flat' alt='Claude Code' />
+      </a>
+      <a href='https://qoder.com' target='_blank' rel='noopener'>
+        <img src='https://img.shields.io/badge/Qoder-6366F1?style=flat' alt='Qoder' />
+      </a>
+    </div>
+  )
+}
 
 <dialog id='wechat-dialog' class='max-w-[calc(100vw-2rem)] rounded-2xl border bg-background p-6 shadow-lg'>
   <div class='flex flex-col items-center gap-5'>

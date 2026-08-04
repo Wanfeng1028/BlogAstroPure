@@ -2,7 +2,7 @@
 import type { GetStaticPaths, Page } from 'astro'
 import type { CollectionEntry } from 'astro:content'
 
-import { Paginator, PostPreview } from 'astro-pure/components/pages'
+import { Paginator } from 'astro-pure/components/pages'
 import { getBlogCollection, sortMDByDate } from 'astro-pure/server'
 import { Button } from 'astro-pure/user'
 import PageLayout from '@/layouts/BaseLayout.astro'
@@ -25,6 +25,24 @@ interface Props {
 }
 
 const { page, collectionsCount } = Astro.props
+
+const dateFmt = new Intl.DateTimeFormat('zh-CN', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+})
+
+// 卡片轮换配色
+const accents = [
+  'hsl(262 83% 58%)', // 紫
+  'hsl(199 89% 48%)', // 天蓝
+  'hsl(142 71% 45%)', // 绿
+  'hsl(24 95% 53%)', // 橙
+  'hsl(330 81% 60%)', // 粉
+  'hsl(38 92% 50%)', // 琥珀
+  'hsl(0 72% 51%)', // 红
+  'hsl(160 84% 39%)' // 青
+]
 
 const meta = {
   description: '一些随想和碎碎念',
@@ -50,27 +68,196 @@ const paginationProps = {
 <PageLayout {meta}>
   <Button title='Back' href='/' variant='back' />
   <main class='mt-6 lg:mt-10'>
-    <div id='content-header' class='animate'>
-      <h1 class='mb-6 mt-6 text-3xl font-medium sm:mt-10'>Murmurs</h1>
+    <div id='content-header' class='animate mb-10'>
+      <h1 class='mb-2 text-3xl font-medium'>Murmurs</h1>
+      <p class='text-muted-foreground'>共 {collectionsCount} 条随想</p>
     </div>
+
     {
       page.data.length === 0 ? (
         <p>暂无内容。</p>
       ) : (
         <section aria-label='碎碎念列表' class='animate' id='content'>
-          <div class='mb-3 flex flex-col justify-between text-sm sm:mb-5 sm:flex-row'>
-            <span class='text-muted-foreground'>
-              第 {page.currentPage} 页 - 共 {collectionsCount} 条
-            </span>
+          <div class='murmur-feed'>
+            {
+              page.data.map((post, index) => {
+                const accent = accents[index % accents.length]
+                return (
+                  <article class='murmur-card' style={`--accent: ${accent}`}>
+                    <div class='murmur-card__node'></div>
+
+                    <div class='murmur-card__body'>
+                      <div class='murmur-card__head'>
+                        <span class='murmur-card__title'>{post.data.title}</span>
+                        <time class='murmur-card__date'>{dateFmt.format(post.data.publishDate)}</time>
+                      </div>
+
+                      <p class='murmur-card__text'>{post.body}</p>
+
+                      {
+                        post.data.tags.length > 0 && (
+                          <div class='murmur-card__tags'>
+                            {post.data.tags.map((tag) => (
+                              <a href={`/tags/${tag}`} class='murmur-card__tag' data-astro-prefetch>
+                                #{tag}
+                              </a>
+                            ))}
+                          </div>
+                        )
+                      }
+                    </div>
+                  </article>
+                )
+              })
+            }
           </div>
-          <ul class='flex flex-col gap-y-4 text-start'>
-            {page.data.map((post) => (
-              <PostPreview {post} detailed />
-            ))}
-          </ul>
+
           <Paginator {...paginationProps} />
         </section>
       )
     }
   </main>
 </PageLayout>
+
+<style>
+  .murmur-feed {
+    position: relative;
+    margin-left: 1.25rem;
+  }
+  /* 竖向时间线 */
+  .murmur-feed::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.5rem;
+    bottom: 0.5rem;
+    width: 2px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, hsl(var(--primary) / 0.7), hsl(var(--border)));
+  }
+
+  .murmur-card {
+    position: relative;
+    padding-left: 2.5rem;
+    margin-bottom: 2rem;
+  }
+  .murmur-card:last-child {
+    margin-bottom: 0;
+  }
+
+  /* 时间节点圆点 */
+  .murmur-card__node {
+    position: absolute;
+    left: -2.5rem;
+    top: 1.4rem;
+    width: 0.85rem;
+    height: 0.85rem;
+    border-radius: 999px;
+    background: hsl(var(--background));
+    border: 3px solid var(--accent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 15%, transparent);
+  }
+
+  /* 内容卡片 */
+  .murmur-card__body {
+    position: relative;
+    padding: 1.25rem 1.5rem 1.15rem;
+    border-radius: calc(var(--radius) * 1.5);
+    border: 1px solid hsl(var(--border));
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--accent) 8%, transparent),
+      hsl(var(--card)) 38%
+    );
+    box-shadow:
+      0 1px 2px 0 rgba(0, 0, 0, 0.04),
+      0 8px 24px -14px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  /* 左侧主色竖条 */
+  .murmur-card__body::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(
+      180deg,
+      var(--accent),
+      color-mix(in srgb, var(--accent) 35%, transparent)
+    );
+  }
+  .murmur-card:hover .murmur-card__body {
+    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+    box-shadow:
+      0 1px 2px 0 rgba(0, 0, 0, 0.04),
+      0 12px 28px -12px color-mix(in srgb, var(--accent) 25%, transparent);
+    transform: translateY(-2px);
+  }
+
+  .murmur-card__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.55rem;
+  }
+  .murmur-card__title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .murmur-card__date {
+    flex-shrink: 0;
+    font-size: 0.8rem;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .murmur-card__text {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.8;
+    color: hsl(var(--foreground));
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .murmur-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding-top: 0.9rem;
+    border-top: 1px dashed hsl(var(--border));
+  }
+  .murmur-card__tag {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.7rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    color: var(--accent);
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .murmur-card__tag:hover {
+    background: var(--accent);
+    color: hsl(0 0% 100%);
+  }
+
+  @media (max-width: 480px) {
+    .murmur-feed {
+      margin-left: 1rem;
+    }
+    .murmur-card {
+      padding-left: 2rem;
+    }
+    .murmur-card__node {
+      left: -2rem;
+    }
+    .murmur-card__body {
+      padding: 1.1rem 1.1rem 1rem;
+    }
+  }
+</style>

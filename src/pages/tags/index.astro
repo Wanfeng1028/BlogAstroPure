@@ -6,6 +6,7 @@ import PageLayout from '@/layouts/BaseLayout.astro'
 const allPosts = await getBlogCollection()
 const allTags = getUniqueTagsWithCount(allPosts).sort((a, b) => b[1] - a[1])
 const totalTags = allTags.length
+const maxCount = Math.max(...allTags.map(([, c]) => c), 1)
 
 const meta = {
   description: '这里汇总了我写过的所有话题标签',
@@ -24,24 +25,27 @@ const meta = {
     <div id='content' class='animate'>
       {
         allTags.length > 0 ? (
-          <ul class='flex flex-wrap gap-3'>
-            {allTags.map(([tag, val]) => (
-              <li>
-                <a
-                  href={`/tags/${tag}`}
-                  data-astro-prefetch
-                  class='group flex items-center gap-x-2 rounded-xl border border-border bg-card px-4 py-2 no-underline transition-all hover:border-primary hover:shadow-sm'
-                >
-                  <span class='font-medium text-foreground transition-colors group-hover:text-primary'>
-                    # {tag}
-                  </span>
-                  <span class='rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground'>
-                    {val}
-                  </span>
-                </a>
-              </li>
-            ))}
-          </ul>
+          <div class='tag-cloud'>
+            {
+              allTags.map(([tag, val]) => {
+                const ratio = val / maxCount
+                const size = (0.9 + ratio * 0.9).toFixed(3)
+                const opacity = 0.55 + ratio * 0.45
+                return (
+                  <a
+                    href={`/tags/${tag}`}
+                    data-astro-prefetch
+                    class='tag-cloud__item'
+                    style={`font-size: ${size}rem; opacity: ${opacity}`}
+                  >
+                    <span class='tag-cloud__hash'>#</span>
+                    {tag}
+                    <span class='tag-cloud__count'>{val}</span>
+                  </a>
+                )
+              })
+            }
+          </div>
         ) : (
           <p class='text-muted-foreground'>暂无标签</p>
         )
@@ -49,3 +53,52 @@ const meta = {
     </div>
   </main>
 </PageLayout>
+
+<style>
+  .tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    padding: 2.5rem 1.5rem;
+    border: 1px solid hsl(var(--border));
+    border-radius: calc(var(--radius) * 1.5);
+    background: linear-gradient(180deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%);
+    box-shadow:
+      0 1px 2px 0 rgba(0, 0, 0, 0.04),
+      0 8px 24px -12px rgba(0, 0, 0, 0.12);
+  }
+  .tag-cloud__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    color: hsl(var(--foreground));
+    text-decoration: none;
+    transition:
+      transform 0.2s ease,
+      color 0.2s ease,
+      background-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+  .tag-cloud__item:hover {
+    transform: translateY(-2px) scale(1.05);
+    color: hsl(var(--primary));
+    background-color: hsl(var(--muted) / 0.5);
+    box-shadow: 0 4px 12px -4px hsl(var(--primary) / 0.35);
+  }
+  .tag-cloud__hash {
+    font-weight: 600;
+    color: hsl(var(--primary));
+  }
+  .tag-cloud__count {
+    font-size: 0.7em;
+    line-height: 1;
+    padding: 0.25em 0.55em;
+    border-radius: 999px;
+    background-color: hsl(var(--muted));
+    color: hsl(var(--muted-foreground));
+  }
+</style>

@@ -5,6 +5,7 @@ interface CatNode {
   own: number
   total: number
   children: CatNode[]
+  posts: { id: string; data: { title: string; publishDate: Date } }[]
 }
 
 interface Props {
@@ -13,89 +14,133 @@ interface Props {
 }
 
 const { nodes, root = true } = Astro.props
+
+const formatDate = (d: Date) =>
+  d.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })
 ---
 
 <ul class:list={['cat-tree', { 'cat-tree--nested': !root }]}>
-  {nodes.map((node) => (
-    <li class='cat-tree__item'>
-      <div class='cat-tree__row'>
-        {
-          node.children.length > 0 ? (
-            <button
-              type='button'
-              class='cat-tree__toggle'
-              data-cat-toggle
-              aria-expanded='true'
-              aria-label={`展开或收起分类「${node.name}」`}
-            >
-              <svg
-                width='14'
-                height='14'
-                viewBox='0 0 24 24'
-                fill='none'
-                stroke='currentColor'
-                stroke-width='2'
-                stroke-linecap='round'
-                stroke-linejoin='round'
-                aria-hidden='true'
-              >
-                <path d='m9 18 6-6-6-6' />
-              </svg>
-            </button>
-          ) : (
-            <span class='cat-tree__toggle cat-tree__toggle--empty' aria-hidden='true'></span>
-          )
-        }
-
-        <a
-          href={`/categories/${node.path}`}
-          data-astro-prefetch
-          class='cat-tree__link'
-        >
+  {nodes.map((node) => {
+    const hasChildren = node.children.length > 0
+    const hasPosts = node.posts.length > 0
+    const expandable = hasChildren || hasPosts
+    return (
+      <li class='cat-tree__item'>
+        <div class='cat-tree__row'>
           {
-            node.children.length > 0 ? (
-              <svg
-                class='cat-tree__icon'
-                width='16'
-                height='16'
-                viewBox='0 0 24 24'
-                fill='none'
-                stroke='currentColor'
-                stroke-width='2'
-                stroke-linecap='round'
-                stroke-linejoin='round'
-                aria-hidden='true'
+            expandable ? (
+              <button
+                type='button'
+                class='cat-tree__toggle'
+                data-cat-toggle
+                aria-expanded='true'
+                aria-label={`展开或收起分类「${node.name}」`}
               >
-                <path d='M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z' />
-              </svg>
+                <svg
+                  width='14'
+                  height='14'
+                  viewBox='0 0 24 24'
+                  fill='none'
+                  stroke='currentColor'
+                  stroke-width='2'
+                  stroke-linecap='round'
+                  stroke-linejoin='round'
+                  aria-hidden='true'
+                >
+                  <path d='m9 18 6-6-6-6' />
+                </svg>
+              </button>
             ) : (
-              <svg
-                class='cat-tree__icon'
-                width='16'
-                height='16'
-                viewBox='0 0 24 24'
-                fill='none'
-                stroke='currentColor'
-                stroke-width='2'
-                stroke-linecap='round'
-                stroke-linejoin='round'
-                aria-hidden='true'
-              >
-                <path d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z' />
-                <path d='M14 2v4a2 2 0 0 0 2 2h4' />
-              </svg>
+              <span class='cat-tree__toggle cat-tree__toggle--empty' aria-hidden='true'></span>
             )
           }
-          <span class='cat-tree__name'>{node.name}</span>
-          <span class='cat-tree__count'>{node.total}</span>
-        </a>
-      </div>
 
-      {node.children.length > 0 && (
-        <Astro.self nodes={node.children} root={false} />
-      )}
-    </li>
-  ))}
+          <a
+            href={`/categories/${node.path}`}
+            data-astro-prefetch
+            class='cat-tree__link'
+          >
+            {
+              hasChildren ? (
+                <svg
+                  class='cat-tree__icon'
+                  width='16'
+                  height='16'
+                  viewBox='0 0 24 24'
+                  fill='none'
+                  stroke='currentColor'
+                  stroke-width='2'
+                  stroke-linecap='round'
+                  stroke-linejoin='round'
+                  aria-hidden='true'
+                >
+                  <path d='M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z' />
+                </svg>
+              ) : (
+                <svg
+                  class='cat-tree__icon'
+                  width='16'
+                  height='16'
+                  viewBox='0 0 24 24'
+                  fill='none'
+                  stroke='currentColor'
+                  stroke-width='2'
+                  stroke-linecap='round'
+                  stroke-linejoin='round'
+                  aria-hidden='true'
+                >
+                  <path d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z' />
+                  <path d='M14 2v4a2 2 0 0 0 2 2h4' />
+                </svg>
+              )
+            }
+            <span class='cat-tree__name'>{node.name}</span>
+            <span class='cat-tree__count'>{node.total}</span>
+          </a>
+        </div>
+
+        {hasChildren && <Astro.self nodes={node.children} root={false} />}
+
+        {hasPosts && (
+          <ul class='cat-tree cat-tree--nested cat-tree__posts'>
+            {node.posts.map((post) => (
+              <li class='cat-tree__item cat-tree__post-item'>
+                <div class='cat-tree__row'>
+                  <span class='cat-tree__toggle cat-tree__toggle--empty' aria-hidden='true'></span>
+                  <a
+                    href={`/blog/${post.id}`}
+                    data-astro-prefetch
+                    class='cat-tree__link'
+                  >
+                    <svg
+                      class='cat-tree__icon'
+                      width='15'
+                      height='15'
+                      viewBox='0 0 24 24'
+                      fill='none'
+                      stroke='currentColor'
+                      stroke-width='2'
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                      aria-hidden='true'
+                    >
+                      <path d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z' />
+                      <path d='M14 2v4a2 2 0 0 0 2 2h4' />
+                      <path d='M10 9H8' />
+                      <path d='M16 13H8' />
+                      <path d='M16 17H8' />
+                    </svg>
+                    <span class='cat-tree__name'>{post.data.title}</span>
+                    <span class='cat-tree__post-date'>{formatDate(post.data.publishDate)}</span>
+                  </a>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </li>
+    )
+  })}
 </ul>
 
 <style>
@@ -106,6 +151,12 @@ const { nodes, root = true } = Astro.props
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+  }
+
+  /* 折叠时隐藏子级面板（子分类 + 文章） */
+  .cat-tree__item--collapsed > .cat-tree--nested,
+  .cat-tree__item--collapsed > .cat-tree__posts {
+    display: none;
   }
 
   /* 嵌套层级：缩进 + 连接线 */
@@ -149,6 +200,7 @@ const { nodes, root = true } = Astro.props
   .cat-tree__row {
     display: flex;
     align-items: center;
+    flex-wrap: nowrap;
     gap: 0.25rem;
     min-height: 2.25rem;
     padding: 0.25rem 0.5rem;
@@ -198,6 +250,7 @@ const { nodes, root = true } = Astro.props
   .cat-tree__link {
     display: flex;
     align-items: center;
+    flex-wrap: nowrap;
     gap: 0.5rem;
     flex: 1;
     min-width: 0;
@@ -208,6 +261,8 @@ const { nodes, root = true } = Astro.props
 
   .cat-tree__icon {
     flex-shrink: 0;
+    display: inline-block;
+    vertical-align: middle;
     color: hsl(var(--muted-foreground));
     transition: color 0.15s ease;
   }
@@ -243,5 +298,26 @@ const { nodes, root = true } = Astro.props
   .cat-tree__row:hover .cat-tree__count {
     color: hsl(var(--primary));
     background-color: hsl(var(--primary) / 0.12);
+  }
+
+  /* 文章列表（复用分类项的嵌套结构，保证缩进与连接线一致） */
+  .cat-tree__posts {
+    margin-top: 0.25rem;
+  }
+
+  .cat-tree__post-item .cat-tree__name {
+    font-weight: 400;
+    color: hsl(var(--foreground) / 0.88);
+  }
+
+  .cat-tree__post-item:hover .cat-tree__name {
+    color: hsl(var(--primary));
+  }
+
+  .cat-tree__post-date {
+    margin-left: auto;
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    color: hsl(var(--muted-foreground));
   }
 </style>
