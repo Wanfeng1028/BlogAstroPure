@@ -7,6 +7,7 @@ import ActivityHeatmap from '@/components/home/ActivityHeatmap.astro'
 import ProfileLinks from '@/components/home/ProfileLinks.astro'
 import Section from '@/components/home/Section.astro'
 import config from '@/site-config'
+import { heatmapWorkerUrl } from '@/site-config'
 
 const MAX_POSTS = 10
 const allPosts = await getBlogCollection()
@@ -22,7 +23,7 @@ const skills = [
   { title: 'Tool', icons: 'docker,postgres,git,vscode' }
 ]
 
-// Build activity heatmap data: blog posts + GitHub push events
+// Build activity heatmap data: blog posts (GitHub push 数据由 Worker 在前端运行时拉取)
 const activityData: Record<string, number> = {}
 
 // Blog post dates
@@ -32,29 +33,6 @@ for (const post of allPosts) {
     const key = new Date(d).toISOString().slice(0, 10)
     activityData[key] = (activityData[key] || 0) + 2
   }
-}
-
-// GitHub public events (push = commits)
-try {
-  for (let page = 1; page <= 3; page++) {
-    const res = await fetch(
-      `https://api.github.com/users/Wanfeng1028/events/public?per_page=100&page=${page}`,
-      { headers: { 'User-Agent': 'AstroBlog' }, signal: AbortSignal.timeout(5000) }
-    )
-    if (!res.ok) break
-    const events: { type: string; created_at: string; payload?: { commits?: unknown[] } }[] =
-      await res.json()
-    if (!events.length) break
-    for (const ev of events) {
-      if (ev.type === 'PushEvent') {
-        const key = ev.created_at.slice(0, 10)
-        const commits = ev.payload?.commits?.length || 1
-        activityData[key] = (activityData[key] || 0) + commits
-      }
-    }
-  }
-} catch {
-  // GitHub API unavailable during build — blog data only
 }
 ---
 
@@ -84,37 +62,46 @@ try {
     </section>
 
     <div id='content' class='animate flex flex-col gap-y-10 md:w-4/5 lg:w-5/6'>
-      <ActivityHeatmap data={activityData} />
-
-      <Section title='关于'>
-        <p class='text-muted-foreground'>开发者</p>
-        <p class='text-muted-foreground'>
-          专业方向：GIS 开发，全栈开发（进行中）；本科期间做过遥感智能识别、计算机视觉相关的研究；毕业前在浙江建投数字技术有限公司做过前端开发实习。目前在学习
-          Agent 和 Go 后端开发。
-        </p>
-        <Button title='了解更多' class='w-fit self-end' href='/about' variant='ahead' />
-      </Section>
+      <ActivityHeatmap blogData={activityData} workerUrl={heatmapWorkerUrl} />
 
       <Section title='Website List'>
         <div class='not-prose grid gap-4 sm:grid-cols-2'>
           <a href='https://github.com/Wanfeng1028/ParrotSoundReVue' target='_blank' rel='noopener'
-            class='group overflow-hidden rounded-xl border bg-muted/40 transition-colors hover:bg-muted'>
-            <div class='flex h-28 items-center justify-center bg-muted/60'>
-              <span class='text-3xl'>🦜</span>
+            class='tilt-card accent-card group relative flex flex-col gap-4 overflow-hidden rounded-2xl border p-5 transition-[border-color,box-shadow] duration-300'
+            data-tilt='' style='--accent: #6366f1'>
+            <div class='flex items-center justify-between'>
+              <div
+                class='accent-icon flex size-12 items-center justify-center rounded-xl text-2xl transition-transform duration-300 group-hover:scale-110'>
+                🦜
+              </div>
+              <span class='rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs text-muted-foreground'>GitHub</span>
             </div>
-            <div class='p-4'>
-              <p class='text-sm font-semibold'>ParrotSoundReVue</p>
-              <p class='mt-1 text-xs text-muted-foreground'>基于 Vue 的智能语音识别应用</p>
+            <div>
+              <p class='accent-title text-base font-semibold'>ParrotSoundReVue</p>
+              <p class='mt-1 text-sm leading-relaxed text-muted-foreground'>基于 Vue 的智能语音识别应用</p>
+            </div>
+            <div class='mt-auto flex flex-wrap gap-1.5'>
+              <span class='accent-tag rounded-full px-2.5 py-0.5 text-xs'>Vue</span>
+              <span class='accent-tag rounded-full px-2.5 py-0.5 text-xs'>语音识别</span>
             </div>
           </a>
           <a href='https://github.com/Wanfeng1028/BlogAstroPure' target='_blank' rel='noopener'
-            class='group overflow-hidden rounded-xl border bg-muted/40 transition-colors hover:bg-muted'>
-            <div class='flex h-28 items-center justify-center bg-muted/60'>
-              <span class='text-3xl'>📝</span>
+            class='tilt-card accent-card group relative flex flex-col gap-4 overflow-hidden rounded-2xl border p-5 transition-[border-color,box-shadow] duration-300'
+            data-tilt='' style='--accent: #f97316'>
+            <div class='flex items-center justify-between'>
+              <div
+                class='accent-icon flex size-12 items-center justify-center rounded-xl text-2xl transition-transform duration-300 group-hover:scale-110'>
+                📝
+              </div>
+              <span class='rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs text-muted-foreground'>GitHub</span>
             </div>
-            <div class='p-4'>
-              <p class='text-sm font-semibold'>BlogAstroPure</p>
-              <p class='mt-1 text-xs text-muted-foreground'>基于 Astro 的个人博客</p>
+            <div>
+              <p class='accent-title text-base font-semibold'>BlogAstroPure</p>
+              <p class='mt-1 text-sm leading-relaxed text-muted-foreground'>基于 Astro 的个人博客</p>
+            </div>
+            <div class='mt-auto flex flex-wrap gap-1.5'>
+              <span class='accent-tag rounded-full px-2.5 py-0.5 text-xs'>Astro</span>
+              <span class='accent-tag rounded-full px-2.5 py-0.5 text-xs'>TypeScript</span>
             </div>
           </a>
         </div>
@@ -153,3 +140,8 @@ try {
     </div>
   </main>
 </PageLayout>
+
+<script>
+  import { initTilt } from '@/utils/tilt'
+  initTilt()
+</script>

@@ -207,3 +207,10 @@ export const terms: CardListData = {
 
 const config = { ...theme, integ } as Config
 export default config
+
+/**
+ * 首页热力图 GitHub 数据来源（Cloudflare Worker）。
+ * 部署后在 cf 控制台复制 Worker 地址填入，例如：
+ * https://github-heatmap.你的子域名.workers.dev
+ */
+export const heatmapWorkerUrl = 'https://github-heatmap.YOUR_SUBDOMAIN.workers.dev'

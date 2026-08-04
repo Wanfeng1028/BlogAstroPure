@@ -1,14 +1,17 @@
 ---
 /**
  * GitHub-style contribution heatmap with interactive year switching.
- * Props: data - Record<'YYYY-MM-DD', count>
+ * Props:
+ *   blogData - Record<'YYYY-MM-DD', count>，构建时根据博客文章生成（静态）
+ *   workerUrl - Cloudflare Worker 地址，运行时拉取 GitHub push 数据（实时）
  */
 interface Props {
-  data: Record<string, number>
+  blogData: Record<string, number>
+  workerUrl: string
 }
 
-const { data } = Astro.props
-const total = Object.values(data).reduce((a, b) => a + b, 0)
+const { blogData, workerUrl } = Astro.props
+const total = Object.values(blogData).reduce((a, b) => a + b, 0)
 const currentYear = new Date().getFullYear()
 const years = [currentYear, currentYear - 1, currentYear - 2]
 ---
@@ -53,7 +56,8 @@ const years = [currentYear, currentYear - 1, currentYear - 2]
   </div>
 </div>
 
-<script type='application/json' id='gh-data' set:html={JSON.stringify(data)} />
+<script type='application/json' id='gh-data' set:html={JSON.stringify(blogData)} />
+<span id='gh-worker' data-url={workerUrl} style='display:none'></span>
 
 <script>
   const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
@@ -144,19 +148,43 @@ const years = [currentYear, currentYear - 1, currentYear - 2]
 
   // Init
   const dataEl = document.getElementById('gh-data')
-  const data: Record<string, number> = JSON.parse(dataEl?.textContent || '{}')
-  const currentYear = new Date().getFullYear()
+  const blogData: Record<string, number> = JSON.parse(dataEl?.textContent || '{}')
+  const workerEl = document.getElementById('gh-worker')
+  const workerUrl = workerEl?.getAttribute('data-url') || ''
 
-  renderYear(currentYear, data)
+  // 运行时从 Worker 拉取 GitHub push 数据，与博客数据合并
+  async function loadGithubData(): Promise<Record<string, number>> {
+    if (!workerUrl) return {}
+    try {
+      const res = await fetch(workerUrl)
+      if (res.ok) return (await res.json()) as Record<string, number>
+    } catch {
+      // Worker 不可用时仅展示博客数据
+    }
+    return {}
+  }
 
-  // Year buttons
-  document.querySelectorAll('.gh-year-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.gh-year-btn').forEach((b) => b.classList.remove('active'))
-      btn.classList.add('active')
-      renderYear(Number((btn as HTMLElement).dataset.year), data)
+  async function init() {
+    const github = await loadGithubData()
+    const data: Record<string, number> = { ...blogData }
+    for (const [k, v] of Object.entries(github)) {
+      data[k] = (data[k] || 0) + v
+    }
+
+    const currentYear = new Date().getFullYear()
+    renderYear(currentYear, data)
+
+    // Year buttons
+    document.querySelectorAll('.gh-year-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.gh-year-btn').forEach((b) => b.classList.remove('active'))
+        btn.classList.add('active')
+        renderYear(Number((btn as HTMLElement).dataset.year), data)
+      })
     })
-  })
+  }
+
+  init()
 </script>
 
 <style is:global>

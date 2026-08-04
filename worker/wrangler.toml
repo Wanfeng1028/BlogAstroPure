@@ -1,0 +1,7 @@
+name = "github-heatmap"
+main = "src/worker.js"
+compatibility_date = "2026-01-01"
+
+# 免费套餐即可，无需任何额外绑定（不使用 R2 / KV）
+[observability]
+enabled = true

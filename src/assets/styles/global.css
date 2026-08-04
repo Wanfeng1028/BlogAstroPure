@@ -357,3 +357,83 @@ span.katex-display {
     text-align: left;
   }
 }
+
+/* [3D Tilt Card] 鼠标跟随 3D 倾斜 + 光泽扫过 */
+.tilt-card {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: transform;
+}
+.tilt-card[data-tilt-active] {
+  transition: transform 0.12s ease-out;
+}
+/* 光泽层：跟随鼠标位置的径向高光 */
+.tilt-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at var(--mx, 50%) var(--my, 50%),
+    hsl(var(--primary) / 0.22) 0%,
+    hsl(var(--primary) / 0.06) 25%,
+    transparent 55%
+  );
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  z-index: 1;
+}
+.tilt-card[data-tilt-active]::after {
+  opacity: 1;
+}
+/* 细边描边层：hover 时强化边缘 */
+.tilt-card[data-tilt-active] {
+  outline: 1px solid hsl(var(--primary) / 0.25);
+  outline-offset: -1px;
+}
+/* 让卡片内容在 3D 空间内轻微浮起，增强立体感 */
+.tilt-card[data-tilt-active] > * {
+  transform: translateZ(20px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .tilt-card[data-tilt-active] {
+    transform: none !important;
+  }
+}
+
+/* [彩色卡片配色] 基于 --accent 主题色驱动，让卡片摆脱纯灰 */
+.accent-card {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, transparent), transparent 55%),
+    hsl(var(--card));
+  border-color: color-mix(in srgb, var(--accent) 30%, hsl(var(--border))) !important;
+}
+.accent-card:hover {
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent) !important;
+  box-shadow: 0 16px 32px -16px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+/* 彩色图标块：accent 渐变 + 投影 */
+.accent-icon {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent) 92%, white),
+    color-mix(in srgb, var(--accent) 60%, black)
+  );
+  color: #fff;
+  box-shadow: 0 8px 20px -10px color-mix(in srgb, var(--accent) 80%, transparent);
+}
+/* 彩色标签：accent 淡底 + 描边 */
+.accent-tag {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: color-mix(in srgb, var(--accent) 85%, hsl(var(--foreground)));
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, transparent);
+}
+.accent-card .accent-title {
+  transition: color 0.2s ease;
+}
+.accent-card:hover .accent-title {
+  color: var(--accent);
+}
