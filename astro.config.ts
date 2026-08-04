@@ -1,5 +1,6 @@
 import { rehypeHeadingIds } from '@astrojs/markdown-remark'
-import vercel from '@astrojs/vercel'
+import cloudflare from '@astrojs/cloudflare'
+// import vercel from '@astrojs/vercel' // 保留 Vercel 配置，切换到 Cloudflare 时暂不使用
 import AstroPureIntegration from 'astro-pure'
 import { defineConfig, fontProviders, svgoOptimizer } from 'astro/config'
 import rehypeKatex from 'rehype-katex'
@@ -40,8 +41,12 @@ export default defineConfig({
 
   // [Adapter]
   // https://docs.astro.build/en/guides/deploy/
-  adapter: vercel({ imageService: true }),
+  // Cloudflare（当前部署目标）
+  adapter: cloudflare({ imageService: 'cloudflare' }),
   output: 'server',
+  // Vercel（保留备用，需要时把上面换成这行）
+  // adapter: vercel({ imageService: true }),
+  // output: 'server',
   // Local (standalone)
   // adapter: node({ mode: 'standalone' }),
   // output: 'server',

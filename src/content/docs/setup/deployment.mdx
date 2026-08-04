@@ -49,7 +49,21 @@ export default defineConfig({
 })
 ```
 
-### Node server
+### Cloudflare Pages
+
+This theme supports Cloudflare Pages via the `@astrojs/cloudflare` adapter:
+
+<Steps>
+
+1. Push your code to your online Git repository (GitHub, GitLab, BitBucket).
+2. Log in to [Cloudflare Dashboard](https://dash.cloudflare.com/) → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**.
+3. Import your repository and set the framework preset to **Astro**.
+4. Set the build command to `npm run build` and the output directory to `dist`.
+5. Deploy! The adapter builds a server-side Worker and the client assets into `dist`.
+
+</Steps>
+
+The adapter auto-provisions a Cloudflare KV namespace (`SESSION`) for sessions, and an `IMAGES` binding for image optimization. If you prefer on-demand image resizing with Cloudflare's edge transformation, keep `imageService: 'cloudflare'` in `astro.config.ts`.
 
 If you are deploying with Node.js locally, you need to install `@astrojs/node` first:
 
