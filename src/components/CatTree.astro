@@ -9,31 +9,239 @@ interface CatNode {
 
 interface Props {
   nodes: CatNode[]
+  root?: boolean
 }
 
-const { nodes } = Astro.props
+const { nodes, root = true } = Astro.props
 ---
 
-<ul class='flex flex-col gap-3'>
+<ul class:list={['cat-tree', { 'cat-tree--nested': !root }]}>
   {nodes.map((node) => (
-    <li>
-      <a
-        href={`/categories/${node.path}`}
-        data-astro-prefetch
-        class='group flex items-center gap-x-2 rounded-xl border border-border bg-card px-4 py-2 no-underline transition-all hover:border-primary hover:shadow-sm'
-      >
-        <span class='font-medium text-foreground transition-colors group-hover:text-primary'>
-          {node.name}
-        </span>
-        <span class='rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground'>
-          {node.total}
-        </span>
-      </a>
+    <li class='cat-tree__item'>
+      <div class='cat-tree__row'>
+        {
+          node.children.length > 0 ? (
+            <button
+              type='button'
+              class='cat-tree__toggle'
+              data-cat-toggle
+              aria-expanded='true'
+              aria-label={`展开或收起分类「${node.name}」`}
+            >
+              <svg
+                width='14'
+                height='14'
+                viewBox='0 0 24 24'
+                fill='none'
+                stroke='currentColor'
+                stroke-width='2'
+                stroke-linecap='round'
+                stroke-linejoin='round'
+                aria-hidden='true'
+              >
+                <path d='m9 18 6-6-6-6' />
+              </svg>
+            </button>
+          ) : (
+            <span class='cat-tree__toggle cat-tree__toggle--empty' aria-hidden='true'></span>
+          )
+        }
+
+        <a
+          href={`/categories/${node.path}`}
+          data-astro-prefetch
+          class='cat-tree__link'
+        >
+          {
+            node.children.length > 0 ? (
+              <svg
+                class='cat-tree__icon'
+                width='16'
+                height='16'
+                viewBox='0 0 24 24'
+                fill='none'
+                stroke='currentColor'
+                stroke-width='2'
+                stroke-linecap='round'
+                stroke-linejoin='round'
+                aria-hidden='true'
+              >
+                <path d='M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z' />
+              </svg>
+            ) : (
+              <svg
+                class='cat-tree__icon'
+                width='16'
+                height='16'
+                viewBox='0 0 24 24'
+                fill='none'
+                stroke='currentColor'
+                stroke-width='2'
+                stroke-linecap='round'
+                stroke-linejoin='round'
+                aria-hidden='true'
+              >
+                <path d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z' />
+                <path d='M14 2v4a2 2 0 0 0 2 2h4' />
+              </svg>
+            )
+          }
+          <span class='cat-tree__name'>{node.name}</span>
+          <span class='cat-tree__count'>{node.total}</span>
+        </a>
+      </div>
+
       {node.children.length > 0 && (
-        <div class='mt-3 border-l border-border pl-5'>
-          <Astro.self nodes={node.children} />
-        </div>
+        <Astro.self nodes={node.children} root={false} />
       )}
     </li>
   ))}
 </ul>
+
+<style>
+  .cat-tree {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  /* 嵌套层级：缩进 + 连接线 */
+  .cat-tree--nested {
+    position: relative;
+    margin-top: 0.25rem;
+    padding-left: 1.5rem;
+  }
+
+  .cat-tree__item {
+    position: relative;
+  }
+
+  /* 竖直连接线（延续到下一层） */
+  .cat-tree--nested > .cat-tree__item::before {
+    content: '';
+    position: absolute;
+    left: -1.5rem;
+    top: 0;
+    bottom: 0;
+    border-left: 1px solid hsl(var(--border));
+  }
+
+  /* 最后一个子节点 / 折叠态：竖线只到行中心 */
+  .cat-tree--nested > .cat-tree__item:last-child::before,
+  .cat-tree--nested > .cat-tree__item.cat-tree__item--collapsed::before {
+    bottom: auto;
+    height: 1.125rem;
+  }
+
+  /* 水平分支线 */
+  .cat-tree--nested > .cat-tree__item::after {
+    content: '';
+    position: absolute;
+    left: -1.5rem;
+    top: 1.125rem;
+    width: 1.5rem;
+    border-top: 1px solid hsl(var(--border));
+  }
+
+  .cat-tree__row {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-height: 2.25rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.15s ease;
+  }
+
+  .cat-tree__row:hover {
+    background-color: hsl(var(--muted));
+  }
+
+  .cat-tree__toggle {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    padding: 0;
+    border: none;
+    border-radius: 0.25rem;
+    background: transparent;
+    color: hsl(var(--muted-foreground));
+    cursor: pointer;
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .cat-tree__toggle:hover {
+    color: hsl(var(--primary));
+    background-color: hsl(var(--muted));
+  }
+
+  .cat-tree__toggle svg {
+    transition: transform 0.15s ease;
+  }
+
+  /* 展开态：箭头朝下 */
+  .cat-tree__item:not(.cat-tree__item--collapsed) .cat-tree__toggle svg {
+    transform: rotate(90deg);
+  }
+
+  .cat-tree__toggle--empty {
+    cursor: default;
+    background: transparent;
+  }
+
+  .cat-tree__link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 0;
+    font-size: 0.9375rem;
+    color: hsl(var(--foreground));
+    text-decoration: none;
+  }
+
+  .cat-tree__icon {
+    flex-shrink: 0;
+    color: hsl(var(--muted-foreground));
+    transition: color 0.15s ease;
+  }
+
+  .cat-tree__row:hover .cat-tree__icon {
+    color: hsl(var(--primary));
+  }
+
+  .cat-tree__name {
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .cat-tree__row:hover .cat-tree__name {
+    color: hsl(var(--primary));
+  }
+
+  .cat-tree__count {
+    margin-left: auto;
+    flex-shrink: 0;
+    min-width: 1.5rem;
+    text-align: center;
+    font-size: 0.75rem;
+    line-height: 1.25rem;
+    padding: 0 0.375rem;
+    border-radius: 9999px;
+    color: hsl(var(--muted-foreground));
+    background-color: hsl(var(--muted));
+  }
+
+  .cat-tree__row:hover .cat-tree__count {
+    color: hsl(var(--primary));
+    background-color: hsl(var(--primary) / 0.12);
+  }
+</style>

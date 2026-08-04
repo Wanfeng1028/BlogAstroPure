@@ -81,3 +81,17 @@ const meta = {
     </div>
   </main>
 </PageLayout>
+
+<script>
+  // 分类树：点击箭头按钮展开/收起子级
+  document.querySelectorAll('[data-cat-toggle]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.cat-tree__item')
+      if (!item) return
+      const panel = item.querySelector(':scope > .cat-tree--nested')
+      const collapsed = item.classList.toggle('cat-tree__item--collapsed')
+      btn.setAttribute('aria-expanded', String(!collapsed))
+      if (panel) (panel as HTMLElement).hidden = collapsed
+    })
+  })
+</script>
