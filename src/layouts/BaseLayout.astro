@@ -2,6 +2,7 @@
 import { Footer, Header, ThemeProvider } from 'astro-pure/components/basic'
 import type { SiteMeta } from 'astro-pure/types'
 import BaseHead from '@/components/BaseHead.astro'
+import Turnstile from '@/components/security/Turnstile.astro'
 import config from '@/site-config'
 
 // Import the global.css file here so that it is included on
@@ -43,6 +44,9 @@ const {
       </div>
       <Footer />
     </div>
+
+    {/* Cloudflare Turnstile 隐形人机验证 */}
+    <Turnstile />
 
     {/* Set highlight color */}
     <style define:vars={{ highlightColor }}>

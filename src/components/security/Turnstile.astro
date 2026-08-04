@@ -1,0 +1,18 @@
+---
+import { security } from '@/security-config'
+
+const siteKey = security.turnstile.siteKey
+const usable = security.turnstile.enabled && siteKey && !siteKey.startsWith('YOUR_')
+---
+
+{usable && (
+  <>
+    <!-- Turnstile 隐形验证占位容器 -->
+    <div id='turnstile-anchor' data-sitekey={siteKey}></div>
+
+    <script>
+      import { initTurnstile } from './turnstile'
+      initTurnstile()
+    </script>
+  </>
+)}
