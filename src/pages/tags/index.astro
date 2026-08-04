@@ -3,8 +3,11 @@ import { getBlogCollection, getUniqueTagsWithCount } from 'astro-pure/server'
 import { Button } from 'astro-pure/user'
 import PageLayout from '@/layouts/BaseLayout.astro'
 
-const allPosts = await getBlogCollection()
-const allTags = getUniqueTagsWithCount(allPosts).sort((a, b) => b[1] - a[1])
+const blogPosts = await getBlogCollection()
+const murmurPosts = await getBlogCollection('murmurs')
+const allTags = getUniqueTagsWithCount([...blogPosts, ...murmurPosts]).sort(
+  (a, b) => b[1] - a[1]
+)
 const totalTags = allTags.length
 const maxCount = Math.max(...allTags.map(([, c]) => c), 1)
 
