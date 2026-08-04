@@ -1,25 +1,441 @@
 ---
 import PageLayout from '@/layouts/CommonPage.astro'
 
-const headings = [
-  { depth: 2, slug: 'projects', text: '开源项目' },
-  { depth: 2, slug: 'gpg-signature', text: 'GPG 签名' }
+// 数据：可后续迁移到 content 集合或独立数据文件
+interface ProjectItem {
+  type: 'project'
+  title: string
+  description: string
+  tech: string[]
+  link: string
+  accent: string
+}
+interface PublicationItem {
+  type: 'publication'
+  title: string
+  authors: string[]
+  venue: string
+  year: number
+  description: string
+  link: string
+}
+type Item = ProjectItem | PublicationItem
+
+const items: Item[] = [
+  // ===== Projects =====
+  {
+    type: 'project',
+    title: 'ParrotSoundReVue',
+    description: '基于 Vue 的智能语音识别应用，曾获一个奖项。',
+    tech: ['Vue', 'TypeScript', 'Vite'],
+    link: 'https://github.com/Wanfeng1028/ParrotSoundReVue',
+    accent: '#6366f1'
+  },
+  {
+    type: 'project',
+    title: 'BlogAstroPure',
+    description: '基于 Astro 的个人博客，当前本站。',
+    tech: ['Astro', 'TypeScript', 'Tailwind'],
+    link: 'https://github.com/Wanfeng1028/BlogAstroPure',
+    accent: '#f97316'
+  },
+  {
+    type: 'project',
+    title: 'GeoFrontend2.0',
+    description: 'GIS 工作台前端，聚焦遥感智能识别与可视化。',
+    tech: ['GIS', 'JavaScript', 'Vue'],
+    link: 'https://github.com/Wanfeng1028/GeoFrontend2.0',
+    accent: '#10b981'
+  },
+  // ===== Publications =====
+  {
+    type: 'publication',
+    title: '示例：遥感影像语义分割方法研究',
+    authors: ['Wanfeng', 'Coauthor'],
+    venue: '示例期刊 / 会议',
+    year: 2026,
+    description: '占位示例，请替换为你的真实论文、作者与链接。',
+    link: '#'
+  },
+  {
+    type: 'publication',
+    title: '示例：基于深度学习的作物识别综述',
+    authors: ['Wanfeng'],
+    venue: '示例会议',
+    year: 2025,
+    description: '占位示例，请替换为你的真实论文、作者与链接。',
+    link: '#'
+  }
 ]
+
+const projectCount = items.filter((i) => i.type === 'project').length
+const publicationCount = items.filter((i) => i.type === 'publication').length
 ---
 
-<PageLayout title='Projects & Publications' {headings}>
+<PageLayout title='Projects & Publications'>
+  <div class='pub-page'>
+    {/* 居中分段切换按钮（滑块动效） */}
+    <div class='pub-toggle' id='pub-toggle' role='tablist' aria-label='筛选展示内容'>
+      <span class='pub-toggle__indicator' id='pub-indicator' aria-hidden='true'></span>
+      <button class='pub-toggle__btn is-active' data-filter='all' role='tab' aria-selected='true'>
+        全部 <span class='pub-toggle__count'>{items.length}</span>
+      </button>
+      <button class='pub-toggle__btn' data-filter='project' role='tab' aria-selected='false'>
+        Projects <span class='pub-toggle__count'>{projectCount}</span>
+      </button>
+      <button class='pub-toggle__btn' data-filter='publication' role='tab' aria-selected='false'>
+        Publications <span class='pub-toggle__count'>{publicationCount}</span>
+      </button>
+    </div>
 
-  <h2 id='projects'>开源项目</h2>
-  <p>这里展示我的开源项目，目前还在积累中。</p>
-
-  <ul>
-    <li>
-      <strong><a href='https://github.com/Wanfeng1028/ParrotSoundReVue' target='_blank' rel='noopener'>ParrotSoundReVue</a></strong>
-      —— 之前做的一个项目，去水了一个奖哈哈（轻点喷）
-    </li>
-  </ul>
-
-  <h2 id='gpg-signature'>GPG 签名</h2>
-  <p>后续添加 GPG 密钥用于签名提交等。</p>
-
+    {/* 内容区 */}
+    <div id='pub-content' class='pub-content'>
+      {
+        items.map((item, i) =>
+          item.type === 'project' ? (
+            <article class='repo-card' data-type='project' style={`--accent: ${item.accent}`}>
+              <div class='repo-card__top'>
+                <span class='repo-card__dot' aria-hidden='true'></span>
+                <a
+                  href={item.link}
+                  target='_blank'
+                  rel='noopener'
+                  class='repo-card__link'
+                  title='查看仓库'
+                  aria-label={`查看 ${item.title}`}
+                >
+                  <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M7 17 17 7' /><path d='M7 7h10v10' /></svg>
+                </a>
+              </div>
+              <h3 class='repo-card__title'>{item.title}</h3>
+              <p class='repo-card__desc'>{item.description}</p>
+              <div class='repo-card__tags'>
+                {item.tech.map((t) => <span class='repo-card__tag'>{t}</span>)}
+              </div>
+            </article>
+          ) : (
+            <article class='pub-item' data-type='publication'>
+              <span class='pub-item__num'>{String(i + 1).padStart(2, '0')}</span>
+              <div class='pub-item__body'>
+                <h3 class='pub-item__title'>
+                  <a href={item.link} target='_blank' rel='noopener'>{item.title}</a>
+                </h3>
+                <p class='pub-item__meta'>
+                  <span class='pub-item__authors'>{item.authors.join(', ')}</span>
+                  <span class='pub-item__venue'>{item.venue}</span>
+                  <span class='pub-item__year'>{item.year}</span>
+                </p>
+                <p class='pub-item__desc'>{item.description}</p>
+              </div>
+              <a
+                href={item.link}
+                target='_blank'
+                rel='noopener'
+                class='pub-item__link'
+                title='查看'
+                aria-label={`查看 ${item.title}`}
+              >
+                <svg width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M7 17 17 7' /><path d='M7 7h10v10' /></svg>
+              </a>
+            </article>
+          )
+        )
+      }
+    </div>
+  </div>
 </PageLayout>
+
+<script>
+  const toggle = document.getElementById('pub-toggle')
+  const buttons = toggle?.querySelectorAll<HTMLElement>('.pub-toggle__btn')
+  const indicator = document.getElementById('pub-indicator')
+  const items = document.querySelectorAll<HTMLElement>('#pub-content [data-type]')
+
+  // 滑块移动到对应按钮
+  function moveIndicator(btn: Element | undefined) {
+    if (!indicator || !btn) return
+    const el = btn as HTMLElement
+    indicator.style.left = `${el.offsetLeft}px`
+    indicator.style.width = `${el.offsetWidth}px`
+  }
+
+  function onSelect(btn: HTMLElement) {
+    buttons?.forEach((b) => {
+      b.classList.toggle('is-active', b === btn)
+      b.setAttribute('aria-selected', b === btn ? 'true' : 'false')
+    })
+    moveIndicator(btn)
+    const filter = btn.dataset.filter
+    items.forEach((item) => {
+      const show = filter === 'all' || item.dataset.type === filter
+      item.classList.toggle('is-hidden', !show)
+    })
+  }
+
+  buttons?.forEach((btn) => btn.addEventListener('click', () => onSelect(btn)))
+
+  // 初始定位 + 窗口尺寸变化时重新定位
+  window.addEventListener('load', () => moveIndicator(buttons?.[0]))
+  window.addEventListener('resize', () => {
+    const active = buttons?.[0]?.parentElement?.querySelector('.is-active') ?? buttons?.[0]
+    moveIndicator(active)
+  })
+</script>
+
+<style>
+  .pub-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* 分段切换按钮 */
+  .pub-toggle {
+    position: relative;
+    display: inline-flex;
+    gap: 0.25rem;
+    padding: 0.3rem;
+    border-radius: 999px;
+    background: hsl(var(--muted));
+    border: 1px solid hsl(var(--border));
+    margin-bottom: 2rem;
+  }
+  /* 滑动指示条 */
+  .pub-toggle__indicator {
+    position: absolute;
+    top: 0.3rem;
+    bottom: 0.3rem;
+    left: 0.3rem;
+    width: 0;
+    border-radius: 999px;
+    background: hsl(var(--background));
+    box-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.12),
+      0 0 0 1px hsl(var(--border));
+    transition:
+      left 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+      width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 0;
+  }
+  .pub-toggle__btn {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 1.15rem;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: hsl(var(--muted-foreground));
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: color 0.25s ease;
+  }
+  .pub-toggle__btn.is-active {
+    color: hsl(var(--foreground));
+  }
+  .pub-toggle__count {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.05rem 0.45rem;
+    border-radius: 999px;
+    background: hsl(var(--primary) / 0.12);
+    color: hsl(var(--primary));
+  }
+  .pub-toggle__btn.is-active .pub-toggle__count {
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+
+  /* 内容区 */
+  .pub-content {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  /* 项目卡片 */
+  .repo-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 1.1rem 1.3rem 1.25rem;
+    border-radius: calc(var(--radius) * 1.25);
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--card));
+    overflow: hidden;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  /* 顶部品牌色渐变条 */
+  .repo-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    opacity: 0.9;
+  }
+  .repo-card:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+    box-shadow: 0 12px 28px -14px color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+  .repo-card__top {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  .repo-card__dot {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 999px;
+    background: var(--accent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent);
+  }
+  .repo-card__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    margin-left: auto;
+    margin-right: -0.4rem;
+    border-radius: 999px;
+    color: hsl(var(--muted-foreground));
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .repo-card__link:hover {
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    color: var(--accent);
+  }
+  .repo-card__title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: hsl(var(--foreground));
+  }
+  .repo-card__desc {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: hsl(var(--muted-foreground));
+  }
+  .repo-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.2rem;
+  }
+  .repo-card__tag {
+    font-size: 0.75rem;
+    padding: 0.18rem 0.6rem;
+    border-radius: 999px;
+    background: hsl(var(--muted));
+    color: hsl(var(--muted-foreground));
+  }
+
+  /* 出版物条目（学术列表样式） */
+  .pub-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.1rem 1.2rem;
+    border-radius: calc(var(--radius) * 1.25);
+    border: 1px solid transparent;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+  .pub-item:hover {
+    background: hsl(var(--muted) / 0.5);
+    border-color: hsl(var(--border));
+  }
+  .pub-item__num {
+    flex-shrink: 0;
+    font-size: 0.8rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: hsl(var(--primary));
+    padding-top: 0.15rem;
+  }
+  .pub-item__body {
+    flex: 1;
+    min-width: 0;
+  }
+  .pub-item__title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: hsl(var(--foreground));
+  }
+  .pub-item__title a {
+    color: inherit;
+    transition: color 0.2s ease;
+  }
+  .pub-item__title a:hover {
+    color: hsl(var(--primary));
+  }
+  .pub-item__meta {
+    margin: 0.35rem 0 0;
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+  .pub-item__authors {
+    color: hsl(var(--foreground));
+  }
+  .pub-item__meta .pub-item__venue {
+    font-style: italic;
+    color: hsl(var(--muted-foreground));
+  }
+  .pub-item__year {
+    display: inline-block;
+    margin-left: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.05rem 0.5rem;
+    border-radius: 999px;
+    background: hsl(var(--primary) / 0.12);
+    color: hsl(var(--primary));
+  }
+  .pub-item__desc {
+    margin: 0.35rem 0 0;
+    font-size: 0.85rem;
+    color: hsl(var(--muted-foreground));
+  }
+  .pub-item__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    flex-shrink: 0;
+    margin-left: auto;
+    border-radius: 999px;
+    border: 1px solid hsl(var(--border));
+    color: hsl(var(--muted-foreground));
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+  .pub-item__link:hover {
+    background: hsl(var(--primary));
+    border-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+
+  /* 筛选隐藏 */
+  .pub-content .is-hidden {
+    display: none;
+  }
+
+  /* 桌面端双列 */
+  @media (min-width: 640px) {
+    .pub-content {
+      grid-template-columns: 1fr 1fr;
+    }
+    .pub-item[data-type='publication'] {
+      grid-column: 1 / -1;
+    }
+  }
+</style>
