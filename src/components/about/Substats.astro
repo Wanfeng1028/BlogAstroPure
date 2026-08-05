@@ -17,28 +17,11 @@ type Props = {
 }
 
 const { stats } = Astro.props as Props
-
-async function fetchCount(item: SubstatsItem) {
-  if (!item.api) return
-  try {
-    const response = await fetch(`https://api.swo.moe/stats/${item.api}`)
-    const data = await response.json()
-    if (data.failed) {
-      throw new Error(data.message)
-    } else {
-      item.count = data.count
-    }
-  } catch (error) {
-    console.error(`Error in Substats fetching: ${error}`)
-  }
-}
-
-await Promise.all(stats.map(fetchCount))
 ---
 
 <div class='grid grid-cols-1 gap-3 rounded-xl border p-2 sm:grid-cols-2 sm:p-3'>
   {
-    stats.map(({ link, platform, icon, color, count, text }) => (
+    stats.map(({ link, platform, icon, color, count, text, api }) => (
       <a
         class='group text-muted-foreground no-underline'
         href={link}
@@ -50,14 +33,10 @@ await Promise.all(stats.map(fetchCount))
           <div class='flex-1 text-foreground transition-colors group-hover:text-primary'>
             {platform}
           </div>
-          {count ? (
-            <div class='flex items-center gap-1.5'>
-              <samp>{count}</samp>
-              <span class='text-sm font-normal'>{text}</span>
-            </div>
-          ) : (
-            'null'
-          )}
+          <div class='flex items-center gap-1.5'>
+            <samp data-count data-api={api}>{count ?? '…'}</samp>
+            <span class='text-sm font-normal'>{text}</span>
+          </div>
         </div>
       </a>
     ))
@@ -71,3 +50,28 @@ await Promise.all(stats.map(fetchCount))
     rel='noopener noreferrer'>Substats</a
   >
 </div>
+
+<script>
+  async function fetchCount(api: string): Promise<number | null> {
+    try {
+      const response = await fetch(`https://api.swo.moe/stats/${api}`)
+      const data = await response.json()
+      if (data.failed) return null
+      return data.count
+    } catch {
+      return null
+    }
+  }
+
+  async function init() {
+    const els = document.querySelectorAll<HTMLElement>('samp[data-count]')
+    for (const el of els) {
+      const api = el.getAttribute('data-api')
+      if (!api) continue
+      const count = await fetchCount(api)
+      if (count !== null) el.textContent = String(count)
+    }
+  }
+
+  init()
+</script>
