@@ -241,64 +241,101 @@ const publicationCount = items.filter((i) => i.type === 'publication').length
     align-items: center;
   }
 
-  /* 分段切换按钮 */
+  /* 分段切换按钮 —— Gemini 官方最终版（全部官方真实值） */
+  /* 容器 */
   .pub-toggle {
     position: relative;
-    display: inline-flex;
-    gap: 0.25rem;
-    padding: 0.3rem;
-    border-radius: 999px;
-    background: hsl(var(--muted));
-    border: 1px solid hsl(var(--border));
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px; /* 官方：3px */
+    border: 1px solid #e5e5e5; /* 官方：--theme-border-color */
+    border-radius: 100px; /* 官方：100px */
+    background: #ffffff;
+    box-shadow: none; /* 官方：无投影 */
     margin-bottom: 2rem;
+    font-family: 'Google Sans', Roboto, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
   }
-  /* 滑动指示条 */
+  /* 滑动指示条：官方渐变胶囊，随激活项滑动 */
   .pub-toggle__indicator {
     position: absolute;
-    top: 0.3rem;
-    bottom: 0.3rem;
-    left: 0.3rem;
+    top: 3px;
+    bottom: 3px;
+    left: 0;
     width: 0;
-    border-radius: 999px;
-    background: hsl(var(--background));
-    box-shadow:
-      0 1px 3px rgba(0, 0, 0, 0.12),
-      0 0 0 1px hsl(var(--border));
-    transition:
-      left 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-      width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 100px;
+    background: linear-gradient(89.58deg, #3186ff 0.28%, #346bf0 44.45%, #4ea0ff 99.55%);
+    transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1), width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 0;
   }
-  .pub-toggle__btn {
+
+  /* 按钮 */
+  .pub-toggle .pub-toggle__btn {
     position: relative;
     z-index: 1;
+    appearance: none;
+    border: none;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 18px; /* 官方：18px */
+    font-weight: 500;
+    line-height: 1.4; /* 官方：1.4 */
+    color: #5f6368; /* 官方：--theme-text-color-secondary */
+    padding: 12px 24px; /* 官方：12px 24px */
+    border-radius: 100px;
+    white-space: nowrap;
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.45rem 1.15rem;
-    border-radius: 999px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: hsl(var(--muted-foreground));
+    gap: 10px; /* 官方：gap 10px */
+    transition: color 0.3s ease, background 0.3s ease;
+  }
+  .pub-toggle .pub-toggle__btn:hover:not(.is-active) {
+    background: #f4f4f5;
+  }
+
+  /* 激活态：文字白、背景透明，由下方滑块提供官方渐变填充 */
+  .pub-toggle .pub-toggle__btn.is-active {
+    color: #ffffff;
     background: transparent;
-    border: none;
-    cursor: pointer;
-    transition: color 0.25s ease;
   }
-  .pub-toggle__btn.is-active {
-    color: hsl(var(--foreground));
+
+  /* 角标（自己的扩展，官方没有） */
+  .pub-toggle .pub-toggle__count {
+    font-size: 0.78rem;
+    font-weight: 500;
+    background: transparent;
+    opacity: 0.55;
   }
-  .pub-toggle__count {
-    font-size: 0.7rem;
-    font-weight: 600;
-    padding: 0.05rem 0.45rem;
-    border-radius: 999px;
-    background: hsl(var(--primary) / 0.12);
-    color: hsl(var(--primary));
+  .pub-toggle .pub-toggle__btn.is-active .pub-toggle__count {
+    background: transparent;
+    opacity: 0.9;
+    color: #fff;
   }
-  .pub-toggle__btn.is-active .pub-toggle__count {
-    background: hsl(var(--primary));
-    color: hsl(var(--primary-foreground));
+
+  /* 暗色模式 */
+  .dark .pub-toggle {
+    background: #1f2128;
+    border-color: #3a3d45;
+  }
+  .dark .pub-toggle .pub-toggle__btn {
+    color: #9aa0a6;
+  }
+  .dark .pub-toggle .pub-toggle__btn:hover:not(.is-active) {
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .dark .pub-toggle .pub-toggle__btn.is-active {
+    color: #ffffff;
+    background: transparent;
+  }
+  .dark .pub-toggle .pub-toggle__count,
+  .dark .pub-toggle .pub-toggle__btn.is-active .pub-toggle__count {
+    background: transparent;
+  }
+  .dark .pub-toggle .pub-toggle__btn.is-active .pub-toggle__count {
+    color: #fff;
   }
 
   /* 内容区 */
