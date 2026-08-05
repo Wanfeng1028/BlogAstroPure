@@ -113,11 +113,6 @@ const { class: className } = Astro.props
     display: inline-block;
   }
 
-  /* Hide comment editor & list & header/footer, keep only reaction */
-  #waline :global(.wl-panel, .wl-cards, .wl-list, .wl-operation, .wl-rss, .wl-count, .wl-sort, .wl-footer, .wl-power, .wl-meta-foot, .wl-comment-header) {
-    display: none;
-  }
-
   /* Reaction buttons */
   #waline :global(.wl-reaction-title, .wl-reaction-text) {
     display: none;
@@ -167,5 +162,15 @@ const { class: className } = Astro.props
   }
   :global(.dark) #waline :global(.wl-reaction img) {
     filter: invert(75%);
+  }
+
+  /* 订阅 RSS 区域：始终铺开显示，避免折叠成竖排与 hover 抖动 */
+  #waline :global(.wl-rss) {
+    max-width: none !important;
+    overflow: visible !important;
+    transition: none !important;
+  }
+  #waline :global(.wl-rss > a) {
+    flex-wrap: wrap;
   }
 </style>

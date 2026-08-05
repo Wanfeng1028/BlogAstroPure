@@ -75,11 +75,12 @@ const years = [currentYear, currentYear - 1, currentYear - 2]
     const monthsEl = document.getElementById('gh-months')!
     const totalEl = document.getElementById('gh-total')!
 
-    // Build calendar: Jan 1 → Dec 31 of selected year
+    // Build calendar: Jan 1 → Dec 31 of selected year.
+    // 始终渲染到年末，当前年份的未来周以 count=0（灰色 lv-0）占位补齐网格，
+    // 使全年宽度一致；过去年份本就到 dec31，行为不变。
     const jan1 = new Date(year, 0, 1)
     const dec31 = new Date(year, 11, 31)
-    const today = new Date()
-    const end = dec31 < today ? dec31 : today
+    const end = dec31
 
     // Align start to Sunday
     const start = new Date(jan1)
