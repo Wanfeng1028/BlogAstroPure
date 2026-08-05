@@ -3,6 +3,7 @@ import cloudflare from '@astrojs/cloudflare'
 // import vercel from '@astrojs/vercel' // 保留 Vercel 配置，切换到 Cloudflare 时暂不使用
 import AstroPureIntegration from 'astro-pure'
 import { defineConfig, fontProviders, svgoOptimizer } from 'astro/config'
+import type { Plugin } from 'vite'
 import rehypeKatex from 'rehype-katex'
 import remarkMath from 'remark-math'
 
@@ -23,8 +24,45 @@ import {
 } from './src/plugins/shiki-official/transformers.ts'
 import config from './src/site.config.ts'
 
+/**
+ * @astrojs/cloudflare 的 workerd dev 环境不会预编译 SSR 依赖，导致运行时才发现的
+ * 依赖触发级联 reload 崩溃（"deps_ssr/chunk-*.js 文件不存在"）。
+ * 这里对非 client 环境强制排除 astro-pure 的预构建，并预编译关键依赖，消除冷启动崩溃。
+ * 注意：不能用 ssr.external 标记 packages/pure，否则 Vite 的 SSR 模块运行时会跳过
+ * 插件管线，导致 astro-pure 注入的 virtual:config 虚拟模块无法解析。
+ * 参考 https://github.com/withastro/astro/issues/16248
+ */
+function optimizeSsrDeps(): Plugin {
+  return {
+    name: 'optimize-ssr-deps',
+    configEnvironment(name) {
+      if (name === 'client') return
+      return {
+        optimizeDeps: {
+          exclude: ['astro-pure'],
+          include: [
+            'astro/errors',
+            'astro/zod',
+            'astro/assets/fonts/runtime.js',
+            'astro/virtual-modules/middleware.js',
+            '@astrojs/cloudflare/image-service',
+            'ultrahtml',
+            'node-html-parser',
+            'hast-util-select',
+            'unist-util-visit',
+            'rehype'
+          ]
+        }
+      }
+    }
+  }
+}
+
+// Astro 6 移除了 defineConfig 的函数形式，用 process.argv 检测 dev 模式
+const isDev = process.argv.includes('dev')
+
 // https://astro.build/config
-export default defineConfig(({ command }) => ({
+export default defineConfig({
   // [Basic]
   site: 'https://astro-pure.js.org',
   // Deploy to a sub path
@@ -45,7 +83,7 @@ export default defineConfig(({ command }) => ({
   // 开发环境使用本地 sharp 处理图片，避免 /cdn-cgi/image/ 端点本地不可用导致图片加载失败；
   // 生产环境（Cloudflare 部署）启用 Cloudflare 图片服务以获得边缘优化。
   adapter: cloudflare({
-    imageService: command === 'dev' ? undefined : 'cloudflare'
+    imageService: isDev ? undefined : 'cloudflare'
   }),
   output: 'server',
   // Vercel（保留备用，需要时把上面换成这行）
@@ -149,5 +187,8 @@ export default defineConfig(({ command }) => ({
     queuedRendering: {
       enabled: true
     }
+  },
+  vite: {
+    plugins: [optimizeSsrDeps()]
   }
-}))
+})

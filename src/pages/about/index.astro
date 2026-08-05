@@ -4,10 +4,10 @@ import PageLayout from '@/layouts/CommonPage.astro'
 import ProfileLinks from '@/components/home/ProfileLinks.astro'
 
 const headings = [
-  { depth: 2, slug: 'about-me', text: '关于我' },
+  { depth: 2, slug: 'about-me', text: 'About Me' },
   { depth: 2, slug: 'education', text: 'Education' },
-  { depth: 2, slug: 'journey', text: '经历' },
-  { depth: 2, slug: 'hobbies', text: '兴趣爱好' },
+  { depth: 2, slug: 'journey', text: 'Internship/Work Experience' },
+  { depth: 2, slug: 'hobbies', text: 'Hobbies & Interests' },
   { depth: 2, slug: 'certifications', text: 'Certifications' }
 ]
 
@@ -38,9 +38,9 @@ const journeyEvents = [
       每个优秀的人都有一段沉默的时光，那段时光是付出了很多努力，却得不到结果的日子，我们把它叫做扎根。
     </p>
 
-    <h3 class='mt-8 mb-3 text-lg font-medium'>个人简介</h3>
+    <h3 class='mt-8 mb-3 text-2xl font-bold'>Infomation</h3>
     <p>
-      2022 级地理信息科学专业，2026 届毕业生，目前二学位在读（考研ing）。
+      2022 级地理信息科学专业，2026 届本科毕业生，目前二学位在读（考研ing）。
     </p>
     <p>
       本科期间的主要方向:GIS 开发，全栈开发（ing）;
@@ -70,11 +70,11 @@ const journeyEvents = [
   </div>
 
   {/* journey */}
-  <h2 id='journey' class='mt-10'>实习/工作经历</h2>
+  <h2 id='journey' class='mt-10'>Internship/Work Experience</h2>
   <Timeline events={journeyEvents} />
 
   {/* hobbies */}
-  <h2 id='hobbies' class='mt-10'>兴趣爱好</h2>
+  <h2 id='hobbies' class='mt-10'>Hobbies & Interests</h2>
   <ul>
     <li>📷 摄影（想学）</li>
     <li>🎸 会弹点吉他，希望之后可以把吉他重新捡起来</li>
