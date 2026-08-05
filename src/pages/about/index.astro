@@ -12,14 +12,11 @@ const headings = [
 ]
 
 const journeyEvents = [
-  { date: '2022', content: '进入<strong>杭州师范大学</strong>，地理信息科学专业（GIS 开发、遥感智能识别、计算机视觉）' },
-  { date: '2026.02', content: '浙江建投数字技术有限公司 · 前端开发实习' },
-  { date: '2026.06', content: '本科毕业，开始二学位（数据科学与大数据技术）+ 考研' },
-  { date: '现在', content: '学习 Go 后端 & Agent 方向' }
+  { date: '2026.02-2026.06', content: '浙江建投数字技术有限公司 · 前端开发实习生' },
 ]
 ---
 
-<PageLayout title='About' {headings} comment>
+<PageLayout title='About' {headings} view>
   {/* about-me */}
   <section id='about-me'>
     <div class='flex flex-col items-center not-prose text-center'>
@@ -43,12 +40,12 @@ const journeyEvents = [
 
     <h3 class='mt-8 mb-3 text-lg font-medium'>个人简介</h3>
     <p>
-      杭州师范大学 2022 级地理信息科学专业，2026 届毕业生，目前二学位在读（考研ing）。
+      2022 级地理信息科学专业，2026 届毕业生，目前二学位在读（考研ing）。
     </p>
     <p>
-      专业方向:GIS 开发，全栈开发（ing）;
-      本科期间主要关注遥感智能识别、计算机视觉相关的研究;
-      毕业前在浙江建投数字技术有限公司做过前端开发实习。目前在学习 Agent 和Go 后端开发。
+      本科期间的主要方向:GIS 开发，全栈开发（ing）;
+      本科期间主要关注遥感智能识别、遥感图像处理、深度学习等相关的研究;
+      目前主要在学习以Go技术栈为主的后端开发和Agent开发。
     </p>
     <p>
       写这个博客主要是为了记录日常的学习和生活，希望在技术之路上留下一些痕迹。
@@ -62,13 +59,18 @@ const journeyEvents = [
   {/* education */}
   <h2 id='education' class='mt-10'>Education</h2>
   <div class='not-prose mt-4 rounded-xl bg-muted/60 p-5'>
-    <p class='text-base font-semibold'>杭州师范大学 · 地理信息科学</p>
+    <p class='text-base font-semibold'>地理信息科学（本科）</p>
     <p class='mt-1 text-sm text-muted-foreground'>GIS 开发、遥感智能识别、计算机视觉</p>
     <p class='mt-2 text-xs text-muted-foreground'>2022.09 – 2026.06</p>
+  </div>,
+    <div class='not-prose mt-4 rounded-xl bg-muted/60 p-5'>
+    <p class='text-base font-semibold'>数据科学与大数据技术（第二学士学位）</p>
+    <p class='mt-1 text-sm text-muted-foreground'>考研ing</p>
+    <p class='mt-2 text-xs text-muted-foreground'>2026.09 – 2027.06</p>
   </div>
 
   {/* journey */}
-  <h2 id='journey' class='mt-10'>经历</h2>
+  <h2 id='journey' class='mt-10'>实习/工作经历</h2>
   <Timeline events={journeyEvents} />
 
   {/* hobbies */}
@@ -82,8 +84,12 @@ const journeyEvents = [
   {/* certifications */}
   <h2 id='certifications' class='mt-10'>Certifications</h2>
   <div class='not-prose mt-4 rounded-xl bg-muted/60 p-5'>
-    <p class='text-base font-semibold'>待补充</p>
-    <p class='mt-1 text-sm text-muted-foreground'>CET-4 / CET-6 / 其他证书…</p>
+    <p class='text-base font-semibold'>一些证书</p>
+    <p class='mt-1 text-sm text-muted-foreground'>
+      <strong>2024-2025浙江省政府奖学金</strong><br>
+      <strong>2025-2026浙江省政府奖学金</strong><br>
+      <strong>And so on...(本科期间的证书之后整理一下hhh)</strong><br>
+    </p>
   </div>
 
   {/* skillicons */}
