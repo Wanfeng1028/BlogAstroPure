@@ -308,6 +308,17 @@ span.katex-display {
 /* Scroll bar */
 :root {
   --scrollbar-thumb: hsl(var(--muted-foreground) / var(--un-bg-opacity, 0.3));
+  /* Gemini 官方蓝色渐变（按钮/胶囊统一样式） */
+  --gemini-gradient: linear-gradient(89.58deg, #3186ff 0.28%, #346bf0 44.45%, #4ea0ff 99.55%);
+}
+/* [Gemini 按钮/胶囊] 全局可复用工具类：渐变底 + 白字 + hover 提亮 */
+.gemini-btn {
+  background: var(--gemini-gradient);
+  color: #fff;
+  transition: filter 0.2s ease;
+}
+.gemini-btn:hover {
+  filter: brightness(1.06);
 }
 :not(html) {
   & ::-webkit-scrollbar {

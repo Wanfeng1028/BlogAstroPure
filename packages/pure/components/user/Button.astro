@@ -17,9 +17,8 @@ const { as: Tag = 'a', class: className, title, href, variant = 'button', ...pro
 
 <Tag
   class={cn(
-    'group inline-flex items-center gap-x-1 rounded-lg bg-muted border px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-card no-underline',
+    'gemini-btn group inline-flex items-center gap-x-1 rounded-full px-4 py-2 text-sm font-medium text-white no-underline',
     !href && 'cursor-default',
-    variant === 'pill' && 'rounded-xl',
     className
   )}
   href={href}
@@ -38,7 +37,7 @@ const { as: Tag = 'a', class: className, title, href, variant = 'button', ...pro
           stroke-width='2.5'
           stroke-linecap='round'
           stroke-linejoin='round'
-          class='stroke-muted-foreground group-hover:stroke-primary'
+          class='stroke-white'
         >
           <line
             x1='19'
@@ -70,7 +69,7 @@ const { as: Tag = 'a', class: className, title, href, variant = 'button', ...pro
           stroke-width='2.5'
           stroke-linecap='round'
           stroke-linejoin='round'
-          class='stroke-muted-foreground group-hover:stroke-primary'
+          class='stroke-white'
         >
           <line
             x1='5'

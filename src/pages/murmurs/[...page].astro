@@ -236,14 +236,13 @@ const paginationProps = {
     font-size: 0.75rem;
     padding: 0.2rem 0.7rem;
     border-radius: 999px;
-    background: color-mix(in srgb, var(--accent) 12%, transparent);
-    color: var(--accent);
+    background: var(--gemini-gradient);
+    color: #fff;
     text-decoration: none;
-    transition: background 0.2s ease, color 0.2s ease;
+    transition: filter 0.2s ease;
   }
   .murmur-card__tag:hover {
-    background: var(--accent);
-    color: hsl(0 0% 100%);
+    filter: brightness(1.06);
   }
 
   @media (max-width: 480px) {

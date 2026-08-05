@@ -291,13 +291,12 @@ const formatDate = (d: Date) =>
     line-height: 1.25rem;
     padding: 0 0.375rem;
     border-radius: 9999px;
-    color: hsl(var(--muted-foreground));
-    background-color: hsl(var(--muted));
+    color: #fff;
+    background: var(--gemini-gradient);
   }
 
   .cat-tree__row:hover .cat-tree__count {
-    color: hsl(var(--primary));
-    background-color: hsl(var(--primary) / 0.12);
+    filter: brightness(1.06);
   }
 
   /* 文章列表（复用分类项的嵌套结构，保证缩进与连接线一致） */
