@@ -78,7 +78,9 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const { pathname } = new URL(context.request.url)
 
   // —— 限流 / 防批量访问 ——
-  if (security.rateLimit.enabled && !shouldSkip(pathname)) {
+  // 开发环境下跳过限流：本地请求 IP 会归一为 'unknown'，共享同一计数桶，
+  // 频繁刷新/热更新极易触发 429。生产环境保留限流。
+  if (!import.meta.env.DEV && security.rateLimit.enabled && !shouldSkip(pathname)) {
     const ip = getClientIp(context.request)
     if (rateLimitHit(ip)) {
       return new Response('Too Many Requests', {

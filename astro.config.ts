@@ -24,7 +24,7 @@ import {
 import config from './src/site.config.ts'
 
 // https://astro.build/config
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   // [Basic]
   site: 'https://astro-pure.js.org',
   // Deploy to a sub path
@@ -42,7 +42,11 @@ export default defineConfig({
   // [Adapter]
   // https://docs.astro.build/en/guides/deploy/
   // Cloudflare（当前部署目标）
-  adapter: cloudflare({ imageService: 'cloudflare' }),
+  // 开发环境使用本地 sharp 处理图片，避免 /cdn-cgi/image/ 端点本地不可用导致图片加载失败；
+  // 生产环境（Cloudflare 部署）启用 Cloudflare 图片服务以获得边缘优化。
+  adapter: cloudflare({
+    imageService: command === 'dev' ? undefined : 'cloudflare'
+  }),
   output: 'server',
   // Vercel（保留备用，需要时把上面换成这行）
   // adapter: vercel({ imageService: true }),
@@ -146,4 +150,4 @@ export default defineConfig({
       enabled: true
     }
   }
-})
+}))
