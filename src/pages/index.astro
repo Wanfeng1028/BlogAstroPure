@@ -65,47 +65,41 @@ for (const post of allPosts) {
       <ActivityHeatmap blogData={activityData} workerUrl={heatmapWorkerUrl} />
 
       <Section title='Website List'>
-        <div class='not-prose grid gap-4 sm:grid-cols-2'>
+        <div class='not-prose w-full'>
           <a href='https://github.com/Wanfeng1028/ParrotSoundReVue' target='_blank' rel='noopener'
-            class='tilt-card accent-card group relative flex flex-col gap-4 overflow-hidden rounded-2xl border p-5 transition-[border-color,box-shadow] duration-300'
-            data-tilt='' style='--accent: #6366f1'>
-            <div class='flex items-center justify-between'>
-              <div
-                class='accent-icon flex size-12 items-center justify-center rounded-xl text-2xl transition-transform duration-300 group-hover:scale-110'>
-                🦜
-              </div>
-              <span class='rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs text-muted-foreground'>GitHub</span>
+            class='tilt-card accent-card no-glow gcard-article group' data-tilt=''
+            data-deco='🦜'
+            style='--accent: #6366f1; --gcard-deco-img: url("/images/social-card.png"); --gcard-img-bg: linear-gradient(135deg, #e0e7ff 0%, #818cf8 55%, #4f46e5 100%); --gcard-img-tone: #6366f1;'>
+            <div class='gcard-text'>
+              <h3 class='gcard-headline accent-title'>ParrotSoundReVue</h3>
+              <span class='gcard-author'>基于 Vue 的智能语音识别应用</span>
+              <ul class='gcard-tags'>
+                <li><span class='gcard-tag gcard-tag-purple'>GitHub</span></li>
+                <li><span class='gcard-tag gcard-tag-aqua'>Vue</span></li>
+                <li><span class='gcard-tag gcard-tag-green'>语音识别</span></li>
+              </ul>
             </div>
-            <div>
-              <p class='accent-title text-base font-semibold'>ParrotSoundReVue</p>
-              <p class='mt-1 text-sm leading-relaxed text-muted-foreground'>基于 Vue 的智能语音识别应用</p>
-            </div>
-            <div class='mt-auto flex flex-wrap gap-1.5'>
-              <span class='accent-tag rounded-full px-2.5 py-0.5 text-xs'>Vue</span>
-              <span class='accent-tag rounded-full px-2.5 py-0.5 text-xs'>语音识别</span>
-            </div>
+            <span class='gcard-arrow' aria-hidden='true'>›</span>
           </a>
           <a href='https://github.com/Wanfeng1028/BlogAstroPure' target='_blank' rel='noopener'
-            class='tilt-card accent-card group relative flex flex-col gap-4 overflow-hidden rounded-2xl border p-5 transition-[border-color,box-shadow] duration-300'
-            data-tilt='' style='--accent: #f97316'>
-            <div class='flex items-center justify-between'>
-              <div
-                class='accent-icon flex size-12 items-center justify-center rounded-xl text-2xl transition-transform duration-300 group-hover:scale-110'>
-                📝
-              </div>
-              <span class='rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs text-muted-foreground'>GitHub</span>
+            class='tilt-card accent-card no-glow gcard-article group' data-tilt=''
+            data-deco='📝'
+            style='--accent: #f97316; --gcard-deco-img: url("/images/touxiang.png"); --gcard-img-bg: linear-gradient(135deg, #ffedd5 0%, #fb923c 55%, #ea580c 100%); --gcard-img-tone: #f97316;'>
+            <div class='gcard-text'>
+              <h3 class='gcard-headline accent-title'>BlogAstroPure</h3>
+              <span class='gcard-author'>基于 Astro 的个人博客</span>
+              <ul class='gcard-tags'>
+                <li><span class='gcard-tag gcard-tag-purple'>GitHub</span></li>
+                <li><span class='gcard-tag gcard-tag-aqua'>Astro</span></li>
+                <li><span class='gcard-tag gcard-tag-green'>TypeScript</span></li>
+              </ul>
             </div>
-            <div>
-              <p class='accent-title text-base font-semibold'>BlogAstroPure</p>
-              <p class='mt-1 text-sm leading-relaxed text-muted-foreground'>基于 Astro 的个人博客</p>
-            </div>
-            <div class='mt-auto flex flex-wrap gap-1.5'>
-              <span class='accent-tag rounded-full px-2.5 py-0.5 text-xs'>Astro</span>
-              <span class='accent-tag rounded-full px-2.5 py-0.5 text-xs'>TypeScript</span>
-            </div>
+            <span class='gcard-arrow' aria-hidden='true'>›</span>
           </a>
+          <div class='mt-4 flex justify-end'>
+            <Button title='查看更多' href='https://github.com/Wanfeng1028' variant='ahead' />
+          </div>
         </div>
-        <Button title='查看更多' class='w-fit self-end' href='https://github.com/Wanfeng1028' variant='ahead' />
       </Section>
 
       <Section title='Skills'>

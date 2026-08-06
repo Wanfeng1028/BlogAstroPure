@@ -93,10 +93,18 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const response = await next()
 
   // —— 安全响应头 ——
+  // 注意：SSR/Cloudflare 下 response.headers 是 immutable（不可变）的，
+  // 直接 .set 会抛 "Can't modify immutable headers"，需新建 Response + 新 Headers
   if (security.headers.enabled) {
+    const newHeaders = new Headers(response.headers)
     for (const [key, value] of Object.entries(SECURITY_HEADERS)) {
-      response.headers.set(key, value)
+      newHeaders.set(key, value)
     }
+    return new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: newHeaders,
+    })
   }
 
   return response

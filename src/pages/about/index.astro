@@ -14,6 +14,16 @@ const headings = [
 const journeyEvents = [
   { date: '2026.02-2026.06', content: '浙江建投数字技术有限公司 · 前端开发实习生' },
 ]
+
+// Skills 分类（icons 为 skillicons.dev 图标名，逗号分隔）
+const skills = [
+  { title: 'OS', icons: 'apple,linux,windows,ubuntu,debian,arch' },
+  {
+    title: 'Language & Frameworks',
+    icons: 'ts,js,go,python,java,vue,react,angular,astro,vite,nodejs,gin'
+  },
+  { title: 'Tool', icons: 'docker,postgres,git,vscode' }
+]
 ---
 
 <PageLayout title='About' {headings} view>
@@ -92,13 +102,21 @@ const journeyEvents = [
     </p>
   </div>
 
-  {/* skillicons */}
-  <div class='not-prose mt-10'>
-    <img
-      src='https://skillicons.dev/icons?i=vue,react,angular,go,java,nodejs,ts,js,docker,git,linux,vscode&theme=light'
-      alt='Tech Stack'
-      class='max-w-full'
-      loading='lazy'
-    />
+  {/* skills */}
+  <h2 id='skills' class='mt-10'>Skills</h2>
+  <div class='not-prose mt-4 flex flex-col gap-5'>
+    {
+      skills.map((cat) => (
+        <div class='flex flex-col items-start'>
+          <p class='mb-2 text-sm font-semibold text-muted-foreground'>{cat.title}</p>
+          <img
+            src={`https://skillicons.dev/icons?i=${cat.icons}&perline=15&theme=light`}
+            alt={cat.title}
+            class='block max-w-full'
+            loading='lazy'
+          />
+        </div>
+      ))
+    }
   </div>
 </PageLayout>
