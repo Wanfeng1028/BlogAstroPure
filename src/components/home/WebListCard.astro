@@ -1,0 +1,71 @@
+---
+import { cn } from 'astro-pure/utils'
+
+type TagItem = {
+  text: string
+  color: 'purple' | 'aqua' | 'green' | 'orange' | 'blue' | 'pink' | 'red' | 'yellow'
+}
+
+type Props = {
+  href: string
+  deco: string
+  accent: string
+  decoImg: string
+  imgBg: string
+  imgTone: string
+  headline: string
+  description: string
+  tags: TagItem[]
+  class?: string
+}
+
+const {
+  href,
+  deco,
+  accent,
+  decoImg,
+  imgBg,
+  imgTone,
+  headline,
+  description,
+  tags,
+  class: className
+} = Astro.props
+
+const colorClassMap: Record<TagItem['color'], string> = {
+  purple: 'gcard-tag-purple',
+  aqua: 'gcard-tag-aqua',
+  green: 'gcard-tag-green',
+  orange: 'gcard-tag-orange',
+  blue: 'gcard-tag-blue',
+  pink: 'gcard-tag-pink',
+  red: 'gcard-tag-red',
+  yellow: 'gcard-tag-yellow'
+}
+---
+
+<a
+  href={href}
+  target='_blank'
+  rel='noopener'
+  class={cn(
+    'tilt-card accent-card no-glow gcard-article group',
+    className
+  )}
+  data-tilt=''
+  data-deco={deco}
+  style={`--accent: ${accent}; --gcard-deco-img: url("${decoImg}"); --gcard-img-bg: ${imgBg}; --gcard-img-tone: ${imgTone};`}
+>
+  <div class='gcard-text'>
+    <h3 class='gcard-headline accent-title'>{headline}</h3>
+    <span class='gcard-author'>{description}</span>
+    <ul class='gcard-tags'>
+      {tags.map((tag) => (
+        <li>
+          <span class={cn('gcard-tag', colorClassMap[tag.color])}>{tag.text}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+  <span class='gcard-arrow' aria-hidden='true'>›</span>
+</a>

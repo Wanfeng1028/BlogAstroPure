@@ -6,12 +6,47 @@ import PageLayout from '@/layouts/BaseLayout.astro'
 import ActivityHeatmap from '@/components/home/ActivityHeatmap.astro'
 import ProfileLinks from '@/components/home/ProfileLinks.astro'
 import Section from '@/components/home/Section.astro'
+import WebListCard from '@/components/home/WebListCard.astro'
 import config from '@/site-config'
 import { heatmapWorkerUrl } from '@/site-config'
 
 const MAX_POSTS = 10
 const allPosts = await getBlogCollection()
 const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS)
+
+// Website List 数据
+const webList = [
+  {
+    href: 'https://github.com/Wanfeng1028/ParrotSoundReVue',
+    deco: '🦜',
+    accent: '#6366f1',
+    decoImg: '/images/social-card.png',
+    imgBg: 'linear-gradient(135deg, #e0e7ff 0%, #818cf8 55%, #4f46e5 100%)',
+    imgTone: '#6366f1',
+    headline: 'ParrotSoundReVue',
+    description: '基于 Vue 的智能语音识别应用',
+    tags: [
+      { text: 'GitHub', color: 'purple' as const },
+      { text: 'Vue', color: 'aqua' as const },
+      { text: '语音识别', color: 'green' as const }
+    ]
+  },
+  {
+    href: 'https://github.com/Wanfeng1028/BlogAstroPure',
+    deco: '📝',
+    accent: '#f97316',
+    decoImg: '/images/touxiang.png',
+    imgBg: 'linear-gradient(135deg, #ffedd5 0%, #fb923c 55%, #ea580c 100%)',
+    imgTone: '#f97316',
+    headline: 'BlogAstroPure',
+    description: '基于 Astro 的个人博客',
+    tags: [
+      { text: 'GitHub', color: 'purple' as const },
+      { text: 'Astro', color: 'aqua' as const },
+      { text: 'TypeScript', color: 'green' as const }
+    ]
+  }
+]
 
 // Skills 分类（icons 为 skillicons.dev 图标名，逗号分隔）
 const skills = [
@@ -66,36 +101,9 @@ for (const post of allPosts) {
 
       <Section title='Website List'>
         <div class='not-prose w-full'>
-          <a href='https://github.com/Wanfeng1028/ParrotSoundReVue' target='_blank' rel='noopener'
-            class='tilt-card accent-card no-glow gcard-article group' data-tilt=''
-            data-deco='🦜'
-            style='--accent: #6366f1; --gcard-deco-img: url("/images/social-card.png"); --gcard-img-bg: linear-gradient(135deg, #e0e7ff 0%, #818cf8 55%, #4f46e5 100%); --gcard-img-tone: #6366f1;'>
-            <div class='gcard-text'>
-              <h3 class='gcard-headline accent-title'>ParrotSoundReVue</h3>
-              <span class='gcard-author'>基于 Vue 的智能语音识别应用</span>
-              <ul class='gcard-tags'>
-                <li><span class='gcard-tag gcard-tag-purple'>GitHub</span></li>
-                <li><span class='gcard-tag gcard-tag-aqua'>Vue</span></li>
-                <li><span class='gcard-tag gcard-tag-green'>语音识别</span></li>
-              </ul>
-            </div>
-            <span class='gcard-arrow' aria-hidden='true'>›</span>
-          </a>
-          <a href='https://github.com/Wanfeng1028/BlogAstroPure' target='_blank' rel='noopener'
-            class='tilt-card accent-card no-glow gcard-article group' data-tilt=''
-            data-deco='📝'
-            style='--accent: #f97316; --gcard-deco-img: url("/images/touxiang.png"); --gcard-img-bg: linear-gradient(135deg, #ffedd5 0%, #fb923c 55%, #ea580c 100%); --gcard-img-tone: #f97316;'>
-            <div class='gcard-text'>
-              <h3 class='gcard-headline accent-title'>BlogAstroPure</h3>
-              <span class='gcard-author'>基于 Astro 的个人博客</span>
-              <ul class='gcard-tags'>
-                <li><span class='gcard-tag gcard-tag-purple'>GitHub</span></li>
-                <li><span class='gcard-tag gcard-tag-aqua'>Astro</span></li>
-                <li><span class='gcard-tag gcard-tag-green'>TypeScript</span></li>
-              </ul>
-            </div>
-            <span class='gcard-arrow' aria-hidden='true'>›</span>
-          </a>
+          {webList.map((item) => (
+            <WebListCard {...item} />
+          ))}
           <div class='mt-4 flex justify-end'>
             <Button title='查看更多' href='https://github.com/Wanfeng1028' variant='ahead' />
           </div>
