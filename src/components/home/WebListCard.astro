@@ -17,6 +17,7 @@ type Props = {
   description: string
   tags: TagItem[]
   class?: string
+  dataType?: string
 }
 
 const {
@@ -29,7 +30,8 @@ const {
   headline,
   description,
   tags,
-  class: className
+  class: className,
+  dataType
 } = Astro.props
 
 const colorClassMap: Record<TagItem['color'], string> = {
@@ -54,6 +56,7 @@ const colorClassMap: Record<TagItem['color'], string> = {
   )}
   data-tilt=''
   data-deco={deco}
+  data-type={dataType}
   style={`--accent: ${accent}; --gcard-deco-img: url("${decoImg}"); --gcard-img-bg: ${imgBg}; --gcard-img-tone: ${imgTone};`}
 >
   <div class='gcard-text'>
