@@ -1,5 +1,5 @@
 ---
-import { Timeline, Button } from 'astro-pure/user'
+import { Timeline } from 'astro-pure/user'
 import PageLayout from '@/layouts/CommonPage.astro'
 import ProfileLinks from '@/components/home/ProfileLinks.astro'
 
@@ -37,9 +37,8 @@ const skills = [
 ---
 
 <PageLayout title='About' {headings} view>
-  {/* Back 按钮 + 中英文切换（gemini-btn 风格） */}
-  <div class='mb-6 flex flex-wrap items-center justify-between gap-3'>
-    <Button title='Back' href='/' variant='back' />
+  {/* 中英文切换（gemini-btn 风格） */}
+  <div class='mb-6 flex justify-end'>
     <button
       id='about-lang-toggle'
       type='button'
@@ -190,22 +189,15 @@ const skills = [
   </div>
 </PageLayout>
 
-<style>
+<style is:global>
   /* ==========================================================
-     关于页中英文显示控制
+     关于页中英文显示控制（全局样式，兼容 Timeline 内部 set:html 渲染的内容）
      ——默认中文（lang-zh 显示，lang-en 隐藏）
-     ——body.has-lang-en 时反转（同时切换按钮文本）
+     ——body[data-lang='en'] 时反转
      ========================================================== */
   .lang-en { display: none; }
   body[data-lang='en'] .lang-zh { display: none; }
   body[data-lang='en'] .lang-en { display: inline; }
-  body[data-lang='en'] p  .lang-en,
-  body[data-lang='en'] li .lang-en,
-  body[data-lang='en'] h2 .lang-en,
-  body[data-lang='en'] h3 .lang-en {
-    display: inline;
-  }
-  /* block 级别的 span（极少情况）兼容 */
   body[data-lang='en'] blockquote .lang-en { display: block; }
 </style>
 

@@ -113,9 +113,10 @@ const { showBadges = true } = Astro.props
 }
 
 <dialog id='wechat-dialog' class='max-w-[calc(100vw-2rem)] rounded-2xl border bg-background p-6 shadow-lg'>
-  <div class='flex flex-col items-center gap-5'>
+  <div class='flex flex-col items-center gap-4'>
     <p class='text-base font-medium'>微信扫码添加</p>
     <img src='/images/WeChat.jpg' alt='WeChat 二维码' class='w-80 max-w-full rounded-lg' />
+    <p class='text-sm text-muted-foreground'>添加时请备注来意，感谢配合 👋</p>
     <button
       id='wechat-close'
       type='button'
