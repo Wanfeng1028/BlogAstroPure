@@ -52,10 +52,14 @@ const {
   href={href}
   target='_blank'
   rel='noopener'
-  class={cn('gh-card gh-card--cert group', className)}
+  class={cn('gh-card gh-card--cert tilt-card group', className)}
+  data-tilt=''
   data-type={dataType}
   style={`--gh-accent: ${accent}; --gh-lang-dot: ${category.dotColor ?? accent};`}
 >
+  {/* 跟随鼠标的光泽高光层（WebListCard 同款） */}
+  <span class='gh-card__shine' aria-hidden='true'></span>
+
   {/* ===== 顶部：机构 / 证书名 + 右侧操作图标 ===== */}
   <div class='gh-card__head'>
     <div class='gh-card__head-left'>
@@ -124,11 +128,26 @@ const {
     border-radius: 10px;
     color: inherit;
     text-decoration: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition:
+      border-color 0.25s ease,
+      box-shadow 0.25s ease,
+      transform 0.15s ease-out;
   }
   .gh-card:hover {
     border-color: #afb8c1;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 6px 18px -8px rgba(0, 0, 0, 0.15);
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.04),
+      0 8px 24px -8px rgba(0, 0, 0, 0.18),
+      0 0 0 1px rgba(9, 105, 218, 0.06);
+  }
+  .gh-card[data-tilt-active=''] {
+    box-shadow:
+      0 6px 18px -6px rgba(0, 0, 0, 0.12),
+      0 24px 48px -16px rgba(0, 0, 0, 0.22),
+      0 0 0 1px rgba(9, 105, 218, 0.1);
   }
   .dark .gh-card {
     background: #0d1117;
@@ -136,7 +155,56 @@ const {
   }
   .dark .gh-card:hover {
     border-color: #484f58;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 22px -10px rgba(0, 0, 0, 0.6);
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.4),
+      0 10px 28px -12px rgba(0, 0, 0, 0.7);
+  }
+  .dark .gh-card[data-tilt-active=''] {
+    box-shadow:
+      0 6px 20px -6px rgba(0, 0, 0, 0.6),
+      0 28px 56px -20px rgba(0, 0, 0, 0.85),
+      0 0 0 1px rgba(47, 129, 247, 0.12);
+  }
+
+  /* ===== Tilt 光泽高光层（WebListCard 同款） ===== */
+  .gh-card__shine {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    border-radius: inherit;
+    opacity: 0;
+    background:
+      radial-gradient(
+        600px circle at var(--mx, 50%) var(--my, 50%),
+        rgba(255, 255, 255, 0.18),
+        rgba(255, 255, 255, 0) 40%
+      ),
+      linear-gradient(
+        115deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.06) 50%,
+        transparent 100%
+      );
+    transition: opacity 0.3s ease;
+  }
+  .gh-card:hover .gh-card__shine,
+  .gh-card[data-tilt-active=''] .gh-card__shine {
+    opacity: 1;
+  }
+  .dark .gh-card__shine {
+    background:
+      radial-gradient(
+        600px circle at var(--mx, 50%) var(--my, 50%),
+        rgba(255, 255, 255, 0.10),
+        rgba(255, 255, 255, 0) 40%
+      ),
+      linear-gradient(
+        115deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.035) 50%,
+        transparent 100%
+      );
   }
 
   /* ===== 顶部 ===== */
