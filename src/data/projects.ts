@@ -119,28 +119,6 @@ export const PROJECTS: ProjectData[] = [
       { text: 'Astro', color: 'aqua' },
       { text: 'TypeScript', color: 'green' }
     ]
-  },
-  {
-    href: 'https://github.com/Wanfeng1028/GeoFrontend2.0',
-    namespace: 'Wanfeng1028',
-    title: 'GeoFrontend2.0',
-    description: 'GIS 工作台前端，聚焦遥感智能识别与可视化。',
-    primaryLang: { text: 'JavaScript', dotColor: LANG_DOT.js },
-    stars: 0,
-    forks: 0,
-    license: false,
-    accent: '#10b981',
-    deco: '🗺️',
-    actionIcon: '🐙',
-
-    decoImg: '/images/social-card.png',
-    imgBg: 'linear-gradient(135deg, #d1fae5 0%, #34d399 55%, #059669 100%)',
-    imgTone: '#10b981',
-    tags: [
-      { text: 'GIS', color: 'green' },
-      { text: 'JavaScript', color: 'yellow' },
-      { text: 'Vue', color: 'aqua' }
-    ]
   }
 ]
 
