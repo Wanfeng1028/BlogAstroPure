@@ -397,14 +397,10 @@ const publicationCount = items.filter((i) => i.type === 'publication').length
     display: none;
   }
 
-  /* 桌面端双列：Projects 双列，Certificates/Publications 卡片全宽 */
+  /* 桌面端双列：全部卡片（Projects / Certificates / Publications）统一一行两个 */
   @media (min-width: 640px) {
     .pub-content {
       grid-template-columns: 1fr 1fr;
-    }
-    .pub-content [data-type='certificate'],
-    .pub-content [data-type='publication'] {
-      grid-column: 1 / -1;
     }
   }
 </style>
