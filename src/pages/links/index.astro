@@ -32,14 +32,15 @@ const linkEditPage = 'https://github.com/Wanfeng1028/BlogAstroPure/blob/main/pub
 
   <h2 id='apply-links'>Apply Links</h2>
   <p>本站信息（点击复制）The site information (click to copy)：</p>
-  <blockquote class='not-prose grid grid-cols-[auto_1fr] gap-x-2 break-words border-s-4 ps-4'>
+  <blockquote class='not-prose grid grid-cols-[auto_1fr] items-start gap-x-3 gap-y-2 break-words border-s-4 ps-4'>
     {
       linksConf.applyTip.map(({ name, val }) => {
-        const script = `navigator.clipboard.writeText('${val}');document.dispatchEvent(new CustomEvent('toast',{detail:{message:'Copied "${val}" to clipboard!'}}))`
+        const safeVal = val.replace(/'/g, "\\'").replace(/"/g, '\\"')
+        const script = `navigator.clipboard.writeText('${safeVal}');document.dispatchEvent(new CustomEvent('toast',{detail:{message:'已复制到剪贴板'}}))`
         return (
           <>
-            <span class='text-end'>{name}:</span>
-            <samp class='cursor-pointer' onclick={script}>
+            <span class='pt-1 text-end align-top whitespace-nowrap'>{name}:</span>
+            <samp class='cursor-pointer whitespace-normal break-all align-top leading-relaxed' onclick={script}>
               {val}
             </samp>
           </>

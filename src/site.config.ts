@@ -7,7 +7,7 @@ export const theme: ThemeUserConfig = {
   /** Will be used in index page & copyright declaration */
   author: '@Wanfeng',
   /** Description metadata for your website. Can be used in page metadata. */
-  description: '每个优秀的人都有一段沉默的时光',
+  description: '每个优秀的人都有一段沉默的时光，那段时光是付出了很多努力，却得不到结果的日子，我们把它叫做扎根。',
   /** The default favicon for your site which should be a path to an image in the `public/` directory. */
   favicon: '/favicon/favicon.ico',
   /** The default social card image for your site which should be a path to an image in the `public/` directory. */
