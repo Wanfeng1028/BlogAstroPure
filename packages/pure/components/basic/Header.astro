@@ -26,59 +26,57 @@ import { Icon } from '../user'
     <span class='text-lg font-medium tracking-tight text-foreground'>{config.title}</span>
   </a>
 
-  <div class='flex items-center gap-1'>
-    {/* Menu links */}
-    <nav
-      id='headerExpandContent'
-      class='flex items-center'
-      aria-label='Main navigation'
-    >
-      <div class='flex items-center gap-0.5'>
-        {
-          config.header.menu.map((item) => (
-            <a
-              href={item.link}
-              class='nav-link relative rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-muted/80'
-              aria-label={item.title}
-              data-astro-prefetch
-            >
-              {item.title}
-            </a>
-          ))
-        }
-      </div>
-    </nav>
-
-    {/* Action buttons */}
-    <div class='ml-1 flex items-center gap-0.5'>
-      <a
-        class='rounded-full p-2 text-muted-foreground transition-colors hover:bg-muted/80 hover:text-foreground'
-        href='/search'
-        title='Search'
-        aria-label='Search'
-      >
-        <span class='sr-only'>Search</span>
-        <Icon name='search' class='size-[18px]' />
-      </a>
-      <button
-        id='toggleDarkMode'
-        class='rounded-full p-2 text-muted-foreground transition-colors hover:bg-muted/80 hover:text-foreground'
-        aria-label='Toggle dark mode'
-      >
-        <span class='sr-only'>Dark Theme</span>
-        <Icon class='system size-[18px]' name='computer' />
-        <Icon class='light hidden size-[18px]' name='sun' />
-        <Icon class='dark hidden size-[18px]' name='moon' />
-      </button>
-      <button
-        id='toggleMenu'
-        class='rounded-full p-2 text-muted-foreground transition-colors hover:bg-muted/80 hover:text-foreground sm:hidden'
-        aria-label='Menu'
-      >
-        <span class='sr-only'>Menu</span>
-        <Icon class='size-[18px]' name='menu' />
-      </button>
+  {/* Menu links (水平居中) */}
+  <nav
+    id='headerExpandContent'
+    class='flex flex-1 items-center justify-center'
+    aria-label='Main navigation'
+  >
+    <div class='flex items-center gap-0.5'>
+      {
+        config.header.menu.map((item) => (
+          <a
+            href={item.link}
+            class='nav-link relative rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-muted/80'
+            aria-label={item.title}
+            data-astro-prefetch
+          >
+            {item.title}
+          </a>
+        ))
+      }
     </div>
+  </nav>
+
+  {/* Action buttons */}
+  <div class='flex items-center gap-0.5'>
+    <a
+      class='rounded-full p-2 text-muted-foreground transition-colors hover:bg-muted/80 hover:text-foreground'
+      href='/search'
+      title='Search'
+      aria-label='Search'
+    >
+      <span class='sr-only'>Search</span>
+      <Icon name='search' class='size-[18px]' />
+    </a>
+    <button
+      id='toggleDarkMode'
+      class='rounded-full p-2 text-muted-foreground transition-colors hover:bg-muted/80 hover:text-foreground'
+      aria-label='Toggle dark mode'
+    >
+      <span class='sr-only'>Dark Theme</span>
+      <Icon class='system size-[18px]' name='computer' />
+      <Icon class='light hidden size-[18px]' name='sun' />
+      <Icon class='dark hidden size-[18px]' name='moon' />
+    </button>
+    <button
+      id='toggleMenu'
+      class='rounded-full p-2 text-muted-foreground transition-colors hover:bg-muted/80 hover:text-foreground sm:hidden'
+      aria-label='Menu'
+    >
+      <span class='sr-only'>Menu</span>
+      <Icon class='size-[18px]' name='menu' />
+    </button>
   </div>
 </header-component>
 
