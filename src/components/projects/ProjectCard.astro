@@ -1,0 +1,331 @@
+---
+import { cn } from 'astro-pure/utils'
+
+// ===== Props 类型定义 =====
+type TagColor = 'purple' | 'aqua' | 'green' | 'orange' | 'blue' | 'pink' | 'red' | 'yellow'
+
+type Props = {
+  href: string
+  /** 项目所有者 / 命名空间（类似 GitHub username） */
+  namespace?: string
+  /** 项目标题（仓库名） */
+  title: string
+  /** 项目描述 */
+  description: string
+  /** 主语言标签（GitHub 主语言） */
+  primaryLang: { text: string; color?: TagColor; dotColor?: string }
+  /** 技术栈标签（用于隐藏筛选/备用，可选显示） */
+  tech?: { text: string; color: TagColor }[]
+  /** Star 数 */
+  stars?: number | string
+  /** Fork 数 */
+  forks?: number | string
+  /** License 文本（如 MIT、Apache-2.0）；传空字符串或 false 不显示 */
+  license?: string | false
+  /** 主色调（用于装饰圆点、hover 强调） */
+  accent?: string
+  /** 装饰 emoji / 左侧头像内容 */
+  deco?: string
+  /** 右侧功能图标（默认 GitHub 猫，可替换为 🔗 📄 ↗ 等） */
+  actionIcon?: string
+  /** 用于分类筛选的 data-type 值 */
+  dataType?: string
+  class?: string
+}
+
+const {
+  href,
+  namespace = '',
+  title,
+  description,
+  primaryLang,
+  tech = [],
+  stars,
+  forks,
+  license,
+  accent = '#0969da',
+  deco = '💻',
+  actionIcon = '🐙',
+  dataType,
+  class: className
+} = Astro.props
+---
+
+<a
+  href={href}
+  target='_blank'
+  rel='noopener'
+  class={cn('gh-card group', className)}
+  data-type={dataType}
+  style={`--gh-accent: ${accent}; --gh-lang-dot: ${primaryLang.dotColor ?? accent};`}
+>
+  {/* ===== 顶部：所有者 / 仓库名 + 右侧操作图标 ===== */}
+  <div class='gh-card__head'>
+    <div class='gh-card__head-left'>
+      <div class='gh-card__avatar' aria-hidden='true'>
+        <span>{deco}</span>
+      </div>
+      <div class='gh-card__names'>
+        {namespace && <span class='gh-card__namespace'>{namespace}<span class='gh-card__slash'> / </span></span>}
+        <span class='gh-card__title'>{title}</span>
+      </div>
+    </div>
+    <div class='gh-card__action' aria-hidden='true'>
+      <span>{actionIcon}</span>
+    </div>
+  </div>
+
+  {/* ===== 中部：描述 ===== */}
+  <p class='gh-card__desc'>{description}</p>
+
+  {/* ===== 底部：元信息 ===== */}
+  <div class='gh-card__foot'>
+    <div class='gh-card__stats'>
+      {stars !== undefined && stars !== null && (
+        <span class='gh-card__stat'>
+          <svg class='gh-card__icon gh-card__icon-star' viewBox='0 0 16 16' aria-hidden='true'><path fill='currentColor' d='M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z'/></svg>
+          <span>{stars}</span>
+        </span>
+      )}
+      {forks !== undefined && forks !== null && (
+        <span class='gh-card__stat'>
+          <svg class='gh-card__icon gh-card__icon-fork' viewBox='0 0 16 16' aria-hidden='true'><path fill='currentColor' d='M5 5.372v.878c0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75v-.878a2.25 2.25 0 1 1 1.5 0v.878a2.25 2.25 0 0 1-2.25 2.25h-1.5v2.128a2.251 2.251 0 1 1-1.5 0V8.5h-1.5A2.25 2.25 0 0 1 3.5 6.25v-.878a2.25 2.25 0 1 1 1.5 0ZM5 3.25a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Zm6.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm-3 8.75a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Z'/></svg>
+          <span>{forks}</span>
+        </span>
+      )}
+    </div>
+
+    <div class='gh-card__pills'>
+      {license && license !== '' && (
+        <span class='gh-card__pill gh-card__pill-license'>
+          <svg class='gh-card__icon gh-card__icon-license' viewBox='0 0 16 16' aria-hidden='true'><path fill='currentColor' d='M8.75.75V2h.985c.317 0 .62.147.812.398l.708.944a.25.25 0 0 0 .204.1h2.04a.75.75 0 0 1 .75.75v8.058a.75.75 0 0 1-.75.75h-1.5v1.45a.25.25 0 0 1-.25.25h-6.5a.25.25 0 0 1-.25-.25V13h-1.5a.75.75 0 0 1-.75-.75V4.192a.75.75 0 0 1 .75-.75h2.04a.25.25 0 0 0 .204-.1l.708-.944A1.25 1.25 0 0 1 6.265 2h.985V.75ZM4 13h1.5v1H4Zm6.5 0v1H12v-1Zm-5.75-3.75a.75.75 0 0 0 0 1.5h4.5a.75.75 0 0 0 0-1.5ZM4.75 7.5a.75.75 0 0 0 0 1.5h6.5a.75.75 0 0 0 0-1.5ZM4.75 5.25a.75.75 0 0 0 0 1.5h6.5a.75.75 0 0 0 0-1.5Z'/></svg>
+          <span>{license}</span>
+        </span>
+      )}
+      <span class='gh-card__pill gh-card__pill-lang'>
+        <span class='gh-card__lang-dot' aria-hidden='true'></span>
+        <span>{primaryLang.text}</span>
+      </span>
+    </div>
+  </div>
+</a>
+
+<style>
+  /* ===== GitHub 风格仓库卡片 ===== */
+  .gh-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    padding: 1rem 1.1rem;
+    width: 100%;
+    min-height: 148px;
+    background: #ffffff;
+    border: 1px solid #d0d7de;
+    border-radius: 10px;
+    color: inherit;
+    text-decoration: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .gh-card:hover {
+    border-color: #afb8c1;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 6px 18px -8px rgba(0, 0, 0, 0.15);
+  }
+  .dark .gh-card {
+    background: #0d1117;
+    border-color: #30363d;
+  }
+  .dark .gh-card:hover {
+    border-color: #484f58;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 22px -10px rgba(0, 0, 0, 0.6);
+  }
+
+  /* ===== 顶部 ===== */
+  .gh-card__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.6rem;
+  }
+  .gh-card__head-left {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-width: 0;
+    flex: 1;
+  }
+  /* 头像（圆形） */
+  .gh-card__avatar {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #f6f8fa, #eaeef2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 1px solid #d0d7de;
+  }
+  .gh-card__avatar > span {
+    font-size: 14px;
+    line-height: 1;
+  }
+  .dark .gh-card__avatar {
+    background: linear-gradient(135deg, #21262d, #161b22);
+    border-color: #30363d;
+  }
+  /* 所有者 + 仓库名 */
+  .gh-card__names {
+    min-width: 0;
+    font-size: 14px;
+    line-height: 1.25;
+    font-weight: 600;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .gh-card__namespace {
+    color: #656d76;
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .dark .gh-card__namespace { color: #8b949e; }
+  .gh-card__slash { color: inherit; }
+  .gh-card__title {
+    color: var(--gh-accent, #0969da);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+  .gh-card:hover .gh-card__title {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1.5px;
+  }
+  /* 右上角操作按钮 */
+  .gh-card__action {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background: #f6f8fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, transform 0.2s ease;
+    border: 1px solid #d0d7de;
+  }
+  .gh-card__action > span {
+    font-size: 15px;
+    line-height: 1;
+    color: #1f2328;
+  }
+  .gh-card:hover .gh-card__action {
+    background: var(--gh-accent, #0969da);
+    transform: scale(1.05);
+    border-color: var(--gh-accent, #0969da);
+  }
+  .gh-card:hover .gh-card__action > span { color: #fff; }
+  .dark .gh-card__action {
+    background: #21262d;
+    border-color: #30363d;
+  }
+  .dark .gh-card__action > span { color: #e6edf3; }
+  .dark .gh-card:hover .gh-card__action {
+    background: var(--gh-accent, #2f81f7);
+    border-color: var(--gh-accent, #2f81f7);
+  }
+
+  /* ===== 描述 ===== */
+  .gh-card__desc {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #656d76;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex: 1;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+  }
+  .dark .gh-card__desc { color: #8b949e; }
+
+  /* ===== 底部 ===== */
+  .gh-card__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    font-size: 12px;
+    line-height: 1;
+    color: #656d76;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+  }
+  .dark .gh-card__foot { color: #8b949e; }
+  .gh-card__stats {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-width: 0;
+  }
+  .gh-card__stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: inherit;
+  }
+  .gh-card__icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    color: #656d76;
+  }
+  .dark .gh-card__icon { color: #8b949e; }
+  .gh-card:hover .gh-card__icon {
+    color: var(--gh-accent, #0969da);
+  }
+
+  /* 右侧 pills */
+  .gh-card__pills {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+  .gh-card__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 18px;
+    background: #f6f8fa;
+    color: #1f2328;
+    white-space: nowrap;
+  }
+  .dark .gh-card__pill {
+    background: #21262d;
+    color: #e6edf3;
+  }
+  .gh-card__pill-license .gh-card__icon {
+    width: 12px;
+    height: 12px;
+  }
+  .gh-card__lang-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--gh-lang-dot, var(--gh-accent, #0969da));
+    flex-shrink: 0;
+  }
+</style>

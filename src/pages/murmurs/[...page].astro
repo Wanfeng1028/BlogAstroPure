@@ -32,18 +32,6 @@ const dateFmt = new Intl.DateTimeFormat('zh-CN', {
   day: 'numeric'
 })
 
-// 卡片轮换配色
-const accents = [
-  'hsl(262 83% 58%)', // 紫
-  'hsl(199 89% 48%)', // 天蓝
-  'hsl(142 71% 45%)', // 绿
-  'hsl(24 95% 53%)', // 橙
-  'hsl(330 81% 60%)', // 粉
-  'hsl(38 92% 50%)', // 琥珀
-  'hsl(0 72% 51%)', // 红
-  'hsl(160 84% 39%)' // 青
-]
-
 const meta = {
   description: '一些随想和碎碎念',
   title: 'Murmurs'
@@ -63,85 +51,55 @@ const paginationProps = {
     }
   })
 }
-// 标签颜色轮换（与 WebListCard 配色一致）
-const tagColors = ['purple', 'aqua', 'green', 'orange', 'blue', 'pink', 'red', 'yellow'] as const
 ---
 
 <PageLayout {meta}>
   <Button title='Back' href='/' variant='back' />
   <main class='mt-6 lg:mt-10'>
-    <div id='content-header' class='animate mb-10'>
-      <h1 class='mb-2 text-3xl font-medium'>Murmurs</h1>
-      <p class='text-muted-foreground'>共 {collectionsCount} 条随想</p>
+    <div id='content-header' class='animate mb-8'>
+      <h1 class='text-3xl font-medium'>Murmurs</h1>
+      <p class='mt-2 text-muted-foreground'>共 {collectionsCount} 条随想</p>
     </div>
 
     {
       page.data.length === 0 ? (
-        <p>暂无内容。</p>
+        <p class='text-muted-foreground'>暂无内容。</p>
       ) : (
         <section aria-label='碎碎念列表' class='animate' id='content'>
           <div class='murmur-feed'>
             {
-              page.data.map((post, index) => {
-                const accent = accents[index % accents.length]
-                const accentHex = index % accents.length === 0 ? '#7c3aed'
-                  : index % accents.length === 1 ? '#0ea5e9'
-                  : index % accents.length === 2 ? '#10b981'
-                  : index % accents.length === 3 ? '#f97316'
-                  : index % accents.length === 4 ? '#ec4899'
-                  : index % accents.length === 5 ? '#eab308'
-                  : index % accents.length === 6 ? '#dc2626'
-                  : '#0d9488'
-                const imgBg = [
-                  'linear-gradient(135deg, #ede9fe 0%, #a78bfa 55%, #7c3aed 100%)', // 紫
-                  'linear-gradient(135deg, #e0f2fe 0%, #38bdf8 55%, #0284c7 100%)', // 天蓝
-                  'linear-gradient(135deg, #d1fae5 0%, #34d399 55%, #059669 100%)', // 绿
-                  'linear-gradient(135deg, #ffedd5 0%, #fb923c 55%, #ea580c 100%)', // 橙
-                  'linear-gradient(135deg, #fce7f3 0%, #f472b6 55%, #db2777 100%)', // 粉
-                  'linear-gradient(135deg, #fef3c7 0%, #fbbf24 55%, #d97706 100%)', // 琥珀
-                  'linear-gradient(135deg, #fee2e2 0%, #f87171 55%, #dc2626 100%)', // 红
-                  'linear-gradient(135deg, #ccfbf1 0%, #2dd4bf 55%, #0d9488 100%)'  // 青
-                ][index % accents.length]
-                return (
-                  <article class='murmur-card' style={`--accent: ${accent}; --gcard-img-tone: ${accentHex}; --gcard-img-bg: ${imgBg};`}>
-                    <div class='murmur-card__node'></div>
-
+              page.data.map((post) => (
+                <div class='murmur-feed__item'>
+                  <div class='murmur-feed__head'>
                     <a
                       href={`/murmurs/${post.id}`}
-                      class='murmur-card__body gcard-article'
+                      class='murmur-feed__title'
                       data-astro-prefetch
                     >
-                      <div class='murmur-card__content'>
-                        <div class='murmur-card__head'>
-                          <span class='murmur-card__title'>{post.data.title}</span>
-                          <time class='murmur-card__date'>{dateFmt.format(post.data.publishDate)}</time>
-                        </div>
-
-                        <p class='murmur-card__text'>{post.body}</p>
-
-                        {
-                          post.data.tags.length > 0 && (
-                            <ul class='murmur-card__tags'>
-                              {post.data.tags.map((tag, tIdx) => (
-                                <li>
-                                  <a
-                                    href={`/tags/${tag}`}
-                                    class={`murmur-card__tag gcard-tag gcard-tag-${tagColors[tIdx % tagColors.length]}`}
-                                    data-astro-prefetch
-                                  >
-                                    #{tag}
-                                  </a>
-                                </li>
-                              ))}
-                            </ul>
-                          )
-                        }
-                      </div>
-                      <span class='murmur-card__arrow gcard-arrow' aria-hidden='true'>›</span>
+                      {post.data.title}
                     </a>
-                  </article>
-                )
-              })
+                    <time class='murmur-feed__date'>{dateFmt.format(post.data.publishDate)}</time>
+                  </div>
+                  <p class='murmur-feed__text'>{post.body}</p>
+                  {
+                    post.data.tags.length > 0 && (
+                      <ul class='murmur-feed__tags'>
+                        {post.data.tags.map((tag) => (
+                          <li>
+                            <a
+                              href={`/tags/${tag}`}
+                              class='murmur-feed__tag'
+                              data-astro-prefetch
+                            >
+                              <span class='murmur-feed__hash'>#</span>{tag}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    )
+                  }
+                </div>
+              ))
             }
           </div>
 
@@ -153,223 +111,115 @@ const tagColors = ['purple', 'aqua', 'green', 'orange', 'blue', 'pink', 'red', '
 </PageLayout>
 
 <style>
-  /* ==========================================================
-     碎碎念时间线（保留原有竖线+圆点）
-     ========================================================== */
   .murmur-feed {
-    position: relative;
-    margin-left: 1.25rem;
-  }
-  /* 竖向时间线 */
-  .murmur-feed::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0.5rem;
-    bottom: 0.5rem;
-    width: 2px;
-    border-radius: 999px;
-    background: linear-gradient(180deg, hsl(var(--primary) / 0.7), hsl(var(--border)));
-  }
-
-  .murmur-card {
-    position: relative;
-    padding-left: 2.5rem;
-    margin-bottom: 2rem;
-  }
-  .murmur-card:last-child {
-    margin-bottom: 0;
-  }
-
-  /* 时间节点圆点 */
-  .murmur-card__node {
-    position: absolute;
-    left: -2.5rem;
-    top: 1.6rem;
-    width: 0.85rem;
-    height: 0.85rem;
-    border-radius: 999px;
-    background: hsl(var(--background));
-    border: 3px solid var(--accent);
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 15%, transparent);
-    z-index: 2;
-  }
-
-  /* ==========================================================
-     卡片主体：复用 WebListCard（gcard-article）风格
-     ========================================================== */
-  .murmur-card__body {
-    /* gcard-article 已提供基础：圆角/边框/::after渐变装饰/箭头样式，这里补细节覆盖 */
-    position: relative;
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    padding: 20px 60px 20px 28px;
-    border-radius: 20px;
-    overflow: hidden;
-    text-decoration: none;
-    color: inherit;
-    width: 100%;
-    background:
-      linear-gradient(90deg,
-        hsl(var(--card)) 0%,
-        hsl(var(--card)) 52%,
-        color-mix(in srgb, hsl(var(--card)) 85%, var(--gcard-img-tone, var(--accent))) 100%);
-    border: 1px solid color-mix(in srgb, var(--gcard-img-tone, var(--accent)) 22%, hsl(var(--border)));
-    transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease;
-  }
-  /* 去掉 gcard-article 提供的 ::after 内容 (data-deco为空)，只保留渐变背景 */
-  .murmur-card__body::after {
-    content: '';
-    position: absolute;
-    right: -6%;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 50%;
-    height: 160%;
-    background: var(--gcard-img-bg, linear-gradient(135deg, #e0e7ff, #6366f1));
-    border-radius: 36px;
-    filter: saturate(1.1);
-    opacity: 0.88;
-    pointer-events: none;
-    mask-image: linear-gradient(90deg, transparent 16%, black 78%);
-    -webkit-mask-image: linear-gradient(90deg, transparent 16%, black 78%);
-    z-index: 1;
-  }
-  /* 右侧柔和光晕叠层 */
-  .murmur-card__body::before {
-    content: '';
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: 55%;
-    background:
-      radial-gradient(circle at 70% 20%, color-mix(in srgb, var(--gcard-img-tone, var(--accent)) 20%, transparent), transparent 55%),
-      radial-gradient(circle at 80% 80%, color-mix(in srgb, var(--gcard-img-tone, var(--accent)) 32%, transparent), transparent 50%),
-      linear-gradient(90deg,
-        color-mix(in srgb, hsl(var(--card)) 0%, transparent) 0%,
-        color-mix(in srgb, hsl(var(--card)) 30%, transparent) 25%,
-        transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
-  .murmur-card:hover .murmur-card__body {
-    border-color: color-mix(in srgb, var(--gcard-img-tone, var(--accent)) 45%, hsl(var(--border)));
-    box-shadow: 0 14px 30px -18px color-mix(in srgb, var(--gcard-img-tone, var(--accent)) 50%, transparent);
-    transform: translateY(-2px);
-  }
-
-  /* 内容区：纵向 flex，tags 推到底部 */
-  .murmur-card__content {
-    flex: 1 1 auto;
-    min-width: 0;
-    min-height: 120px;
-    position: relative;
-    z-index: 2;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
+    gap: 0;
+    padding: 2.5rem 1.5rem;
+    border: 1px solid hsl(var(--border));
+    border-radius: calc(var(--radius) * 1.5);
+    background: linear-gradient(180deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%);
+    box-shadow:
+      0 1px 2px 0 rgba(0, 0, 0, 0.04),
+      0 8px 24px -12px rgba(0, 0, 0, 0.12);
   }
 
-  .murmur-card__head {
+  .murmur-feed__item {
+    display: block;
+    padding: 1.5rem 0;
+    text-decoration: none;
+    color: inherit;
+    border-bottom: 1px solid hsl(var(--border) / 0.5);
+    transition: background-color 0.2s ease;
+  }
+  .murmur-feed__item:first-child {
+    padding-top: 0;
+  }
+  .murmur-feed__item:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+  .murmur-feed__item:hover {
+    background-color: hsl(var(--muted) / 0.3);
+    border-radius: 8px;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    margin-left: -0.75rem;
+    margin-right: -0.75rem;
+  }
+
+  .murmur-feed__head {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
     gap: 1rem;
-    align-self: stretch;
-    margin-bottom: 0.7rem;
+    margin-bottom: 0.5rem;
   }
-  .murmur-card__title {
-    font-size: 1.15rem;
+  .murmur-feed__title {
+    font-size: 1.1rem;
     font-weight: 600;
-    line-height: 1.5;
     color: hsl(var(--foreground));
-    transition: color .2s ease, text-decoration .2s ease;
+    transition: color 0.2s ease;
   }
-  .murmur-card:hover .murmur-card__title {
-    color: color-mix(in srgb, var(--gcard-img-tone, var(--accent)) 95%, hsl(var(--foreground)));
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    text-decoration-thickness: 1.5px;
+  .murmur-feed__item:hover .murmur-feed__title {
+    color: hsl(var(--primary));
   }
-  .murmur-card__date {
+  .murmur-feed__date {
     flex-shrink: 0;
     font-size: 0.8rem;
     color: hsl(var(--muted-foreground));
     white-space: nowrap;
   }
 
-  .murmur-card__text {
+  .murmur-feed__text {
     margin: 0;
     font-size: 0.95rem;
-    line-height: 1.85;
-    color: hsl(var(--foreground));
+    line-height: 1.75;
+    color: hsl(var(--foreground) / 0.85);
     white-space: pre-wrap;
     word-break: break-word;
   }
 
-  /* 标签区：推到底部，Google 三色渐变 pill（由 gcard-tag 类提供配色） */
-  .murmur-card__tags {
+  .murmur-feed__tags {
     list-style: none;
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-top: auto;
-    margin-bottom: 0;
+    margin: 0.75rem 0 0 0;
     padding: 0;
-    padding-top: 1rem;
   }
-  /* murmur 标签不再有原有的 gradient 背景，交给 gcard-tag 配色 */
-  .murmur-card__tag {
-    font-size: 13px;
-    padding: 8px 14px;
-    line-height: 18px;
-    text-decoration: none;
-    color: #202124;
+  .murmur-feed__tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.25rem 0.65rem;
     border-radius: 999px;
-    transition: transform .2s ease;
+    font-size: 0.85rem;
+    color: hsl(var(--foreground) / 0.7);
+    text-decoration: none;
+    background-color: hsl(var(--muted) / 0.5);
+    transition:
+      transform 0.2s ease,
+      color 0.2s ease,
+      background-color 0.2s ease;
   }
-  .murmur-card__tag:hover {
-    transform: scale(1.04);
-    filter: none;
+  .murmur-feed__tag:hover {
+    transform: translateY(-1px) scale(1.05);
+    color: hsl(var(--primary));
+    background-color: hsl(var(--muted) / 0.8);
   }
-
-  /* 右侧 › 箭头（与 WebListCard 一致） */
-  .murmur-card__arrow {
-    position: absolute;
-    right: 24px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 30px;
-    line-height: 1;
-    font-weight: 400;
-    color: #5f6368;
-    z-index: 3;
-    pointer-events: none;
-    transition: transform .25s ease, color .25s ease;
-  }
-  .murmur-card:hover .murmur-card__arrow {
-    transform: translateY(-50%) translateX(4px);
-    color: #202124;
+  .murmur-feed__hash {
+    font-weight: 600;
+    color: hsl(var(--primary));
   }
 
   @media (max-width: 480px) {
-    .murmur-feed { margin-left: 1rem; }
-    .murmur-card { padding-left: 2rem; }
-    .murmur-card__node { left: -2rem; top: 1.5rem; }
-    .murmur-card__body {
-      padding: 18px 48px 18px 20px;
+    .murmur-feed {
+      padding: 1.5rem 1rem;
     }
-    .murmur-card__body::after { display: none; }
-    .murmur-card__body::before {
-      width: 100%;
-      opacity: 0.55;
-      background:
-        radial-gradient(circle at 90% 10%, color-mix(in srgb, var(--gcard-img-tone, var(--accent)) 28%, transparent), transparent 50%);
+    .murmur-feed__head {
+      flex-direction: column;
+      gap: 0.25rem;
     }
-    .murmur-card__content { min-height: auto; }
-    .murmur-card__arrow { right: 18px; font-size: 26px; }
   }
 </style>

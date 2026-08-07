@@ -1,5 +1,5 @@
 ---
-import { Timeline } from 'astro-pure/user'
+import { Timeline, Button } from 'astro-pure/user'
 import PageLayout from '@/layouts/CommonPage.astro'
 import ProfileLinks from '@/components/home/ProfileLinks.astro'
 
@@ -11,8 +11,18 @@ const headings = [
   { depth: 2, slug: 'certifications', text: 'Certifications' }
 ]
 
+// Timeline content 用带 lang 类的 HTML 字符串（Timeline 会按 HTML 渲染）
+const tZh = (zh: string, en: string) =>
+  `<span class='lang-zh'>${zh}</span><span class='lang-en'>${en}</span>`
+
 const journeyEvents = [
-  { date: '2026.02-2026.06', content: '浙江建投数字技术有限公司 · 前端开发实习生' },
+  {
+    date: '2026.02-2026.06',
+    content: tZh(
+      '浙江建投数字技术有限公司 · 前端开发实习生',
+      'Zhejiang Construction Investment Digital Technology Co., Ltd. · Frontend Development Intern'
+    )
+  }
 ]
 
 // Skills 分类（icons 为 skillicons.dev 图标名，逗号分隔）
@@ -27,6 +37,20 @@ const skills = [
 ---
 
 <PageLayout title='About' {headings} view>
+  {/* Back 按钮 + 中英文切换（gemini-btn 风格） */}
+  <div class='mb-6 flex flex-wrap items-center justify-between gap-3'>
+    <Button title='Back' href='/' variant='back' />
+    <button
+      id='about-lang-toggle'
+      type='button'
+      class='gemini-btn inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium text-white'
+      aria-label='Toggle language'
+    >
+      <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-4 w-4'><path d='m5 8 6 6'/><path d='m4 14 6-6 2-3'/><path d='M2 5h12'/><path d='M7 2h1'/><path d='m22 22-5-10-5 10'/><path d='M14 18h6'/></svg>
+      <span class='lang-toggle-label'><span class='lang-zh'>English</span><span class='lang-en'>中文</span></span>
+    </button>
+  </div>
+
   {/* about-me */}
   <section id='about-me'>
     <div class='flex flex-col items-center not-prose text-center'>
@@ -35,33 +59,42 @@ const skills = [
         <div class='avatar-ring-glow'></div>
         <img
           src='/images/touxiang.png'
-          alt='晚风'
+          alt='晚风 / Wanfeng'
           class='size-24 rounded-full object-contain bg-muted p-1'
         />
       </div>
-      <h2 class='mt-3 mb-1 text-2xl font-medium'>晚风</h2>
-      <p class='text-muted-foreground'>开发者</p>
+      <h2 class='mt-3 mb-1 text-2xl font-medium'>
+        <span class='lang-zh'>晚风</span>
+        <span class='lang-en'>Wanfeng</span>
+      </h2>
+      <p class='text-muted-foreground'>
+        <span class='lang-zh'>开发者</span>
+        <span class='lang-en'>Developer</span>
+      </p>
       <ProfileLinks />
     </div>
 
     <p class='mt-4 text-center text-sm italic text-muted-foreground'>
-      每个优秀的人都有一段沉默的时光，那段时光是付出了很多努力，却得不到结果的日子，我们把它叫做扎根。
+      <span class='lang-zh'>每个优秀的人都有一段沉默的时光，那段时光是付出了很多努力，却得不到结果的日子，我们把它叫做扎根。</span>
+      <span class='lang-en'>Every outstanding person has a period of silence — days when great efforts yield no visible results. We call this "taking root."</span>
     </p>
 
     <h3 class='mt-8 mb-3 text-2xl font-bold'>Infomation</h3>
     <p>
-      2022 级地理信息科学专业，2026 届本科毕业生，目前二学位在读（考研ing）。
+      <span class='lang-zh'>2022 级地理信息科学专业，2026 届本科毕业生，目前二学位在读（考研ing）。</span>
+      <span class='lang-en'>Class of 2022, Geographic Information Science. Expected 2026 bachelor's graduate. Currently enrolled in a second bachelor's degree program (preparing for postgraduate entrance exams).</span>
     </p>
     <p>
-      本科期间的主要方向:GIS 开发，全栈开发（ing）;
-      本科期间主要关注遥感智能识别、遥感图像处理、深度学习等相关的研究;
-      目前主要在学习以Go技术栈为主的后端开发和Agent开发。
+      <span class='lang-zh'>本科期间的主要方向：GIS 开发，全栈开发（ing）；本科期间主要关注遥感智能识别、遥感图像处理、深度学习等相关的研究；目前主要在学习以 Go 技术栈为主的后端开发和 Agent 开发。</span>
+      <span class='lang-en'>Main focus during undergraduate studies: GIS development, full-stack development (in progress). Research interests: intelligent remote sensing recognition, remote sensing image processing, and deep learning. Currently focused on Go-based backend development and Agent development.</span>
     </p>
     <p>
-      写这个博客主要是为了记录日常的学习和生活，希望在技术之路上留下一些痕迹。
+      <span class='lang-zh'>写这个博客主要是为了记录日常的学习和生活，希望在技术之路上留下一些痕迹。</span>
+      <span class='lang-en'>I created this blog to document my daily learning and life experiences, and to leave behind some traces along my technology journey.</span>
     </p>
     <p class='text-sm text-muted-foreground'>
-      联系我：
+      <span class='lang-zh'>联系我：</span>
+      <span class='lang-en'>Contact me: </span>
       <a href='mailto:wanfeng572@gmail.com' class='text-primary hover:underline'>wanfeng572@gmail.com</a>
     </p>
   </section>
@@ -69,13 +102,25 @@ const skills = [
   {/* education */}
   <h2 id='education' class='mt-10'>Education</h2>
   <div class='not-prose mt-4 rounded-xl bg-muted/60 p-5'>
-    <p class='text-base font-semibold'>地理信息科学（本科）</p>
-    <p class='mt-1 text-sm text-muted-foreground'>GIS 开发、遥感智能识别、计算机视觉</p>
+    <p class='text-base font-semibold'>
+      <span class='lang-zh'>地理信息科学（本科）</span>
+      <span class='lang-en'>Geographic Information Science (Bachelor's)</span>
+    </p>
+    <p class='mt-1 text-sm text-muted-foreground'>
+      <span class='lang-zh'>GIS 开发、遥感智能识别、计算机视觉</span>
+      <span class='lang-en'>GIS Development · Intelligent Remote Sensing Recognition · Computer Vision</span>
+    </p>
     <p class='mt-2 text-xs text-muted-foreground'>2022.09 – 2026.06</p>
-  </div>,
-    <div class='not-prose mt-4 rounded-xl bg-muted/60 p-5'>
-    <p class='text-base font-semibold'>数据科学与大数据技术（第二学士学位）</p>
-    <p class='mt-1 text-sm text-muted-foreground'>考研ing</p>
+  </div>
+  <div class='not-prose mt-4 rounded-xl bg-muted/60 p-5'>
+    <p class='text-base font-semibold'>
+      <span class='lang-zh'>数据科学与大数据技术（第二学士学位）</span>
+      <span class='lang-en'>Data Science and Big Data Technology (Second Bachelor's Degree)</span>
+    </p>
+    <p class='mt-1 text-sm text-muted-foreground'>
+      <span class='lang-zh'>考研ing</span>
+      <span class='lang-en'>Preparing for Postgraduate Entrance Exams</span>
+    </p>
     <p class='mt-2 text-xs text-muted-foreground'>2026.09 – 2027.06</p>
   </div>
 
@@ -86,19 +131,43 @@ const skills = [
   {/* hobbies */}
   <h2 id='hobbies' class='mt-10'>Hobbies & Interests</h2>
   <ul>
-    <li>📷 摄影（想学）</li>
-    <li>🎸 会弹点吉他，希望之后可以把吉他重新捡起来</li>
-    <li>🏀 偶尔打篮球，但大三之后没体育课就很少运动了</li>
+    <li>
+      📷
+      <span class='lang-zh'> 摄影（想学）</span>
+      <span class='lang-en'> Photography (Want to Learn)</span>
+    </li>
+    <li>
+      🎸
+      <span class='lang-zh'> 会弹点吉他，希望之后可以把吉他重新捡起来</span>
+      <span class='lang-en'> Play a bit of guitar — hoping to pick it back up again</span>
+    </li>
+    <li>
+      🏀
+      <span class='lang-zh'> 偶尔打篮球，但大三之后没体育课就很少运动了</span>
+      <span class='lang-en'> Occasionally play basketball; haven't exercised much since PE classes stopped after junior year</span>
+    </li>
   </ul>
 
   {/* certifications */}
   <h2 id='certifications' class='mt-10'>Certifications</h2>
   <div class='not-prose mt-4 rounded-xl bg-muted/60 p-5'>
-    <p class='text-base font-semibold'>一些证书</p>
+    <p class='text-base font-semibold'>
+      <span class='lang-zh'>一些证书</span>
+      <span class='lang-en'>Some Certificates</span>
+    </p>
     <p class='mt-1 text-sm text-muted-foreground'>
-      <strong>2024-2025浙江省政府奖学金</strong><br>
-      <strong>2025-2026浙江省政府奖学金</strong><br>
-      <strong>And so on...(本科期间的证书之后整理一下hhh)</strong><br>
+      <strong>
+        <span class='lang-zh'>2024–2025 浙江省政府奖学金</span>
+        <span class='lang-en'>2024–2025 Zhejiang Provincial Government Scholarship</span>
+      </strong><br>
+      <strong>
+        <span class='lang-zh'>2025–2026 浙江省政府奖学金</span>
+        <span class='lang-en'>2025–2026 Zhejiang Provincial Government Scholarship</span>
+      </strong><br>
+      <strong>
+        <span class='lang-zh'>And so on...（本科期间的证书之后整理一下 hhh）</span>
+        <span class='lang-en'>And so on... (I'll organize my undergraduate certificates later hhh)</span>
+      </strong><br>
     </p>
   </div>
 
@@ -120,3 +189,56 @@ const skills = [
     }
   </div>
 </PageLayout>
+
+<style>
+  /* ==========================================================
+     关于页中英文显示控制
+     ——默认中文（lang-zh 显示，lang-en 隐藏）
+     ——body.has-lang-en 时反转（同时切换按钮文本）
+     ========================================================== */
+  .lang-en { display: none; }
+  body[data-lang='en'] .lang-zh { display: none; }
+  body[data-lang='en'] .lang-en { display: inline; }
+  body[data-lang='en'] p  .lang-en,
+  body[data-lang='en'] li .lang-en,
+  body[data-lang='en'] h2 .lang-en,
+  body[data-lang='en'] h3 .lang-en {
+    display: inline;
+  }
+  /* block 级别的 span（极少情况）兼容 */
+  body[data-lang='en'] blockquote .lang-en { display: block; }
+</style>
+
+<script>
+  /**
+   * 关于页 中英文切换
+   * - 状态存 localStorage['about-lang'] = 'zh' | 'en'
+   * - 通过给 <body> 加 data-lang 属性，让 CSS 控制显隐
+   * - Timeline 组件内部内容由 Timeline 渲染，传入的 HTML 字符串仍能被
+   *   body[data-lang='en'] 的选择器覆盖
+   */
+  const KEY = 'about-lang'
+  const body = document.body
+
+  function apply(lang: 'zh' | 'en') {
+    body.setAttribute('data-lang', lang)
+  }
+
+  // 初始化（优先 localStorage，其次 <html lang> 检测）
+  const saved = localStorage.getItem(KEY) as 'zh' | 'en' | null
+  if (saved === 'en' || saved === 'zh') {
+    apply(saved)
+  } else {
+    const browserLang = navigator.language.toLowerCase()
+    apply(browserLang.startsWith('zh') ? 'zh' : 'en')
+  }
+
+  // 绑定切换按钮
+  const btn = document.getElementById('about-lang-toggle')
+  btn?.addEventListener('click', () => {
+    const cur = body.getAttribute('data-lang') === 'en' ? 'en' : 'zh'
+    const next = cur === 'en' ? 'zh' : 'en'
+    apply(next)
+    localStorage.setItem(KEY, next)
+  })
+</script>

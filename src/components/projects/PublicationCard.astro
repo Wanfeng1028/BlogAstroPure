@@ -1,0 +1,351 @@
+---
+import { cn } from 'astro-pure/utils'
+
+// ===== Props 类型定义 =====
+type TagColor = 'purple' | 'aqua' | 'green' | 'orange' | 'blue' | 'pink' | 'red' | 'yellow'
+
+type Props = {
+  href: string
+  /** 第一作者 / 主要作者（类似 GitHub namespace） */
+  firstAuthor: string
+  /** 合作者人数（显示 "第一作者 +N" 形式）；不填则用 authors 列表直接显示 */
+  coAuthorCount?: number
+  /** 全部作者（完整列表，用于 title/悬浮） */
+  authors?: string[]
+  /** 论文 / 出版物标题 */
+  title: string
+  /** 摘要 / 描述 */
+  description: string
+  /** 发表年份 */
+  year: number
+  /** 引用数（可选，不填不显示） */
+  citations?: number | string
+  /** PDF / DOI / 访问链接 License 文本位置，如 "Open Access"、"DOI"、"CC BY"；传空不显示 */
+  accessLabel?: string
+  /** 期刊 / 会议 pill（主语言位置） */
+  venue: { text: string; dotColor?: string }
+  /** 学科领域 pill（可选），对应 license 位置 */
+  field?: { text: string; dotColor?: string }
+  /** 作者之间连接符 */
+  authorSeparator?: string
+  /** 主色调（hover 强调） */
+  accent?: string
+  /** 装饰 emoji / 左侧头像 */
+  deco?: string
+  /** 右侧功能图标（默认 📄 PDF 图标） */
+  actionIcon?: string
+  /** 用于分类筛选的 data-type 值 */
+  dataType?: string
+  class?: string
+}
+
+const {
+  href,
+  firstAuthor,
+  coAuthorCount,
+  authors = [],
+  title,
+  description,
+  year,
+  citations,
+  accessLabel,
+  venue,
+  field,
+  authorSeparator = ', ',
+  accent = '#8250df',
+  deco = '📄',
+  actionIcon = '📄',
+  dataType,
+  class: className
+} = Astro.props
+
+// 显示作者名：firstAuthor + N（如果 coAuthorCount 设定），否则显示全部 authors
+const displayAuthor =
+  coAuthorCount !== undefined && coAuthorCount > 0
+    ? `${firstAuthor} +${coAuthorCount}`
+    : authors.length > 0
+      ? authors.join(authorSeparator)
+      : firstAuthor
+---
+
+<a
+  href={href}
+  target='_blank'
+  rel='noopener'
+  class={cn('gh-card gh-card--pub group', className)}
+  data-type={dataType}
+  style={`--gh-accent: ${accent}; --gh-lang-dot: ${venue.dotColor ?? accent};`}
+>
+  {/* ===== 顶部：作者 / 论文名 + 右侧操作图标 ===== */}
+  <div class='gh-card__head'>
+    <div class='gh-card__head-left'>
+      <div class='gh-card__avatar' aria-hidden='true'>
+        <span>{deco}</span>
+      </div>
+      <div class='gh-card__names' title={authors.length > 0 ? authors.join(authorSeparator) : firstAuthor}>
+        <span class='gh-card__namespace'>{displayAuthor}<span class='gh-card__slash'> / </span></span>
+        <span class='gh-card__title'>{title}</span>
+      </div>
+    </div>
+    <div class='gh-card__action' aria-hidden='true'>
+      <span>{actionIcon}</span>
+    </div>
+  </div>
+
+  {/* ===== 中部：摘要 ===== */}
+  <p class='gh-card__desc'>{description}</p>
+
+  {/* ===== 底部：元信息 ===== */}
+  <div class='gh-card__foot'>
+    <div class='gh-card__stats'>
+      {/* 发表年份（日历图标） */}
+      <span class='gh-card__stat'>
+        <svg class='gh-card__icon gh-card__icon-cal' viewBox='0 0 16 16' aria-hidden='true'><path fill='currentColor' d='M4 .75a.75.75 0 0 1 .75.75v.25h6.5V1.5a.75.75 0 0 1 1.5 0v.25h.5A1.75 1.75 0 0 1 15 3.5v8.75A1.75 1.75 0 0 1 13.25 14h-10.5A1.75 1.75 0 0 1 1 12.25V3.5A1.75 1.75 0 0 1 2.75 1.75h.5V1.5a.75.75 0 0 1 .75-.75Zm0 1.75h-.5a.25.25 0 0 0-.25.25v.25h11V3.5a.25.25 0 0 0-.25-.25h-10Zm11 1.75H2.5v8c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25v-8Z'/></svg>
+        <span>{year}</span>
+      </span>
+      {/* 引用数（引用图标，可选） */}
+      {citations !== undefined && citations !== null && citations !== '' && (
+        <span class='gh-card__stat'>
+          <svg class='gh-card__icon gh-card__icon-quote' viewBox='0 0 16 16' aria-hidden='true'><path fill='currentColor' d='M2.775 2.173A.75.75 0 0 1 3.5 3v2.25h.75a.75.75 0 0 1 0 1.5H2.75v2.19c.044-.008.09-.016.136-.022.444-.055 1.097-.165 1.941-.045.282.04.565.11.845.21a.75.75 0 0 1-.344 1.46 6 6 0 0 0-.93-.23c-.194-.024-.395-.03-.604-.018a1.47 1.47 0 0 0-1.192.629C1.944 9.293 1.5 10.27 1.5 11.75V13a.75.75 0 0 1-1.5 0v-1.25c0-1.73.528-2.928 1.45-3.636a3 3 0 0 1 1.325-.916V6.75H.75a.75.75 0 0 1 0-1.5h2V3a.75.75 0 0 1 .025-.186l.012-.042a.75.75 0 0 1-.012-.6Zm8 0A.75.75 0 0 1 11.5 3v2.25h.75a.75.75 0 0 1 0 1.5h-1.5v2.19c.044-.008.09-.016.136-.022.444-.055 1.097-.165 1.941-.045.282.04.565.11.845.21a.75.75 0 0 1-.344 1.46 6 6 0 0 0-.93-.23c-.194-.024-.395-.03-.604-.018a1.47 1.47 0 0 0-1.192.629c-.648.855-1.094 1.832-1.094 3.312V13a.75.75 0 0 1-1.5 0v-1.25c0-1.73.528-2.928 1.45-3.636a3 3 0 0 1 1.325-.916V6.75H8.75a.75.75 0 0 1 0-1.5h2V3a.75.75 0 0 1 .025-.186l.012-.042a.75.75 0 0 1-.012-.6Z'/></svg>
+          <span>{citations}</span>
+        </span>
+      )}
+    </div>
+
+    <div class='gh-card__pills'>
+      {/* 领域 / 访问标签（可选） */}
+      {(accessLabel && accessLabel !== '') || (field && field.text !== '') ? (
+        <span class='gh-card__pill gh-card__pill-license'>
+          {field ? (
+            <svg class='gh-card__icon gh-card__icon-tag' viewBox='0 0 16 16' aria-hidden='true' style={field.dotColor ? `color: ${field.dotColor}` : undefined}><path fill='currentColor' d='M3 0a2 2 0 0 0-2 2v4.586c0 .53.21 1.039.586 1.414l6.414 6.414a2 2 0 0 0 2.828 0l4.586-4.586a2 2 0 0 0 0-2.828L8.914 2.586A2 2 0 0 0 7.586 2H3Zm1.5 4a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z'/></svg>
+          ) : (
+            <svg class='gh-card__icon gh-card__icon-lock' viewBox='0 0 16 16' aria-hidden='true'><path fill='currentColor' d='M4 4a4 4 0 0 1 8 0v1.5h1a1 1 0 0 1 1 1v6.5a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6.5a1 1 0 0 1 1-1h1V4Zm1.5 1.5h5V4a2.5 2.5 0 1 0-5 0v1.5ZM8 8a1.25 1.25 0 0 1 1.25 1.25v1.5a.75.75 0 0 1-1.5 0v-1.5H7a.75.75 0 0 1 0-1.5h1Z'/></svg>
+          )}
+          <span>{accessLabel ?? field?.text}</span>
+        </span>
+      ) : null}
+      {/* 期刊/会议（主语言 pill 位置） */}
+      <span class='gh-card__pill gh-card__pill-lang'>
+        <span class='gh-card__lang-dot' aria-hidden='true'></span>
+        <span>{venue.text}</span>
+      </span>
+    </div>
+  </div>
+</a>
+
+<style>
+  /* ===== GitHub 风格仓库卡片 ===== */
+  .gh-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    padding: 1rem 1.1rem;
+    width: 100%;
+    min-height: 148px;
+    background: #ffffff;
+    border: 1px solid #d0d7de;
+    border-radius: 10px;
+    color: inherit;
+    text-decoration: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .gh-card:hover {
+    border-color: #afb8c1;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 6px 18px -8px rgba(0, 0, 0, 0.15);
+  }
+  .dark .gh-card {
+    background: #0d1117;
+    border-color: #30363d;
+  }
+  .dark .gh-card:hover {
+    border-color: #484f58;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 22px -10px rgba(0, 0, 0, 0.6);
+  }
+
+  /* ===== 顶部 ===== */
+  .gh-card__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.6rem;
+  }
+  .gh-card__head-left {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-width: 0;
+    flex: 1;
+  }
+  .gh-card__avatar {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #f6f8fa, #eaeef2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 1px solid #d0d7de;
+  }
+  .gh-card__avatar > span {
+    font-size: 14px;
+    line-height: 1;
+  }
+  .dark .gh-card__avatar {
+    background: linear-gradient(135deg, #21262d, #161b22);
+    border-color: #30363d;
+  }
+  .gh-card__names {
+    min-width: 0;
+    font-size: 14px;
+    line-height: 1.25;
+    font-weight: 600;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .gh-card__namespace {
+    color: #656d76;
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .dark .gh-card__namespace { color: #8b949e; }
+  .gh-card__slash { color: inherit; }
+  .gh-card__title {
+    color: var(--gh-accent, #0969da);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+  .gh-card:hover .gh-card__title {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1.5px;
+  }
+  .gh-card__action {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background: #f6f8fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, transform 0.2s ease;
+    border: 1px solid #d0d7de;
+  }
+  .gh-card__action > span {
+    font-size: 15px;
+    line-height: 1;
+    color: #1f2328;
+  }
+  .gh-card:hover .gh-card__action {
+    background: var(--gh-accent, #0969da);
+    transform: scale(1.05);
+    border-color: var(--gh-accent, #0969da);
+  }
+  .gh-card:hover .gh-card__action > span { color: #fff; }
+  .dark .gh-card__action {
+    background: #21262d;
+    border-color: #30363d;
+  }
+  .dark .gh-card__action > span { color: #e6edf3; }
+  .dark .gh-card:hover .gh-card__action {
+    background: var(--gh-accent, #2f81f7);
+    border-color: var(--gh-accent, #2f81f7);
+  }
+
+  /* ===== 描述 ===== */
+  .gh-card__desc {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #656d76;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex: 1;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+  }
+  .dark .gh-card__desc { color: #8b949e; }
+
+  /* ===== 底部 ===== */
+  .gh-card__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    font-size: 12px;
+    line-height: 1;
+    color: #656d76;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+  }
+  .dark .gh-card__foot { color: #8b949e; }
+  .gh-card__stats {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-width: 0;
+  }
+  .gh-card__stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: inherit;
+  }
+  .gh-card__icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    color: #656d76;
+  }
+  .dark .gh-card__icon { color: #8b949e; }
+  .gh-card:hover .gh-card__icon {
+    color: var(--gh-accent, #0969da);
+  }
+
+  /* 右侧 pills */
+  .gh-card__pills {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+  .gh-card__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 18px;
+    background: #f6f8fa;
+    color: #1f2328;
+    white-space: nowrap;
+  }
+  .dark .gh-card__pill {
+    background: #21262d;
+    color: #e6edf3;
+  }
+  .gh-card__pill-license .gh-card__icon {
+    width: 12px;
+    height: 12px;
+  }
+  .gh-card__lang-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--gh-lang-dot, var(--gh-accent, #0969da));
+    flex-shrink: 0;
+  }
+</style>
