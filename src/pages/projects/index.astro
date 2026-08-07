@@ -32,13 +32,9 @@ const showPublicationsTab = publicationCount > 0
       <button class='pub-toggle__btn' data-filter='certificate' role='tab' aria-selected='false'>
         Certificates <span class='pub-toggle__count'>{certificateCount}</span>
       </button>
-      {
-        showPublicationsTab && (
-          <button class='pub-toggle__btn' data-filter='publication' role='tab' aria-selected='false'>
-            Publications <span class='pub-toggle__count'>{publicationCount}</span>
-          </button>
-        )
-      }
+      <button class='pub-toggle__btn' data-filter='publication' role='tab' aria-selected='false'>
+        Publications <span class='pub-toggle__count'>{publicationCount}</span>
+      </button>
     </div>
 
     {/* 内容区：使用三个独立卡片组件渲染 */}
