@@ -269,6 +269,31 @@ const showPublicationsTab = publicationCount > 0
     color: #fff;
   }
 
+  /* 移动端 tabs 适配：缩小字号/padding，允许横向滑动 */
+  @media (max-width: 640px) {
+    .pub-toggle {
+      width: 100%;
+      gap: 2px;
+      padding: 2px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      margin-bottom: 1.25rem;
+      justify-content: flex-start;
+    }
+    .pub-toggle::-webkit-scrollbar { display: none; }
+    .pub-toggle .pub-toggle__btn {
+      font-size: 15px;
+      padding: 10px 14px;
+      gap: 6px;
+      flex: 0 0 auto;
+    }
+    .pub-toggle .pub-toggle__count {
+      font-size: 0.7rem;
+    }
+  }
+
   /* 内容区 */
   .pub-content {
     width: 100%;
