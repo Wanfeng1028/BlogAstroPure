@@ -24,6 +24,8 @@ const { title, headings, view, comment: enableComment, ...props } = Astro.props
     {(view || enableComment) && <PageInfo {view} class='italic' />}
   </Fragment>
 
+  <slot name='header-right' slot='header-right' />
+
   <slot />
 
   <slot name='bottom' slot='bottom'>
