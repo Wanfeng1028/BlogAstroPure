@@ -2,6 +2,7 @@
 import { getBlogCollection, groupCollectionsByYear, sortMDByDate } from 'astro-pure/server'
 import { Button } from 'astro-pure/user'
 import PageLayout from '@/layouts/BaseLayout.astro'
+import EmptyState from '@/components/common/EmptyState.astro'
 
 export const prerender = true
 
@@ -31,7 +32,7 @@ const meta = {
       <p class='text-muted-foreground'>共 {totalPosts} 篇文章 · {allPostsByYear.length} 个年份</p>
     </div>
 
-    {allPosts.length === 0 && <p>No posts yet.</p>}
+    {allPosts.length === 0 && <EmptyState title='暂无归档' hint='博客文章正在整理中，敬请期待' />}
 
     <section id='content' class='animate' aria-label='Blog post list'>
       <div class='archive'>

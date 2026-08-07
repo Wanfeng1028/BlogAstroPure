@@ -7,6 +7,7 @@ import { getBlogCollection, sortMDByDate } from 'astro-pure/server'
 import { Button } from 'astro-pure/user'
 import PageLayout from '@/layouts/BaseLayout.astro'
 import config from '@/site-config'
+import EmptyState from '@/components/common/EmptyState.astro'
 
 export const prerender = true
 
@@ -63,7 +64,7 @@ const paginationProps = {
 
     {
       page.data.length === 0 ? (
-        <p class='text-muted-foreground'>暂无内容。</p>
+        <EmptyState title='暂无碎碎念' hint='随想与日常记录正在整理中，敬请期待' />
       ) : (
         <section aria-label='碎碎念列表' class='animate' id='content'>
           <div class='murmur-feed'>

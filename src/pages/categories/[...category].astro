@@ -6,6 +6,7 @@ import { PostPreview } from 'astro-pure/components/pages'
 import { getBlogCollection, sortMDByDate } from 'astro-pure/server'
 import { Button } from 'astro-pure/user'
 import PageLayout from '@/layouts/BaseLayout.astro'
+import EmptyState from '@/components/common/EmptyState.astro'
 
 export const prerender = true
 
@@ -63,7 +64,7 @@ const meta = {
             {posts.map((post) => <PostPreview {post} detailed />)}
           </ul>
         ) : (
-          <p class='text-muted-foreground'>暂无文章</p>
+          <EmptyState title='暂无文章' hint='该分类下的文章正在整理中，敬请期待' />
         )
       }
     </section>

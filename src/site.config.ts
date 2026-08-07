@@ -111,8 +111,8 @@ export const integ: IntegrationUserConfig = {
     applyTip: [
       { name: 'Name', val: theme.title },
       { name: 'Desc', val: theme.description || 'Null' },
-      { name: 'Link', val: 'https://gema.top' },
-      { name: 'Avatar', val: 'https://gema.top/images/touxiang.png' }
+      { name: 'Link', val: 'https://gemmae.dev' },
+      { name: 'Avatar', val: 'https://gemmae.dev/images/touxiang.png' }
     ],
     // Cache avatars in `public/avatars/` to improve user experience.
     cacheAvatar: false
@@ -156,7 +156,7 @@ export const integ: IntegrationUserConfig = {
   },
   // Comment system
   waline: {
-    enable: true,
+    enable: false,
     // Server service link
     server: 'https://astro-theme-pure-waline.arthals.ink/',
     // Show meta info for comments

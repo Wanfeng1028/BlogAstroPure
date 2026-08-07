@@ -1,0 +1,111 @@
+---
+interface Props {
+  title?: string
+  hint?: string
+  class?: string
+}
+
+const {
+  title = '等待更新',
+  hint = '相关内容正在整理中，敬请期待',
+  class: className = ''
+} = Astro.props
+---
+
+<div class={`empty-state ${className}`} aria-live='polite'>
+  <div class='empty-state__icon' aria-hidden='true'>
+    <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'>
+      <path d='M12 2v4'/>
+      <path d='M12 18v4'/>
+      <path d='m4.93 4.93 2.83 2.83'/>
+      <path d='m16.24 16.24 2.83 2.83'/>
+      <path d='M2 12h4'/>
+      <path d='M18 12h4'/>
+      <path d='m4.93 19.07 2.83-2.83'/>
+      <path d='m16.24 7.76 2.83-2.83'/>
+      <circle cx='12' cy='12' r='4'/>
+    </svg>
+  </div>
+  <p class='empty-state__text'>
+    {title}<span class='empty-state__dots'><i>.</i><i>.</i><i>.</i></span>
+  </p>
+  <p class='empty-state__hint'>{hint}</p>
+</div>
+
+<style>
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 72px 24px 80px;
+    border-radius: 14px;
+    border: 1.5px dashed #cfd5de;
+    background:
+      radial-gradient(1200px 400px at 50% -100px, rgba(78,160,255,0.08), transparent 60%),
+      linear-gradient(180deg, rgba(250,251,253,0.9) 0%, rgba(246,248,251,0.6) 100%);
+    color: #6b7280;
+    text-align: center;
+    user-select: none;
+    min-height: 320px;
+  }
+  .empty-state__icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: rgba(78,160,255,0.12);
+    color: #346bf0;
+    animation: empty-spin 8s linear infinite;
+  }
+  .empty-state__icon svg {
+    width: 30px;
+    height: 30px;
+  }
+  .empty-state__text {
+    font-size: 22px;
+    font-weight: 600;
+    color: #374151;
+    letter-spacing: 0.5px;
+    margin: 0;
+  }
+  .empty-state__dots i {
+    font-style: normal;
+    display: inline-block;
+    margin: 0 1px;
+    animation: empty-dot 1.4s infinite ease-in-out both;
+  }
+  .empty-state__dots i:nth-child(1) { animation-delay: -0.32s; }
+  .empty-state__dots i:nth-child(2) { animation-delay: -0.16s; }
+  .empty-state__hint {
+    font-size: 14px;
+    color: #9aa0a6;
+    margin: 0;
+  }
+
+  .dark .empty-state {
+    border-color: #3a3d45;
+    background:
+      radial-gradient(1200px 400px at 50% -100px, rgba(78,160,255,0.12), transparent 60%),
+      linear-gradient(180deg, rgba(15,23,42,0.55) 0%, rgba(13,17,23,0.45) 100%);
+    color: #94a3b8;
+  }
+  .dark .empty-state__icon {
+    background: rgba(78,160,255,0.18);
+    color: #4ea0ff;
+  }
+  .dark .empty-state__text {
+    color: #e5e7eb;
+  }
+
+  @keyframes empty-spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  @keyframes empty-dot {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+    40%           { transform: scale(1);   opacity: 1;   }
+  }
+</style>

@@ -2,6 +2,7 @@
 import { getBlogCollection, getUniqueTagsWithCount } from 'astro-pure/server'
 import { Button } from 'astro-pure/user'
 import PageLayout from '@/layouts/BaseLayout.astro'
+import EmptyState from '@/components/common/EmptyState.astro'
 
 const blogPosts = await getBlogCollection()
 const murmurPosts = await getBlogCollection('murmurs')
@@ -50,7 +51,7 @@ const meta = {
             }
           </div>
         ) : (
-          <p class='text-muted-foreground'>暂无标签</p>
+          <EmptyState title='暂无标签' hint='标签信息正在整理中，敬请期待' />
         )
       }
     </div>

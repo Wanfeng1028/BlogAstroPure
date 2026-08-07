@@ -5,6 +5,7 @@ import { getBlogCollection, sortMDByDate } from 'astro-pure/server'
 import { Button } from 'astro-pure/user'
 import PageLayout from '@/layouts/BaseLayout.astro'
 import CatTree from '@/components/CatTree.astro'
+import EmptyState from '@/components/common/EmptyState.astro'
 
 type Post = CollectionEntry<'blog'>
 
@@ -93,7 +94,7 @@ const meta = {
         root.length > 0 ? (
           <CatTree nodes={root} />
         ) : (
-          <p class='text-muted-foreground'>暂无分类</p>
+          <EmptyState title='暂无分类' hint='分类信息正在整理中，敬请期待' />
         )
       }
     </div>

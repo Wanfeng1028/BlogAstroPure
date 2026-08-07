@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets'
 
 import config from '@/site-config'
+import EmptyState from '@/components/common/EmptyState.astro'
 
 interface AvatarCache {
   hash: string
@@ -112,7 +113,7 @@ const getAvatarSrc = (friend: Friend) =>
         </a>
       ))
     ) : (
-      <p>Nothing here.</p>
+      <EmptyState title='暂无友链' hint='朋友列表正在整理中，敬请期待' class='mt-4' />
     )
   }
 </div>

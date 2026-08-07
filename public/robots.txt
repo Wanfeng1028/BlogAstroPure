@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+# 请在 astro.config.ts 的 site: 字段已同步为 https://gemmae.dev
+# Astro 构建时会自动输出 sitemap-index.xml（按 content collections 分组）
+Sitemap: https://gemmae.dev/sitemap-index.xml

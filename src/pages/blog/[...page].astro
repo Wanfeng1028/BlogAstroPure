@@ -7,6 +7,7 @@ import { getBlogCollection, getUniqueTagsWithCount, sortMDByDate } from 'astro-p
 import { Button, Icon } from 'astro-pure/user'
 import PageLayout from '@/layouts/BaseLayout.astro'
 import config from '@/site-config'
+import EmptyState from '@/components/common/EmptyState.astro'
 
 export const prerender = true
 
@@ -57,7 +58,7 @@ const paginationProps = {
     </div>
     {
       page.data.length === 0 ? (
-        <p>No posts yet.</p>
+        <EmptyState title='暂无文章' hint='博客文章正在整理中，敬请期待' />
       ) : (
         <div class='grid gap-y-16 sm:grid-cols-[3fr_1fr] sm:gap-x-8'>
           <section aria-label='Blog posts list' class='animate' id='content'>
