@@ -46,7 +46,7 @@ const skills = [
       aria-label='Toggle language'
     >
       <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-4 w-4'><path d='m5 8 6 6'/><path d='m4 14 6-6 2-3'/><path d='M2 5h12'/><path d='M7 2h1'/><path d='m22 22-5-10-5 10'/><path d='M14 18h6'/></svg>
-      <span class='lang-toggle-label'><span class='lang-zh'>English</span><span class='lang-en'>中文</span></span>
+      <span class='lang-toggle-label'><span class='lang-zh'>中文</span><span class='lang-en'>English</span></span>
     </button>
   </div>
 
@@ -267,39 +267,46 @@ const skills = [
 
 <script is:inline>
   /**
-   * 关于页 中英文切换 ——提前在 DOMContentLoaded 之前就设置好 body[data-lang]，
-   * 避免首屏先渲染中文再切换到英文产生的闪烁。
-   * - 状态存 localStorage['about-lang'] = 'zh' | 'en'
-   * - 默认：'en'（用户要求首次进入 About 默认显示英文）
-   * - 之前保存了 zh 的用户可以按切换按钮回到中文
+   * 关于页 中英文切换
+   *
+   * —— 执行时机：这个 <script is:inline> 放在 </body> 前（HTML 从上往下解析到的时候立即执行）
+   *    同时做 3 件事保证首次进入 100% 显示英文、无闪烁：
+   *
+   *    ① KEY = about-lang:v2：升级版本号，旧版保存的 about-lang=zh 直接作废
+   *       （用户浏览器之前点过"中文"保存的 localStorage 不再被读取，首次=英文）
+   *    ② 在脚本执行的第一行就同步写 documentElement[data-lang]
+   *       （在 Layout 的 CSS 渲染显隐前完成状态写入，避免先中文再切英文）
+   *    ③ 默认值 DEFAULT_LANG = 'en'（硬编码英文，除非你真的点了按钮切换到中文）
+   *
+   * 按钮上的文字：<span class='lang-zh'>中文</span><span class='lang-en'>English</span>
+   *  显示的是**当前语言**（用户截图里"按钮写English=正在英文"，符合直觉）
    */
   ;(function () {
-    const KEY = 'about-lang'
-    const DEFAULT_LANG = 'en' // About 默认英文
+    const KEY = 'about-lang:v2'
+    const DEFAULT_LANG = 'en' // 首次进入 About 默认英文
 
-    // 第 0 步：在任何渲染发生前先同步到 <html>/<body>
-    const saved = typeof localStorage !== 'undefined' ? localStorage.getItem(KEY) : null
-    const lang = saved === 'zh' || saved === 'en' ? saved : DEFAULT_LANG
-
+    // 0. 立即设置 <html data-lang>（CSS 显隐规则吃的就是 html/body[data-lang]）
     function apply(l) {
       document.documentElement.setAttribute('data-lang', l)
-      document.body && document.body.setAttribute('data-lang', l)
+      if (document.body) document.body.setAttribute('data-lang', l)
     }
+    let saved = null
+    try { saved = localStorage.getItem(KEY) } catch (e) {}
+    const lang = saved === 'zh' || saved === 'en' ? saved : DEFAULT_LANG
     apply(lang)
 
-    // 第 1 步：DOM ready 之后再绑定切换按钮（按钮此时已经挂到 DOM 上）
+    // 1. DOM ready 后绑定按钮
     function onReady() {
-      apply(lang) // 再同步一次确保 body 有
+      apply(lang)
       const btn = document.getElementById('about-lang-toggle')
       if (!btn) return
       btn.addEventListener('click', function () {
-        const cur = (document.body.getAttribute('data-lang') === 'zh' ? 'zh' : 'en')
+        const cur = document.documentElement.getAttribute('data-lang') === 'zh' ? 'zh' : 'en'
         const next = cur === 'en' ? 'zh' : 'en'
         apply(next)
         try { localStorage.setItem(KEY, next) } catch (e) {}
       })
     }
-
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', onReady)
     } else {
