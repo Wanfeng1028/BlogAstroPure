@@ -192,13 +192,19 @@ const skills = [
 <style is:global>
   /* ==========================================================
      关于页中英文显示控制（全局样式，兼容 Timeline 内部 set:html 渲染的内容）
-     ——默认中文（lang-zh 显示，lang-en 隐藏）
-     ——body[data-lang='en'] 时反转
+     ——默认英文（lang-zh 隐藏，lang-en 显示）
+     ——body[data-lang='zh'] 时反转
      ========================================================== */
-  .lang-en { display: none; }
-  body[data-lang='en'] .lang-zh { display: none; }
-  body[data-lang='en'] .lang-en { display: inline; }
-  body[data-lang='en'] blockquote .lang-en { display: block; }
+  .lang-zh { display: none; }
+  .lang-en { display: inline; }
+  body[data-lang='zh'] .lang-zh { display: inline; }
+  body[data-lang='zh'] p  .lang-zh,
+  body[data-lang='zh'] li .lang-zh,
+  body[data-lang='zh'] h2 .lang-zh,
+  body[data-lang='zh'] h3 .lang-zh,
+  body[data-lang='zh'] strong .lang-zh { display: inline; }
+  body[data-lang='zh'] .lang-en { display: none; }
+  body[data-lang='zh'] blockquote .lang-zh { display: block; }
 </style>
 
 <script>
@@ -216,14 +222,9 @@ const skills = [
     body.setAttribute('data-lang', lang)
   }
 
-  // 初始化（优先 localStorage，其次 <html lang> 检测）
+  // 初始化（优先 localStorage，否则默认英文）
   const saved = localStorage.getItem(KEY) as 'zh' | 'en' | null
-  if (saved === 'en' || saved === 'zh') {
-    apply(saved)
-  } else {
-    const browserLang = navigator.language.toLowerCase()
-    apply(browserLang.startsWith('zh') ? 'zh' : 'en')
-  }
+  apply(saved === 'zh' || saved === 'en' ? saved : 'en')
 
   // 绑定切换按钮
   const btn = document.getElementById('about-lang-toggle')
