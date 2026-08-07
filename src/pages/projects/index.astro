@@ -1,166 +1,170 @@
 ---
 import PageLayout from '@/layouts/CommonPage.astro'
-import WebListCard from '@/components/home/WebListCard.astro'
+import ProjectCard from '@/components/projects/ProjectCard.astro'
+import CertificateCard from '@/components/projects/CertificateCard.astro'
+import PublicationCard from '@/components/projects/PublicationCard.astro'
 
-// 数据：可后续迁移到 content 集合或独立数据文件
+// 主语言圆点色（GitHub 官方语言色板近似值）
+const LANG_DOT = {
+  vue: '#41b883',
+  ts: '#3178c6',
+  astro: '#ff5d01',
+  js: '#f1e05a',
+  python: '#3572A5',
+  jupyter: '#DA5B0B',
+  tailwind: '#06b6d4',
+  gis: '#10b981',
+  vite: '#646cff'
+} as const
+
+// ===== 数据：可后续迁移到 content 集合或独立数据文件 =====
 interface ProjectItem {
   type: 'project'
+  href: string
+  namespace?: string
   title: string
   description: string
-  tech: { text: string; color: 'purple' | 'aqua' | 'green' | 'orange' | 'blue' | 'pink' | 'red' | 'yellow' }[]
-  link: string
-  accent: string
-  deco: string
-  decoImg: string
-  imgBg: string
-  imgTone: string
+  primaryLang: { text: string; dotColor?: string }
+  tech?: { text: string; color: 'purple' | 'aqua' | 'green' | 'orange' | 'blue' | 'pink' | 'red' | 'yellow' }[]
+  stars?: number | string
+  forks?: number | string
+  license?: string | false
+  accent?: string
+  deco?: string
+  actionIcon?: string
 }
 interface CertificateItem {
   type: 'certificate'
-  title: string
+  href: string
   issuer: string
-  year: number
+  title: string
   description: string
-  link: string
-  accent: string
-  deco: string
-  decoImg: string
-  imgBg: string
-  imgTone: string
+  year: number
+  validity?: string
+  certType?: { text: string; dotColor?: string }
+  category: { text: string; dotColor?: string }
+  accent?: string
+  deco?: string
+  actionIcon?: string
 }
 interface PublicationItem {
   type: 'publication'
+  href: string
+  firstAuthor: string
+  coAuthorCount?: number
+  authors?: string[]
   title: string
-  authors: string[]
-  venue: string
-  year: number
   description: string
-  link: string
-  accent: string
-  deco: string
-  decoImg: string
-  imgBg: string
-  imgTone: string
+  year: number
+  citations?: number | string
+  accessLabel?: string
+  venue: { text: string; dotColor?: string }
+  field?: { text: string; dotColor?: string }
+  authorSeparator?: string
+  accent?: string
+  deco?: string
+  actionIcon?: string
 }
 type Item = ProjectItem | CertificateItem | PublicationItem
-
-type TagColor = 'purple' | 'aqua' | 'green' | 'orange' | 'blue' | 'pink' | 'red' | 'yellow'
 
 const items: Item[] = [
   // ===== Projects =====
   {
     type: 'project',
+    href: 'https://github.com/Wanfeng1028/ParrotSoundReVue',
+    namespace: 'Wanfeng1028',
     title: 'ParrotSoundReVue',
     description: '基于 Vue 的智能语音识别应用，曾获一个奖项。',
-    tech: [
-      { text: 'Vue', color: 'aqua' },
-      { text: 'TypeScript', color: 'blue' },
-      { text: 'Vite', color: 'purple' }
-    ],
-    link: 'https://github.com/Wanfeng1028/ParrotSoundReVue',
-    accent: '#6366f1',
+    primaryLang: { text: 'Vue', dotColor: LANG_DOT.vue },
+    stars: 56,
+    forks: 16,
+    license: 'MIT',
+    accent: '#0969da',
     deco: '🦜',
-    decoImg: '/images/social-card.png',
-    imgBg: 'linear-gradient(135deg, #e0e7ff 0%, #818cf8 55%, #4f46e5 100%)',
-    imgTone: '#6366f1'
+    actionIcon: '🐙'
   },
   {
     type: 'project',
+    href: 'https://github.com/Wanfeng1028/BlogAstroPure',
+    namespace: 'Wanfeng1028',
     title: 'BlogAstroPure',
     description: '基于 Astro 的个人博客，当前本站。',
-    tech: [
-      { text: 'Astro', color: 'aqua' },
-      { text: 'TypeScript', color: 'blue' },
-      { text: 'Tailwind', color: 'green' }
-    ],
-    link: 'https://github.com/Wanfeng1028/BlogAstroPure',
+    primaryLang: { text: 'Astro', dotColor: LANG_DOT.astro },
+    stars: 0,
+    forks: 0,
+    license: 'MIT',
     accent: '#f97316',
     deco: '📝',
-    decoImg: '/images/touxiang.png',
-    imgBg: 'linear-gradient(135deg, #ffedd5 0%, #fb923c 55%, #ea580c 100%)',
-    imgTone: '#f97316'
+    actionIcon: '🐙'
   },
   {
+    // ↓↓↓ GeoFrontend2.0 （用户参考卡片对应的项目）↓↓↓
     type: 'project',
+    href: 'https://github.com/Wanfeng1028/GeoFrontend2.0',
+    namespace: 'Wanfeng1028',
     title: 'GeoFrontend2.0',
     description: 'GIS 工作台前端，聚焦遥感智能识别与可视化。',
-    tech: [
-      { text: 'GIS', color: 'green' },
-      { text: 'JavaScript', color: 'yellow' },
-      { text: 'Vue', color: 'aqua' }
-    ],
-    link: 'https://github.com/Wanfeng1028/GeoFrontend2.0',
-    accent: '#10b981',
+    primaryLang: { text: 'JavaScript', dotColor: LANG_DOT.js },
+    stars: 0,
+    forks: 0,
+    license: false, // 无许可证：不显示 license pill
+    accent: '#10b981', // GIS 主题绿
     deco: '🗺️',
-    decoImg: '/images/social-card.png',
-    imgBg: 'linear-gradient(135deg, #d1fae5 0%, #34d399 55%, #059669 100%)',
-    imgTone: '#10b981'
+    actionIcon: '🐙'
   },
   // ===== Certificates =====
   {
     type: 'certificate',
-    title: '示例：前端开发工程师认证',
+    href: '#',
     issuer: '示例机构 / 颁发方',
-    year: 2026,
+    title: '示例：前端开发工程师认证',
     description: '占位示例，请替换为你的真实证书名称、颁发机构与链接。',
-    link: '#',
-    accent: '#f59e0b',
+    year: 2026,
+    validity: '永久有效',
+    certType: { text: 'Professional' },
+    category: { text: '前端开发', dotColor: '#3178c6' },
+    accent: '#d4a72c',
     deco: '🏅',
-    decoImg: '/images/social-card.png',
-    imgBg: 'linear-gradient(135deg, #fef3c7 0%, #fbbf24 55%, #d97706 100%)',
-    imgTone: '#f59e0b'
+    actionIcon: '🔗'
   },
   // ===== Publications =====
   {
     type: 'publication',
-    title: '示例：遥感影像语义分割方法研究',
+    href: '#',
+    firstAuthor: 'Wanfeng',
+    coAuthorCount: 1,
     authors: ['Wanfeng', 'Coauthor'],
-    venue: '示例期刊 / 会议',
-    year: 2026,
+    title: '示例：遥感影像语义分割方法研究',
     description: '占位示例，请替换为你的真实论文、作者与链接。',
-    link: '#',
-    accent: '#8b5cf6',
+    year: 2026,
+    citations: 12,
+    accessLabel: 'DOI',
+    venue: { text: '示例期刊', dotColor: '#8250df' },
+    field: { text: '遥感科学', dotColor: '#10b981' },
+    accent: '#8250df',
     deco: '📄',
-    decoImg: '/images/social-card.png',
-    imgBg: 'linear-gradient(135deg, #ede9fe 0%, #a78bfa 55%, #7c3aed 100%)',
-    imgTone: '#8b5cf6'
+    actionIcon: '📄'
   },
   {
     type: 'publication',
-    title: '示例：基于深度学习的作物识别综述',
+    href: '#',
+    firstAuthor: 'Wanfeng',
     authors: ['Wanfeng'],
-    venue: '示例会议',
-    year: 2025,
+    title: '示例：基于深度学习的作物识别综述',
     description: '占位示例，请替换为你的真实论文、作者与链接。',
-    link: '#',
+    year: 2025,
+    citations: 3,
+    accessLabel: 'Open Access',
+    venue: { text: '示例会议', dotColor: '#06b6d4' },
     accent: '#06b6d4',
     deco: '📑',
-    decoImg: '/images/social-card.png',
-    imgBg: 'linear-gradient(135deg, #cffafe 0%, #22d3ee 55%, #0891b2 100%)',
-    imgTone: '#06b6d4'
+    actionIcon: '📑'
   }
 ]
 
 const projectCount = items.filter((i) => i.type === 'project').length
 const certificateCount = items.filter((i) => i.type === 'certificate').length
 const publicationCount = items.filter((i) => i.type === 'publication').length
-
-// 生成证书的 tags
-function certTags(item: CertificateItem): { text: string; color: TagColor }[] {
-  const tags: { text: string; color: TagColor }[] = []
-  if (item.issuer) tags.push({ text: item.issuer, color: 'orange' })
-  if (item.year) tags.push({ text: String(item.year), color: 'yellow' })
-  return tags
-}
-
-// 生成出版物的 tags
-function pubTags(item: PublicationItem): { text: string; color: TagColor }[] {
-  const tags: { text: string; color: TagColor }[] = []
-  if (item.authors?.length) tags.push({ text: item.authors.join(', '), color: 'purple' })
-  if (item.venue) tags.push({ text: item.venue, color: 'aqua' })
-  if (item.year) tags.push({ text: String(item.year), color: 'blue' })
-  return tags
-}
 ---
 
 <PageLayout title='Projects & Publications' hideSidebar view>
@@ -182,47 +186,58 @@ function pubTags(item: PublicationItem): { text: string; color: TagColor }[] {
       </button>
     </div>
 
-    {/* 内容区：全部统一使用 WebListCard 卡片组件 */}
+    {/* 内容区：使用三个独立卡片组件渲染 */}
     <div id='pub-content' class='pub-content'>
       {
         items.map((item) =>
           item.type === 'project' ? (
-            <WebListCard
-              href={item.link}
-              deco={item.deco}
-              accent={item.accent}
-              decoImg={item.decoImg}
-              imgBg={item.imgBg}
-              imgTone={item.imgTone}
-              headline={item.title}
+            <ProjectCard
+              href={item.href}
+              namespace={item.namespace}
+              title={item.title}
               description={item.description}
-              tags={item.tech}
+              primaryLang={item.primaryLang}
+              tech={item.tech}
+              stars={item.stars}
+              forks={item.forks}
+              license={item.license}
+              accent={item.accent}
+              deco={item.deco}
+              actionIcon={item.actionIcon}
               dataType='project'
             />
           ) : item.type === 'certificate' ? (
-            <WebListCard
-              href={item.link}
-              deco={item.deco}
-              accent={item.accent}
-              decoImg={item.decoImg}
-              imgBg={item.imgBg}
-              imgTone={item.imgTone}
-              headline={item.title}
+            <CertificateCard
+              href={item.href}
+              issuer={item.issuer}
+              title={item.title}
               description={item.description}
-              tags={certTags(item)}
+              year={item.year}
+              validity={item.validity}
+              certType={item.certType}
+              category={item.category}
+              accent={item.accent}
+              deco={item.deco}
+              actionIcon={item.actionIcon}
               dataType='certificate'
             />
           ) : (
-            <WebListCard
-              href={item.link}
-              deco={item.deco}
-              accent={item.accent}
-              decoImg={item.decoImg}
-              imgBg={item.imgBg}
-              imgTone={item.imgTone}
-              headline={item.title}
+            <PublicationCard
+              href={item.href}
+              firstAuthor={item.firstAuthor}
+              coAuthorCount={item.coAuthorCount}
+              authors={item.authors}
+              title={item.title}
               description={item.description}
-              tags={pubTags(item)}
+              year={item.year}
+              citations={item.citations}
+              accessLabel={item.accessLabel}
+              venue={item.venue}
+              field={item.field}
+              authorSeparator={item.authorSeparator}
+              accent={item.accent}
+              deco={item.deco}
+              actionIcon={item.actionIcon}
               dataType='publication'
             />
           )
@@ -240,7 +255,6 @@ function pubTags(item: PublicationItem): { text: string; color: TagColor }[] {
   const indicator = document.getElementById('pub-indicator')
   const items = document.querySelectorAll<HTMLElement>('#pub-content [data-type]')
 
-  // 滑块移动到对应按钮
   function moveIndicator(btn: Element | undefined) {
     if (!indicator || !btn) return
     const el = btn as HTMLElement
@@ -263,14 +277,13 @@ function pubTags(item: PublicationItem): { text: string; color: TagColor }[] {
 
   buttons?.forEach((btn) => btn.addEventListener('click', () => onSelect(btn)))
 
-  // 初始定位 + 窗口尺寸变化时重新定位
   window.addEventListener('load', () => moveIndicator(buttons?.[0]))
   window.addEventListener('resize', () => {
     const active = buttons?.[0]?.parentElement?.querySelector('.is-active') ?? buttons?.[0]
     moveIndicator(active)
   })
 
-  // 3D Tilt 反光卡片交互（全部 WebListCard 卡片都启用）
+  // 3D Tilt 反光卡片交互（三个新卡片组件都启用，WebListCard 同款效果）
   initTilt('#pub-content .tilt-card[data-tilt]')
 </script>
 
@@ -282,21 +295,19 @@ function pubTags(item: PublicationItem): { text: string; color: TagColor }[] {
   }
 
   /* 分段切换按钮 —— Gemini 官方最终版（全部官方真实值） */
-  /* 容器 */
   .pub-toggle {
     position: relative;
     display: flex;
     align-items: center;
     gap: 4px;
-    padding: 3px; /* 官方：3px */
-    border: 1px solid #e5e5e5; /* 官方：--theme-border-color */
-    border-radius: 100px; /* 官方：100px */
+    padding: 3px;
+    border: 1px solid #e5e5e5;
+    border-radius: 100px;
     background: #ffffff;
-    box-shadow: none; /* 官方：无投影 */
+    box-shadow: none;
     margin-bottom: 2rem;
     font-family: 'Google Sans', Roboto, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
   }
-  /* 滑动指示条：官方渐变胶囊，随激活项滑动 */
   .pub-toggle__indicator {
     position: absolute;
     top: 3px;
@@ -309,7 +320,6 @@ function pubTags(item: PublicationItem): { text: string; color: TagColor }[] {
     z-index: 0;
   }
 
-  /* 按钮 */
   .pub-toggle .pub-toggle__btn {
     position: relative;
     z-index: 1;
@@ -320,29 +330,26 @@ function pubTags(item: PublicationItem): { text: string; color: TagColor }[] {
     background: transparent;
     cursor: pointer;
     font-family: inherit;
-    font-size: 18px; /* 官方：18px */
+    font-size: 18px;
     font-weight: 500;
-    line-height: 1.4; /* 官方：1.4 */
-    color: #5f6368; /* 官方：--theme-text-color-secondary */
-    padding: 12px 24px; /* 官方：12px 24px */
+    line-height: 1.4;
+    color: #5f6368;
+    padding: 12px 24px;
     border-radius: 100px;
     white-space: nowrap;
     display: inline-flex;
     align-items: center;
-    gap: 10px; /* 官方：gap 10px */
+    gap: 10px;
     transition: color 0.3s ease, background 0.3s ease;
   }
   .pub-toggle .pub-toggle__btn:hover:not(.is-active) {
     background: #f4f4f5;
   }
-
-  /* 激活态：文字白、背景透明，由下方滑块提供官方渐变填充 */
   .pub-toggle .pub-toggle__btn.is-active {
     color: #ffffff;
     background: transparent;
   }
 
-  /* 角标（自己的扩展，官方没有） */
   .pub-toggle .pub-toggle__count {
     font-size: 0.78rem;
     font-weight: 500;
@@ -355,7 +362,6 @@ function pubTags(item: PublicationItem): { text: string; color: TagColor }[] {
     color: #fff;
   }
 
-  /* 暗色模式 */
   .dark .pub-toggle {
     background: #1f2128;
     border-color: #3a3d45;
