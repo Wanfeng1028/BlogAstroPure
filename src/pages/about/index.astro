@@ -37,18 +37,16 @@ const skills = [
 ---
 
 <PageLayout title='About' {headings} view>
-  {/* 中英文切换（gemini-btn 风格） */}
-  <div class='mb-6 flex justify-end'>
-    <button
-      id='about-lang-toggle'
-      type='button'
-      class='gemini-btn inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium text-white'
-      aria-label='Toggle language'
-    >
-      <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-4 w-4'><path d='m5 8 6 6'/><path d='m4 14 6-6 2-3'/><path d='M2 5h12'/><path d='M7 2h1'/><path d='m22 22-5-10-5 10'/><path d='M14 18h6'/></svg>
-      <span class='lang-toggle-label'><span class='lang-zh'>中文</span><span class='lang-en'>English</span></span>
-    </button>
-  </div>
+  <button
+    slot='header-right'
+    id='about-lang-toggle'
+    type='button'
+    class='gemini-btn inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium text-white'
+    aria-label='Toggle language'
+  >
+    <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-4 w-4'><path d='m5 8 6 6'/><path d='m4 14 6-6 2-3'/><path d='M2 5h12'/><path d='M7 2h1'/><path d='m22 22-5-10-5 10'/><path d='M14 18h6'/></svg>
+    <span class='lang-toggle-label'><span class='lang-zh'>中文</span><span class='lang-en'>English</span></span>
+  </button>
 
   {/* about-me */}
   <section id='about-me'>

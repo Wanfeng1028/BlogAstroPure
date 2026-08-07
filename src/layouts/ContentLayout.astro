@@ -18,7 +18,12 @@ const { meta, highlightColor, back = '/', hideSidebar, ...props } = Astro.props
 ---
 
 <PageLayout {meta} {highlightColor} {...props}>
-  <Button title='Back' href={back} variant='back' />
+  <div class='flex items-center justify-between gap-4'>
+    <Button title='Back' href={back} variant='back' />
+    <div>
+      <slot name='header-right' />
+    </div>
+  </div>
   <main class='mt-6 items-start gap-x-10 md:flex'>
     {/* Sidebar */}
     {!hideSidebar && (
