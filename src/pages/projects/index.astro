@@ -3,168 +3,19 @@ import PageLayout from '@/layouts/CommonPage.astro'
 import ProjectCard from '@/components/projects/ProjectCard.astro'
 import CertificateCard from '@/components/projects/CertificateCard.astro'
 import PublicationCard from '@/components/projects/PublicationCard.astro'
+import { PROJECTS, CERTIFICATES, PUBLICATIONS } from '@/data/projects'
 
-// 主语言圆点色（GitHub 官方语言色板近似值）
-const LANG_DOT = {
-  vue: '#41b883',
-  ts: '#3178c6',
-  astro: '#ff5d01',
-  js: '#f1e05a',
-  python: '#3572A5',
-  jupyter: '#DA5B0B',
-  tailwind: '#06b6d4',
-  gis: '#10b981',
-  vite: '#646cff'
-} as const
-
-// ===== 数据：可后续迁移到 content 集合或独立数据文件 =====
-interface ProjectItem {
-  type: 'project'
-  href: string
-  namespace?: string
-  title: string
-  description: string
-  primaryLang: { text: string; dotColor?: string }
-  tech?: { text: string; color: 'purple' | 'aqua' | 'green' | 'orange' | 'blue' | 'pink' | 'red' | 'yellow' }[]
-  stars?: number | string
-  forks?: number | string
-  license?: string | false
-  accent?: string
-  deco?: string
-  actionIcon?: string
-}
-interface CertificateItem {
-  type: 'certificate'
-  href: string
-  issuer: string
-  title: string
-  description: string
-  year: number
-  validity?: string
-  certType?: { text: string; dotColor?: string }
-  category: { text: string; dotColor?: string }
-  accent?: string
-  deco?: string
-  actionIcon?: string
-}
-interface PublicationItem {
-  type: 'publication'
-  href: string
-  firstAuthor: string
-  coAuthorCount?: number
-  authors?: string[]
-  title: string
-  description: string
-  year: number
-  citations?: number | string
-  accessLabel?: string
-  venue: { text: string; dotColor?: string }
-  field?: { text: string; dotColor?: string }
-  authorSeparator?: string
-  accent?: string
-  deco?: string
-  actionIcon?: string
-}
-type Item = ProjectItem | CertificateItem | PublicationItem
-
-const items: Item[] = [
-  // ===== Projects =====
-  {
-    type: 'project',
-    href: 'https://github.com/Wanfeng1028/ParrotSoundReVue',
-    namespace: 'Wanfeng1028',
-    title: 'ParrotSoundReVue',
-    description: '基于 Vue 的智能语音识别应用，曾获一个奖项。',
-    primaryLang: { text: 'Vue', dotColor: LANG_DOT.vue },
-    stars: 56,
-    forks: 16,
-    license: 'MIT',
-    accent: '#0969da',
-    deco: '🦜',
-    actionIcon: '🐙'
-  },
-  {
-    type: 'project',
-    href: 'https://github.com/Wanfeng1028/BlogAstroPure',
-    namespace: 'Wanfeng1028',
-    title: 'BlogAstroPure',
-    description: '基于 Astro 的个人博客，当前本站。',
-    primaryLang: { text: 'Astro', dotColor: LANG_DOT.astro },
-    stars: 0,
-    forks: 0,
-    license: 'MIT',
-    accent: '#f97316',
-    deco: '📝',
-    actionIcon: '🐙'
-  },
-  {
-    // ↓↓↓ GeoFrontend2.0 （用户参考卡片对应的项目）↓↓↓
-    type: 'project',
-    href: 'https://github.com/Wanfeng1028/GeoFrontend2.0',
-    namespace: 'Wanfeng1028',
-    title: 'GeoFrontend2.0',
-    description: 'GIS 工作台前端，聚焦遥感智能识别与可视化。',
-    primaryLang: { text: 'JavaScript', dotColor: LANG_DOT.js },
-    stars: 0,
-    forks: 0,
-    license: false, // 无许可证：不显示 license pill
-    accent: '#10b981', // GIS 主题绿
-    deco: '🗺️',
-    actionIcon: '🐙'
-  },
-  // ===== Certificates =====
-  {
-    type: 'certificate',
-    href: '#',
-    issuer: '示例机构 / 颁发方',
-    title: '示例：前端开发工程师认证',
-    description: '占位示例，请替换为你的真实证书名称、颁发机构与链接。',
-    year: 2026,
-    validity: '永久有效',
-    certType: { text: 'Professional' },
-    category: { text: '前端开发', dotColor: '#3178c6' },
-    accent: '#d4a72c',
-    deco: '🏅',
-    actionIcon: '🔗'
-  },
-  // ===== Publications =====
-  {
-    type: 'publication',
-    href: '#',
-    firstAuthor: 'Wanfeng',
-    coAuthorCount: 1,
-    authors: ['Wanfeng', 'Coauthor'],
-    title: '示例：遥感影像语义分割方法研究',
-    description: '占位示例，请替换为你的真实论文、作者与链接。',
-    year: 2026,
-    citations: 12,
-    accessLabel: 'DOI',
-    venue: { text: '示例期刊', dotColor: '#8250df' },
-    field: { text: '遥感科学', dotColor: '#10b981' },
-    accent: '#8250df',
-    deco: '📄',
-    actionIcon: '📄'
-  },
-  {
-    type: 'publication',
-    href: '#',
-    firstAuthor: 'Wanfeng',
-    authors: ['Wanfeng'],
-    title: '示例：基于深度学习的作物识别综述',
-    description: '占位示例，请替换为你的真实论文、作者与链接。',
-    year: 2025,
-    citations: 3,
-    accessLabel: 'Open Access',
-    venue: { text: '示例会议', dotColor: '#06b6d4' },
-    accent: '#06b6d4',
-    deco: '📑',
-    actionIcon: '📑'
-  }
+// ===== 统一数据从 src/data/projects.ts 读取（首页共用此数据源） =====
+const items = [
+  ...PROJECTS.map((p) => ({ ...p, type: 'project' as const })),
+  ...CERTIFICATES.map((c) => ({ ...c, type: 'certificate' as const })),
+  ...PUBLICATIONS.map((p) => ({ ...p, type: 'publication' as const }))
 ]
 
-const projectCount = items.filter((i) => i.type === 'project').length
-const certificateCount = items.filter((i) => i.type === 'certificate').length
-const publicationCount = items.filter((i) => i.type === 'publication').length
+const projectCount = PROJECTS.length
+const certificateCount = CERTIFICATES.length
+const publicationCount = PUBLICATIONS.length
+const showPublicationsTab = publicationCount > 0
 ---
 
 <PageLayout title='Projects & Publications' hideSidebar view>
@@ -181,9 +32,13 @@ const publicationCount = items.filter((i) => i.type === 'publication').length
       <button class='pub-toggle__btn' data-filter='certificate' role='tab' aria-selected='false'>
         Certificates <span class='pub-toggle__count'>{certificateCount}</span>
       </button>
-      <button class='pub-toggle__btn' data-filter='publication' role='tab' aria-selected='false'>
-        Publications <span class='pub-toggle__count'>{publicationCount}</span>
-      </button>
+      {
+        showPublicationsTab && (
+          <button class='pub-toggle__btn' data-filter='publication' role='tab' aria-selected='false'>
+            Publications <span class='pub-toggle__count'>{publicationCount}</span>
+          </button>
+        )
+      }
     </div>
 
     {/* 内容区：使用三个独立卡片组件渲染 */}
