@@ -192,46 +192,118 @@ const skills = [
 <style is:global>
   /* ==========================================================
      关于页中英文显示控制（全局样式，兼容 Timeline 内部 set:html 渲染的内容）
-     ——默认英文（lang-zh 隐藏，lang-en 显示）
-     ——body[data-lang='zh'] 时反转
+     ——默认英文（lang-zh 隐藏，lang-en 显示），首次进入即展示英文
+     ——body[data-lang='zh'] 时反转全部显隐规则
      ========================================================== */
-  .lang-zh { display: none; }
-  .lang-en { display: inline; }
-  body[data-lang='zh'] .lang-zh { display: inline; }
-  body[data-lang='zh'] p  .lang-zh,
-  body[data-lang='zh'] li .lang-zh,
-  body[data-lang='zh'] h2 .lang-zh,
-  body[data-lang='zh'] h3 .lang-zh,
-  body[data-lang='zh'] strong .lang-zh { display: inline; }
-  body[data-lang='zh'] .lang-en { display: none; }
-  body[data-lang='zh'] blockquote .lang-zh { display: block; }
-</style>
-
-<script>
-  /**
-   * 关于页 中英文切换
-   * - 状态存 localStorage['about-lang'] = 'zh' | 'en'
-   * - 通过给 <body> 加 data-lang 属性，让 CSS 控制显隐
-   * - Timeline 组件内部内容由 Timeline 渲染，传入的 HTML 字符串仍能被
-   *   body[data-lang='en'] 的选择器覆盖
-   */
-  const KEY = 'about-lang'
-  const body = document.body
-
-  function apply(lang: 'zh' | 'en') {
-    body.setAttribute('data-lang', lang)
+  /* 默认：中文隐藏 */
+  .lang-zh,
+  p .lang-zh,
+  li .lang-zh,
+  h1 .lang-zh,
+  h2 .lang-zh,
+  h3 .lang-zh,
+  h4 .lang-zh,
+  h5 .lang-zh,
+  h6 .lang-zh,
+  strong .lang-zh,
+  blockquote .lang-zh,
+  span .lang-zh,
+  a .lang-zh {
+    display: none !important;
+  }
+  /* 默认：英文显示（块级容器里的 span.lang-en → inline；<p>/<h> 里的 blockquote 里 → 正确的层级） */
+  .lang-en,
+  p .lang-en,
+  li .lang-en,
+  h1 .lang-en,
+  h2 .lang-en,
+  h3 .lang-en,
+  h4 .lang-en,
+  h5 .lang-en,
+  h6 .lang-en,
+  strong .lang-en,
+  span .lang-en,
+  a .lang-en {
+    display: inline !important;
+  }
+  blockquote .lang-en {
+    display: block !important;
   }
 
-  // 初始化（优先 localStorage，否则默认英文）
-  const saved = localStorage.getItem(KEY) as 'zh' | 'en' | null
-  apply(saved === 'zh' || saved === 'en' ? saved : 'en')
+  /* body[data-lang='zh'] 时：中文显示，英文隐藏 */
+  body[data-lang='zh'] .lang-zh,
+  body[data-lang='zh'] p .lang-zh,
+  body[data-lang='zh'] li .lang-zh,
+  body[data-lang='zh'] h1 .lang-zh,
+  body[data-lang='zh'] h2 .lang-zh,
+  body[data-lang='zh'] h3 .lang-zh,
+  body[data-lang='zh'] h4 .lang-zh,
+  body[data-lang='zh'] h5 .lang-zh,
+  body[data-lang='zh'] h6 .lang-zh,
+  body[data-lang='zh'] strong .lang-zh,
+  body[data-lang='zh'] span .lang-zh,
+  body[data-lang='zh'] a .lang-zh {
+    display: inline !important;
+  }
+  body[data-lang='zh'] blockquote .lang-zh {
+    display: block !important;
+  }
+  body[data-lang='zh'] .lang-en,
+  body[data-lang='zh'] p .lang-en,
+  body[data-lang='zh'] li .lang-en,
+  body[data-lang='zh'] h1 .lang-en,
+  body[data-lang='zh'] h2 .lang-en,
+  body[data-lang='zh'] h3 .lang-en,
+  body[data-lang='zh'] h4 .lang-en,
+  body[data-lang='zh'] h5 .lang-en,
+  body[data-lang='zh'] h6 .lang-en,
+  body[data-lang='zh'] strong .lang-en,
+  body[data-lang='zh'] span .lang-en,
+  body[data-lang='zh'] a .lang-en,
+  body[data-lang='zh'] blockquote .lang-en {
+    display: none !important;
+  }
+</style>
 
-  // 绑定切换按钮
-  const btn = document.getElementById('about-lang-toggle')
-  btn?.addEventListener('click', () => {
-    const cur = body.getAttribute('data-lang') === 'en' ? 'en' : 'zh'
-    const next = cur === 'en' ? 'zh' : 'en'
-    apply(next)
-    localStorage.setItem(KEY, next)
-  })
+<script is:inline>
+  /**
+   * 关于页 中英文切换 ——提前在 DOMContentLoaded 之前就设置好 body[data-lang]，
+   * 避免首屏先渲染中文再切换到英文产生的闪烁。
+   * - 状态存 localStorage['about-lang'] = 'zh' | 'en'
+   * - 默认：'en'（用户要求首次进入 About 默认显示英文）
+   * - 之前保存了 zh 的用户可以按切换按钮回到中文
+   */
+  ;(function () {
+    const KEY = 'about-lang'
+    const DEFAULT_LANG = 'en' // About 默认英文
+
+    // 第 0 步：在任何渲染发生前先同步到 <html>/<body>
+    const saved = typeof localStorage !== 'undefined' ? localStorage.getItem(KEY) : null
+    const lang = saved === 'zh' || saved === 'en' ? saved : DEFAULT_LANG
+
+    function apply(l) {
+      document.documentElement.setAttribute('data-lang', l)
+      document.body && document.body.setAttribute('data-lang', l)
+    }
+    apply(lang)
+
+    // 第 1 步：DOM ready 之后再绑定切换按钮（按钮此时已经挂到 DOM 上）
+    function onReady() {
+      apply(lang) // 再同步一次确保 body 有
+      const btn = document.getElementById('about-lang-toggle')
+      if (!btn) return
+      btn.addEventListener('click', function () {
+        const cur = (document.body.getAttribute('data-lang') === 'zh' ? 'zh' : 'en')
+        const next = cur === 'en' ? 'zh' : 'en'
+        apply(next)
+        try { localStorage.setItem(KEY, next) } catch (e) {}
+      })
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', onReady)
+    } else {
+      onReady()
+    }
+  })()
 </script>
