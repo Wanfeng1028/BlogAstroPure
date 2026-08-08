@@ -114,21 +114,49 @@ const shares = {
 </div>
 
 <div class='mx-6 rounded-b-xl border border-t-0 px-3 pb-1.5 pt-1 sm:mx-8 sm:px-4'>
-  <a
-    href='/projects#sponsorship'
-    class='flex items-center justify-between text-muted-foreground no-underline'
-    target='_blank'
+  <button
+    id='sponsor-btn'
+    type='button'
+    class='flex w-full items-center justify-between text-muted-foreground transition-colors hover:text-primary'
   >
     <span>Buy me a cup of coffee ☕.</span>
     <Icon class='box-content size-5 p-1' name='receive-money' />
-  </a>
+  </button>
 </div>
+
+<dialog
+  id='sponsor-dialog'
+  class='max-w-[calc(100vw-2rem)] rounded-2xl border bg-background p-6 shadow-lg'
+>
+  <div class='flex flex-col items-center gap-4'>
+    <p class='text-lg font-semibold'>请我喝杯咖啡 ☕</p>
+    <p class='text-sm text-muted-foreground'>感谢你的支持，这将是我持续创作的动力 💪</p>
+    <img
+      src='/images/WeChat.jpg'
+      alt='微信收款码'
+      class='w-80 max-w-full rounded-lg border'
+    />
+    <p class='text-xs text-muted-foreground'>（上图为微信收款码，若想更换图片可替换 public/images/WeChat.jpg）</p>
+    <button
+      id='sponsor-close'
+      type='button'
+      class='mt-1 inline-flex items-center gap-1 rounded-full bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90'
+    >
+      <Icon class='size-4' name='close' />
+      关闭
+    </button>
+  </div>
+</dialog>
 
 <style>
   #qrcode-container.expanded {
     max-height: 11rem;
     transform: translateY(6px);
     opacity: 100;
+  }
+
+  #sponsor-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.45);
   }
 </style>
 
@@ -147,4 +175,14 @@ const shares = {
   const getQRCode = document.getElementById('get-qrcode')
   const qrcodeContainer = document.getElementById('qrcode-container')
   getQRCode?.addEventListener('click', () => qrcodeContainer?.classList.toggle('expanded'))
+
+  // Sponsor dialog
+  const sponsorBtn = document.getElementById('sponsor-btn')
+  const sponsorDialog = document.getElementById('sponsor-dialog') as HTMLDialogElement | null
+  const sponsorClose = document.getElementById('sponsor-close')
+  sponsorBtn?.addEventListener('click', () => sponsorDialog?.showModal())
+  sponsorClose?.addEventListener('click', () => sponsorDialog?.close())
+  sponsorDialog?.addEventListener('click', (e) => {
+    if (e.target === sponsorDialog) sponsorDialog.close()
+  })
 </script>
