@@ -55,7 +55,11 @@ function optimizeSsrDeps(): Plugin {
             'hast-util-select',
             'unist-util-visit',
             'rehype'
-          ]
+          ],
+          // 抑制 esbuild 的 createRequire(import.meta.url) banner，
+          // 避免 Vite SSR 转换重写 import.meta 中的 meta 标识符时与 zod v4 的 meta 导出冲突
+          // 参考: https://github.com/withastro/astro/pull/16109
+          esbuildOptions: { banner: { js: '' } }
         }
       }
     }
