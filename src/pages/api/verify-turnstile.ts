@@ -2,6 +2,8 @@ import type { APIRoute } from 'astro'
 
 import { security } from '@/security-config'
 
+export const prerender = false
+
 /**
  * Turnstile 服务端验证接口：把前端拿到的 token 交给 Cloudflare siteverify 校验。
  * 返回 { success: boolean, 'error-codes'?: string[] }。

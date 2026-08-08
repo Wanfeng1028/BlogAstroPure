@@ -89,7 +89,7 @@ export default defineConfig({
   adapter: cloudflare({
     imageService: isDev ? undefined : 'cloudflare'
   }),
-  output: 'server',
+  output: 'static',
   // Vercel（保留备用，需要时把上面换成这行）
   // adapter: vercel({ imageService: true }),
   // output: 'server',
