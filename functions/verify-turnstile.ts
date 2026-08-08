@@ -2,7 +2,7 @@
 // 校验 Turnstile token。使用 URLSearchParams (application/x-www-form-urlencoded)
 // 以获得最佳 siteverify 兼容性。Secret Key 从 Pages 环境变量 TURNSTILE_SECRET_KEY 读取。
 
-export async function onRequestPost(context) {
+export async function onRequestPost(context: any) {
   const { request, env } = context
 
   let token: string | undefined

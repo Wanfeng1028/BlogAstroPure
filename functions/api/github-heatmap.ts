@@ -2,7 +2,7 @@
 // 代理拉取 GitHub 公开 push 事件，返回 { 'YYYY-MM-DD': 贡献数 }
 // 沿用 worker/src/worker.js 逻辑，1 小时浏览器缓存，避免 GitHub 限流。
 
-export async function onRequest(context) {
+export async function onRequest(context: any) {
   const { request, env } = context
   const url = new URL(request.url)
   const username = url.searchParams.get('user') || 'Wanfeng1028'
