@@ -16,9 +16,9 @@ const blog = defineCollection({
   // Required
   schema: ({ image }) =>
     z.object({
-      // Required
-      title: z.string().max(60),
-      description: z.string().max(160),
+      // Required — 放宽到真实个人博客常用长度，避免长标题/详细描述被静默丢弃
+      title: z.string().max(120),
+      description: z.string().max(250),
       publishDate: z.coerce.date(),
       // Optional
       updatedDate: z.coerce.date().optional(),
