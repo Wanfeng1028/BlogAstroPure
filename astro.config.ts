@@ -1,6 +1,6 @@
 import { rehypeHeadingIds } from '@astrojs/markdown-remark'
 import cloudflare from '@astrojs/cloudflare'
-// import vercel from '@astrojs/vercel' // 保留 Vercel 配置，切换到 Cloudflare 时暂不使用
+// import vercel from '@astrojs/vercel' // 保留 Vercel 配置，需要时切换
 import AstroPureIntegration from 'astro-pure'
 import { defineConfig, fontProviders, svgoOptimizer } from 'astro/config'
 import type { Plugin } from 'vite'
@@ -25,12 +25,18 @@ import {
 import config from './src/site.config.ts'
 
 /**
- * @astrojs/cloudflare 的 workerd dev 环境不会预编译 SSR 依赖，导致运行时才发现的
- * 依赖触发级联 reload 崩溃（"deps_ssr/chunk-*.js 文件不存在"）。
- * 这里对非 client 环境强制排除 astro-pure 的预构建，并预编译关键依赖，消除冷启动崩溃。
- * 注意：不能用 ssr.external 标记 packages/pure，否则 Vite 的 SSR 模块运行时会跳过
- * 插件管线，导致 astro-pure 注入的 virtual:config 虚拟模块无法解析。
- * 参考 https://github.com/withastro/astro/issues/16248
+ * @astrojs/cloudflare 的 workerd SSR 环境在首次 render 时容易找不到已被 Vite 跳过的
+ * 深层依赖（表现为 "deps_ssr/chunk-*.js 文件不存在"）。这里把非 client 环境的常见
+ * 运行时依赖加入 optimizeDeps.include，保证它们被 Vite SSR 预编译打包。
+ *
+ * 注意：
+ * 1) 不能把 `astro-pure` 放进 include（它依赖 virtual:config 虚拟模块，必须走插件管线）；
+ * 2) 绝对不能把 `astro/assets/fonts/runtime.js` 放进 include —— 它依赖
+ *    `virtual:astro:assets/fonts/internal` 这类 Astro 内部虚拟模块，被 esbuild 强行预编译
+ *    时会直接报 "Could not resolve virtual:astro:assets/fonts/internal"。
+ *    之前踩过这个坑，build 阶段会崩。
+ * 3) @astrojs/cloudflare/image-service 同样是 workerd 专用入口，在本地预构建会引用
+ *    不存在的 workerd runtime，应该放到 exclude 或不处理。
  */
 function optimizeSsrDeps(): Plugin {
   return {
@@ -39,13 +45,11 @@ function optimizeSsrDeps(): Plugin {
       if (name === 'client') return
       return {
         optimizeDeps: {
-          exclude: ['astro-pure'],
+          exclude: ['astro-pure', '@astrojs/cloudflare/image-service'],
           include: [
             'astro/errors',
             'astro/zod',
-            'astro/assets/fonts/runtime.js',
             'astro/virtual-modules/middleware.js',
-            '@astrojs/cloudflare/image-service',
             'ultrahtml',
             'node-html-parser',
             'hast-util-select',

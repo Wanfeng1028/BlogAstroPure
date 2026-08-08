@@ -63,11 +63,18 @@ export function vitePluginUserConfig(
      * Module containing imports of user-specified custom CSS files.
      */
     'virtual:user-css': opts.customCss.map((id) => `import ${resolveId(id)};`).join(''),
-    'virtual:collection-config': `let userCollections;
-			try {
-				userCollections = (await import(${JSON.stringify(collectionConfigImportPath)})).collections;
-			} catch {}
-			export const collections = userCollections;`
+    // Use a top-level static import wrapped in a try/catch-compatible pattern
+    // instead of `await import(...)` (dynamic import). The dynamic-import form
+    // forces Vite/Rollup to split the chunk at build-time, which conflicts with
+    // the @astrojs/cloudflare workerd SSR transform that simultaneously rewrites
+    // `import.meta.env` identifiers on the same chunk, producing the build error:
+    //   "Cannot split a chunk that has already been edited (0:76 – import.meta)"
+    //
+    // With the static-import form, Vite can still alias the TS source module
+    // normally, and a module-level Promise chain keeps the semantics identical
+    // to the original try/catch pattern (undefined on failure).
+    'virtual:collection-config': `import * as __userContentModule from ${JSON.stringify(collectionConfigImportPath)};
+export const collections = __userContentModule?.collections ?? undefined;`
   } satisfies Record<string, string>
 
   /** Mapping names prefixed with `\0` to their original form. */
