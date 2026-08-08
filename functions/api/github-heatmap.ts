@@ -1,13 +1,29 @@
 // Cloudflare Pages Functions: /api/github-heatmap
-// 代理拉取 GitHub 公开 push 事件，返回 { 'YYYY-MM-DD': 贡献数 }
-// 沿用 worker/src/worker.js 逻辑，1 小时浏览器缓存，避免 GitHub 限流。
+// 用 GitHub GraphQL API 的 contributionCalendar 拉取贡献数据（与 GitHub 主页一致）。
+// 支持可选 GITHUB_TOKEN 环境变量以提升限流（匿名 60/小时，有 PAT 5000/小时）。
+// 浏览器 + CDN 双缓存 1 小时。
+
+const GRAPHQL_QUERY = `
+query($user: String!, $from: DateTime!, $to: DateTime!) {
+  user(login: $user) {
+    contributionsCollection(from: $from, to: $to) {
+      contributionCalendar {
+        weeks {
+          contributionDays {
+            date
+            contributionCount
+          }
+        }
+      }
+    }
+  }
+}`
 
 export async function onRequest(context: any) {
   const { request, env } = context
   const url = new URL(request.url)
   const username = url.searchParams.get('user') || 'Wanfeng1028'
 
-  // CORS 预检
   if (request.method === 'OPTIONS') {
     return new Response(null, {
       headers: {
@@ -18,28 +34,47 @@ export async function onRequest(context: any) {
     })
   }
 
+  // 拉取 [今天 - 1 年, 今天] 范围的贡献（热力图组件会按选中年份筛）
+  const end = new Date()
+  const start = new Date(end)
+  start.setFullYear(start.getFullYear() - 1)
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    'User-Agent': 'AstroBlog',
+    Accept: 'application/vnd.github+json'
+  }
+  if (env.GITHUB_TOKEN) headers.Authorization = `Bearer ${env.GITHUB_TOKEN}`
+
   const data: Record<string, number> = {}
-  for (let page = 1; page <= 4; page++) {
-    const res = await fetch(
-      `https://api.github.com/users/${encodeURIComponent(username)}/events/public?per_page=100&page=${page}`,
-      {
-        headers: {
-          'User-Agent': 'AstroBlog',
-          Accept: 'application/vnd.github+json',
-          ...(env.GITHUB_TOKEN ? { Authorization: `Bearer ${env.GITHUB_TOKEN}` } : {})
+
+  try {
+    const res = await fetch('https://api.github.com/graphql', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        query: GRAPHQL_QUERY,
+        variables: {
+          user: username,
+          from: start.toISOString(),
+          to: end.toISOString()
+        }
+      })
+    })
+
+    if (res.ok) {
+      const json = await res.json()
+      const weeks =
+        json?.data?.user?.contributionsCollection?.contributionCalendar?.weeks || []
+      for (const week of weeks) {
+        for (const day of week?.contributionDays || []) {
+          const count = Number(day.contributionCount) || 0
+          if (count > 0) data[String(day.date)] = count
         }
       }
-    )
-    if (!res.ok) break
-    const events = (await res.json()) as any[]
-    if (!Array.isArray(events) || !events.length) break
-    for (const ev of events) {
-      if (ev.type === 'PushEvent') {
-        const key = String(ev.created_at).slice(0, 10)
-        const commits = ev.payload?.commits?.length || 1
-        data[key] = (data[key] || 0) + commits
-      }
     }
+  } catch {
+    // GraphQL 出错时兜底返回空对象（前端仅显示博客数据）
   }
 
   return new Response(JSON.stringify(data), {
