@@ -3,16 +3,18 @@ interface Props {
   title?: string
   hint?: string
   class?: string
+  variant?: 'card' | 'bar'
 }
 
 const {
   title = '等待更新',
   hint = '相关内容正在整理中，敬请期待',
-  class: className = ''
+  class: className = '',
+  variant = 'card'
 } = Astro.props
 ---
 
-<div class={`empty-state ${className}`} aria-live='polite'>
+<div class={`empty-state ${variant === 'bar' ? 'empty-state--bar' : ''} ${className}`} aria-live='polite'>
   <div class='empty-state__icon' aria-hidden='true'>
     <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'>
       <path d='M12 2v4'/>
@@ -26,10 +28,13 @@ const {
       <circle cx='12' cy='12' r='4'/>
     </svg>
   </div>
-  <p class='empty-state__text'>
-    {title}<span class='empty-state__dots'><i>.</i><i>.</i><i>.</i></span>
-  </p>
-  <p class='empty-state__hint'>{hint}</p>
+  <div class='empty-state__body'>
+    <p class='empty-state__text'>
+      {title}<span class='empty-state__dots'><i>.</i><i>.</i><i>.</i></span>
+    </p>
+    {variant === 'card' && <p class='empty-state__hint'>{hint}</p>}
+    {variant === 'bar'  && <p class='empty-state__hint empty-state__hint--bar'>{hint}</p>}
+  </div>
 </div>
 
 <style>
@@ -50,6 +55,17 @@ const {
     user-select: none;
     min-height: 320px;
   }
+  /* 横向条带形态（友链空状态用） */
+  .empty-state--bar {
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: left;
+    min-height: 0;
+    padding: 18px 24px;
+    gap: 20px;
+    border-radius: 14px;
+  }
   .empty-state__icon {
     width: 56px;
     height: 56px;
@@ -59,10 +75,25 @@ const {
     background: rgba(78,160,255,0.12);
     color: #346bf0;
     animation: empty-spin 8s linear infinite;
+    flex-shrink: 0;
+  }
+  .empty-state--bar .empty-state__icon {
+    width: 44px;
+    height: 44px;
   }
   .empty-state__icon svg {
     width: 30px;
     height: 30px;
+  }
+  .empty-state--bar .empty-state__icon svg {
+    width: 24px;
+    height: 24px;
+  }
+  .empty-state__body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
   }
   .empty-state__text {
     font-size: 22px;
@@ -70,6 +101,9 @@ const {
     color: #374151;
     letter-spacing: 0.5px;
     margin: 0;
+  }
+  .empty-state--bar .empty-state__text {
+    font-size: 18px;
   }
   .empty-state__dots i {
     font-style: normal;
@@ -83,6 +117,9 @@ const {
     font-size: 14px;
     color: #9aa0a6;
     margin: 0;
+  }
+  .empty-state__hint--bar {
+    font-size: 13px;
   }
 
   .dark .empty-state {
