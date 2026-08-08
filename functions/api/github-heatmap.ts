@@ -1,7 +1,7 @@
 // Cloudflare Pages Functions: /api/github-heatmap
-// 用 GitHub GraphQL API 的 contributionCalendar 拉取贡献数据（与 GitHub 主页一致）。
-// 支持可选 GITHUB_TOKEN 环境变量以提升限流（匿名 60/小时，有 PAT 5000/小时）。
-// 浏览器 + CDN 双缓存 1 小时。
+// 优先走 GitHub GraphQL contributionCalendar（与主页数据一致），
+// 失败时回退到 REST PushEvent（至少不空白）。
+// 支持 GITHUB_TOKEN 环境变量以提升限流。缓存 10 分钟 + 避免陈旧数据。
 
 const GRAPHQL_QUERY = `
 query($user: String!, $from: DateTime!, $to: DateTime!) {
@@ -19,6 +19,67 @@ query($user: String!, $from: DateTime!, $to: DateTime!) {
   }
 }`
 
+type HeatmapData = Record<string, number>
+
+async function fetchGraphQL(
+  username: string,
+  headers: Record<string, string>
+): Promise<HeatmapData | null> {
+  const end = new Date()
+  const start = new Date(end)
+  start.setFullYear(start.getFullYear() - 1)
+
+  const res = await fetch('https://api.github.com/graphql', {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      query: GRAPHQL_QUERY,
+      variables: {
+        user: username,
+        from: start.toISOString(),
+        to: end.toISOString()
+      }
+    })
+  })
+  if (!res.ok) return null
+  const json = (await res.json()) as any
+  const weeks =
+    json?.data?.user?.contributionsCollection?.contributionCalendar?.weeks || []
+  const data: HeatmapData = {}
+  for (const week of weeks) {
+    for (const day of week?.contributionDays || []) {
+      const count = Number(day.contributionCount) || 0
+      if (count > 0) data[String(day.date)] = count
+    }
+  }
+  // 一个有效贡献日都没有 → 视为失败走 fallback
+  return Object.keys(data).length > 0 ? data : null
+}
+
+async function fetchRestPushEvents(
+  username: string,
+  headers: Record<string, string>
+): Promise<HeatmapData> {
+  const data: HeatmapData = {}
+  for (let page = 1; page <= 4; page++) {
+    const res = await fetch(
+      `https://api.github.com/users/${encodeURIComponent(username)}/events/public?per_page=100&page=${page}`,
+      { headers }
+    )
+    if (!res.ok) break
+    const events = (await res.json()) as any[]
+    if (!Array.isArray(events) || !events.length) break
+    for (const ev of events) {
+      if (ev.type === 'PushEvent') {
+        const key = String(ev.created_at).slice(0, 10)
+        const commits = ev.payload?.commits?.length || 1
+        data[key] = (data[key] || 0) + commits
+      }
+    }
+  }
+  return data
+}
+
 export async function onRequest(context: any) {
   const { request, env } = context
   const url = new URL(request.url)
@@ -34,11 +95,6 @@ export async function onRequest(context: any) {
     })
   }
 
-  // 拉取 [今天 - 1 年, 今天] 范围的贡献（热力图组件会按选中年份筛）
-  const end = new Date()
-  const start = new Date(end)
-  start.setFullYear(start.getFullYear() - 1)
-
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     'User-Agent': 'AstroBlog',
@@ -46,42 +102,26 @@ export async function onRequest(context: any) {
   }
   if (env.GITHUB_TOKEN) headers.Authorization = `Bearer ${env.GITHUB_TOKEN}`
 
-  const data: Record<string, number> = {}
-
+  let data: HeatmapData = {}
+  let source = 'graphql'
   try {
-    const res = await fetch('https://api.github.com/graphql', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({
-        query: GRAPHQL_QUERY,
-        variables: {
-          user: username,
-          from: start.toISOString(),
-          to: end.toISOString()
-        }
-      })
-    })
-
-    if (res.ok) {
-      const json = await res.json()
-      const weeks =
-        json?.data?.user?.contributionsCollection?.contributionCalendar?.weeks || []
-      for (const week of weeks) {
-        for (const day of week?.contributionDays || []) {
-          const count = Number(day.contributionCount) || 0
-          if (count > 0) data[String(day.date)] = count
-        }
-      }
+    const gql = await fetchGraphQL(username, headers)
+    if (gql) data = gql
+    else {
+      data = await fetchRestPushEvents(username, headers)
+      source = 'rest-fallback'
     }
   } catch {
-    // GraphQL 出错时兜底返回空对象（前端仅显示博客数据）
+    data = {}
+    source = 'error'
   }
 
   return new Response(JSON.stringify(data), {
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
-      'Cache-Control': 'public, max-age=3600, s-maxage=3600',
-      'Access-Control-Allow-Origin': '*'
+      'Cache-Control': 'public, max-age=600, s-maxage=600', // 10 分钟
+      'Access-Control-Allow-Origin': '*',
+      'X-Heatmap-Source': source
     }
   })
 }

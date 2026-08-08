@@ -1,203 +1,217 @@
 ---
-import { turnstileSiteKey } from '@/site-config'
-
-const enabled = turnstileSiteKey && !turnstileSiteKey.startsWith('YOUR_')
+// TurnstileGate：全站首次进入弹层人机验证（localStorage 记忆 12 小时）。
+// Site Key 运行时从 /api/site-config 取 Pages 环境变量，不写进代码仓库。
+// Secret Key 从 Pages 环境变量 TURNSTILE_SECRET_KEY 读取，服务端 /verify-turnstile 使用。
 ---
 
-{enabled && (
-  <>
-    <div
-      id='turnstile-gate'
-      role='dialog'
-      aria-modal='true'
-      aria-labelledby='turnstile-gate-title'
-      style='display:none'
-    >
-      <div class='gate-overlay'></div>
-      <div class='gate-box'>
-        <h2 id='turnstile-gate-title'>人机验证</h2>
-        <p class='gate-desc'>请完成验证以继续访问本站</p>
-        <div id='turnstile-gate-widget' data-sitekey={turnstileSiteKey}></div>
-        <div id='turnstile-gate-error' class='gate-error' style='display:none'></div>
-      </div>
-    </div>
+<div
+  id='turnstile-gate'
+  role='dialog'
+  aria-modal='true'
+  aria-labelledby='turnstile-gate-title'
+  style='display:none'
+>
+  <div class='gate-overlay'></div>
+  <div class='gate-box'>
+    <h2 id='turnstile-gate-title'>人机验证</h2>
+    <p class='gate-desc'>请完成验证以继续访问本站</p>
+    <div id='turnstile-gate-widget'></div>
+    <div id='turnstile-gate-error' class='gate-error' style='display:none'></div>
+  </div>
+</div>
 
-    <script is:inline>
-      // 优先执行：检测 localStorage，避免已通过用户看到闪屏
-      (function () {
-        try {
-          var k = 'turnstile-gate:v1'
-          var t = localStorage.getItem(k)
-          if (t && Date.now() - Number(t) < 12 * 60 * 60 * 1000) return // 12 小时内不重复
-          var el = document.getElementById('turnstile-gate')
-          if (el) el.style.display = 'flex'
-        } catch (e) {}
-      })()
-    </script>
+<script is:inline>
+  // 优先执行：检测 localStorage，避免已通过用户看到闪屏
+  (function () {
+    try {
+      var k = 'turnstile-gate:v1'
+      var t = localStorage.getItem(k)
+      if (t && Date.now() - Number(t) < 12 * 60 * 60 * 1000) return // 12 小时内不重复
+      var el = document.getElementById('turnstile-gate')
+      if (el) el.style.display = 'none' // 先隐藏，等 init 判断 Site Key 是否启用
+    } catch (e) {}
+  })()
+</script>
 
-    <script>
-      import { turnstileSiteKey } from '@/site-config'
+<script>
+  const STORAGE_KEY = 'turnstile-gate:v1'
+  const TTL = 12 * 60 * 60 * 1000 // 12 小时
 
-      const STORAGE_KEY = 'turnstile-gate:v1'
-      const TTL = 12 * 60 * 60 * 1000 // 12 小时
-
-      declare global {
-        interface Window {
-          turnstile?: {
-            render: (el: HTMLElement, opts: Record<string, unknown>) => void
-            reset: (el: HTMLElement) => void
-          }
-          onTurnstileLoad?: () => void
-        }
+  declare global {
+    interface Window {
+      turnstile?: {
+        render: (el: HTMLElement, opts: Record<string, unknown>) => void
+        reset: (el: HTMLElement) => void
       }
+      onTurnstileLoad?: () => void
+    }
+  }
 
-      function isPassed(): boolean {
-        try {
-          const t = localStorage.getItem(STORAGE_KEY)
-          if (!t) return false
-          return Date.now() - Number(t) < TTL
-        } catch {
-          return false
-        }
-      }
+  function isPassed(): boolean {
+    try {
+      const t = localStorage.getItem(STORAGE_KEY)
+      if (!t) return false
+      return Date.now() - Number(t) < TTL
+    } catch {
+      return false
+    }
+  }
 
-      function markPassed() {
-        try {
-          localStorage.setItem(STORAGE_KEY, String(Date.now()))
-        } catch {}
-      }
+  function markPassed() {
+    try {
+      localStorage.setItem(STORAGE_KEY, String(Date.now()))
+    } catch {}
+  }
 
-      function showError(msg: string) {
-        const err = document.getElementById('turnstile-gate-error')
-        if (err) {
-          err.textContent = msg
-          err.style.display = 'block'
-        }
-      }
+  function showError(msg: string) {
+    const err = document.getElementById('turnstile-gate-error')
+    if (err) {
+      err.textContent = msg
+      err.style.display = 'block'
+    }
+  }
 
-      async function verify(token: string): Promise<boolean> {
-        try {
-          const res = await fetch('/verify-turnstile', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token })
-          })
-          if (!res.ok) return false
-          const data = await res.json()
-          return data && data.success === true
-        } catch {
-          return false
-        }
-      }
+  function hideGate() {
+    const gate = document.getElementById('turnstile-gate')
+    if (gate) gate.style.display = 'none'
+  }
 
-      function hideGate() {
-        const gate = document.getElementById('turnstile-gate')
-        if (gate) gate.style.display = 'none'
-      }
+  function showGate() {
+    const gate = document.getElementById('turnstile-gate')
+    if (gate) gate.style.display = 'flex'
+  }
 
-      function loadScript(): Promise<void> {
-        return new Promise((resolve) => {
-          if (window.turnstile) return resolve()
-          window.onTurnstileLoad = () => resolve()
-          const s = document.createElement('script')
-          s.src =
-            'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad&render=explicit'
-          s.async = true
-          s.defer = true
-          s.onerror = () => resolve() // 脚本报错也继续，防止死锁
-          document.head.appendChild(s)
-        })
-      }
+  async function fetchSiteKey(): Promise<string> {
+    try {
+      const res = await fetch('/api/site-config', {
+        headers: { Accept: 'application/json' }
+      })
+      if (!res.ok) return ''
+      const data = (await res.json()) as { turnstileSiteKey?: string }
+      return data.turnstileSiteKey || ''
+    } catch {
+      return ''
+    }
+  }
 
-      async function init() {
-        if (isPassed()) return
+  async function verify(token: string): Promise<boolean> {
+    try {
+      const res = await fetch('/verify-turnstile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token })
+      })
+      if (!res.ok) return false
+      const data = await res.json()
+      return data && data.success === true
+    } catch {
+      return false
+    }
+  }
 
-        const gate = document.getElementById('turnstile-gate')
-        const widget = document.getElementById('turnstile-gate-widget')
-        if (!gate || !widget) return
+  function loadScript(): Promise<void> {
+    return new Promise((resolve) => {
+      if (window.turnstile) return resolve()
+      window.onTurnstileLoad = () => resolve()
+      const s = document.createElement('script')
+      s.src =
+        'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad&render=explicit'
+      s.async = true
+      s.defer = true
+      s.onerror = () => resolve() // 脚本报错也继续，防止死锁
+      document.head.appendChild(s)
+    })
+  }
 
-        gate.style.display = 'flex'
+  async function init() {
+    if (isPassed()) return
 
-        await loadScript()
+    const siteKey = await fetchSiteKey()
+    // 没有配置 Turnstile Site Key → 直接放通
+    if (!siteKey) return
 
-        if (!window.turnstile) {
-          // Turnstile 脚本加载失败 → 放通（避免锁死站点）
+    const widget = document.getElementById('turnstile-gate-widget')
+    if (!widget) return
+
+    showGate()
+    await loadScript()
+
+    if (!window.turnstile) {
+      // Turnstile 脚本加载失败 → 放通（避免锁死站点）
+      hideGate()
+      return
+    }
+
+    window.turnstile.render(widget, {
+      sitekey: siteKey,
+      size: 'normal',
+      action: 'site-entry',
+      callback: async (token: string) => {
+        const ok = await verify(token)
+        if (ok) {
+          markPassed()
           hideGate()
-          return
+        } else {
+          showError('验证失败，请重试')
+          window.turnstile?.reset(widget)
         }
+      },
+      'error-callback': () => {
+        showError('验证加载出错，请刷新页面重试')
+      },
+      'timeout-callback': () => {
+        showError('验证已超时，请重试')
+        window.turnstile?.reset(widget)
+      }
+    })
+  }
 
-        window.turnstile.render(widget, {
-          sitekey: turnstileSiteKey,
-          size: 'normal',
-          action: 'site-entry',
-          callback: async (token: string) => {
-            const ok = await verify(token)
-            if (ok) {
-              markPassed()
-              hideGate()
-            } else {
-              showError('验证失败，请重试')
-              window.turnstile?.reset(widget)
-            }
-          },
-          'error-callback': () => {
-            showError('验证加载出错，请刷新页面重试')
-          },
-          'timeout-callback': () => {
-            showError('验证已超时，请重试')
-            window.turnstile?.reset(widget)
-          }
-        })
-      }
+  init()
+</script>
 
-      init()
-    </script>
-
-    <style is:global>
-      #turnstile-gate {
-        position: fixed;
-        inset: 0;
-        z-index: 2147483647;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      #turnstile-gate .gate-overlay {
-        position: absolute;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.65);
-        backdrop-filter: blur(4px);
-      }
-      #turnstile-gate .gate-box {
-        position: relative;
-        background: hsl(var(--card));
-        color: hsl(var(--card-foreground));
-        border-radius: 16px;
-        padding: 28px 32px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 14px;
-        min-width: 300px;
-        max-width: calc(100vw - 32px);
-      }
-      #turnstile-gate h2 {
-        font-size: 20px;
-        font-weight: 600;
-        margin: 0;
-      }
-      #turnstile-gate .gate-desc {
-        margin: 0;
-        font-size: 13px;
-        color: hsl(var(--muted-foreground));
-      }
-      #turnstile-gate .gate-error {
-        margin-top: 4px;
-        font-size: 13px;
-        color: #ef4444;
-        text-align: center;
-      }
-    </style>
-  </>
-)}
+<style is:global>
+  #turnstile-gate {
+    position: fixed;
+    inset: 0;
+    z-index: 2147483647;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #turnstile-gate .gate-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+  }
+  #turnstile-gate .gate-box {
+    position: relative;
+    background: hsl(var(--card));
+    color: hsl(var(--card-foreground));
+    border-radius: 16px;
+    padding: 28px 32px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    min-width: 300px;
+    max-width: calc(100vw - 32px);
+  }
+  #turnstile-gate h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+  }
+  #turnstile-gate .gate-desc {
+    margin: 0;
+    font-size: 13px;
+    color: hsl(var(--muted-foreground));
+  }
+  #turnstile-gate .gate-error {
+    margin-top: 4px;
+    font-size: 13px;
+    color: #ef4444;
+    text-align: center;
+  }
+</style>
