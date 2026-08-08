@@ -26,19 +26,19 @@ ERA5 提供了广泛的气象和气候变量，包括温度、湿度、风速、
 
 首先我们需要从哥白尼气候数据存储 (Copernicus Climate Data Store - CDS) 下载 ERA5 数据。访问 CDS 网站并登录：[https://cds.climate.copernicus.eu/](https://cds.climate.copernicus.eu/)。（如果是首次使用，请注册一个免费账号并登录。）点击注册按钮，使用邮箱注册填写相关信息即可，不做过多阐述，注册成功后会向注册的邮箱发送一封激活账号的邮件。点击邮件里面的链接即可激活账号登录。
 
-![](https://i-blog.csdnimg.cn/img_convert/904169f5e5f641fe962bcfce525e71d4.png)
+![](./img/01.png)
 
-![](https://i-blog.csdnimg.cn/img_convert/5b1748e18e231194a712db2a37da29a8.png)
+![](./img/02.png)
 
 > 图 1 注册与账号激活操作界面
 
 接下来我们需要配置运行 Python 程序的环境，这里我们选用的是 Anaconda 或者 Miniconda（轻量级版本），Anaconda 是一个用于管理 Python 环境和软件包的工具。按照以下的指令即可完成 Python 程序运行环境的配置。
 
-![](https://i-blog.csdnimg.cn/img_convert/00bfc7d3193f357792ad3cdfd31c75ee.png)
+![](./img/03.png)
 
 后续需要用到的 python 包可以使用 `pip install` 安装。
 
-![](https://i-blog.csdnimg.cn/img_convert/b06ddd2872ffe290c25a42e8df3e5f82.png)
+![](./img/04.png)
 
 > 图 2 Python 运行环境配置
 
@@ -46,7 +46,7 @@ ERA5 提供了广泛的气象和气候变量，包括温度、湿度、风速、
 
 我们需要选择正确的数据集，在 CDS 网站上，导航到或直接访问以下链接：[ERA5 hourly data on single levels from 1940 to present](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels)，搜索：ERA5 hourly data on single levels from 1940 to present（ERA5 每小时单层数据，时间范围从 1940 年至今），选择列表中的第一条数据。
 
-![](https://i-blog.csdnimg.cn/direct/21c58054c33146c1bc8608bc90a14adf.png)
+![](./img/05.png)
 
 > 图 3 ERA5 hourly data on single levels from 1940 to present
 
@@ -69,19 +69,19 @@ ERA5 提供了广泛的气象和气候变量，包括温度、湿度、风速、
 
 官方提供了 API 请求数据接口，如下图所示，点击 API，但是这里需要配置一下 url 和 api key。
 
-![](https://i-blog.csdnimg.cn/img_convert/7ce2ff3a701110052c10b65bf5e5aa1b.png)
+![](./img/06.png)
 
 > 图 4 API 下载入口
 
-![](https://i-blog.csdnimg.cn/img_convert/1f45051a9eee883cb4dc32cf7aa0e98b.png)
+![](./img/07.png)
 
 > 图 5 URL 与 API Key 配置
 
 使用下面的代码进行 API 请求数据，请求之后，其实可以跳转到官方页面使用浏览器下载，程序的控制台下载较为缓慢且容易中断。
 
-![](https://i-blog.csdnimg.cn/img_convert/23a396fc8523f379206e8c693d47ffed.png)
+![](./img/08.png)
 
-![](https://i-blog.csdnimg.cn/img_convert/4dc28fd262aca0cc9e93ec212263bc39.png)
+![](./img/09.png)
 
 > 图 6 官网请求之后的数据下载界面
 
@@ -111,28 +111,28 @@ ERA5 提供了广泛的气象和气候变量，包括温度、湿度、风速、
 
 这段代码是前置需要配置的一些中文字体和打印输出语句，用来显示进度。
 
-![](https://i-blog.csdnimg.cn/img_convert/91e25561409cd8bca6a7d31115193ab5.png)
+![](./img/10.png)
 
 下面的这段代码是进行第一步加载数据，加载 Dataset 对象并且找到正确的 10 米极大风速变量名。
 
-![](https://i-blog.csdnimg.cn/img_convert/226185de98bbc0bf2b196a1809b56649.png)
+![](./img/11.png)
 
 第二步是计算月平均极大风速。
 
-![](https://i-blog.csdnimg.cn/img_convert/1814232ee6fb79235df81eacbae712c3.png)
+![](./img/12.png)
 
 第三步绘制全球分布图。
 
-![](https://i-blog.csdnimg.cn/img_convert/7960504ab55f4264f5b1d13bf8971661.png)
+![](./img/13.png)
 
-![](https://i-blog.csdnimg.cn/img_convert/bd72772dd07dbed30c82bb2b2fd95c65.png)
+![](./img/14.png)
 
 ## 4 结果
 
-![](https://i-blog.csdnimg.cn/img_convert/b1e2dca745a97aa1df1b13ac290f3c82.png)
+![](./img/15.png)
 
 > 图 7 2024 年 1 月全球月平均 10 米极大风速分布图（300dpi）
 
-![](https://i-blog.csdnimg.cn/img_convert/4c339cf294efc6b870818b9adee5056c6.png)
+![](./img/16.png)
 
 > 图 8 2024 年 7 月全球月平均 10 米极大风速分布图（300dpi）
