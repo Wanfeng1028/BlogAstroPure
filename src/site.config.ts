@@ -203,8 +203,15 @@ const config = { ...theme, integ } as Config
 export default config
 
 /**
- * 首页热力图 GitHub 数据来源（Cloudflare Worker）。
- * 部署后在 cf 控制台复制 Worker 地址填入，例如：
- * https://github-heatmap.你的子域名.workers.dev
+ * 首页热力图 GitHub 数据来源（Cloudflare Pages Functions）。
+ * 路径 functions/api/github-heatmap.ts 自动映射为 /api/github-heatmap
+ * 可从环境变量 GITHUB_TOKEN 传入 PAT 以提高限流（可选）。
  */
-export const heatmapWorkerUrl = 'https://github-heatmap.YOUR_SUBDOMAIN.workers.dev'
+export const heatmapWorkerUrl = '/api/github-heatmap?user=Wanfeng1028'
+
+/**
+ * Cloudflare Turnstile 站点公钥（Site Key），
+ * 对应 Pages 环境变量 TURNSTILE_SECRET_KEY（Secret Key）。
+ * 为空时 TurnstileGate 全站拦截自动跳过。
+ */
+export const turnstileSiteKey = 'YOUR_TURNSTILE_SITE_KEY'

@@ -3,6 +3,7 @@ import { Footer, Header, ThemeProvider } from 'astro-pure/components/basic'
 import type { SiteMeta } from 'astro-pure/types'
 import BaseHead from '@/components/BaseHead.astro'
 import Turnstile from '@/components/security/Turnstile.astro'
+import TurnstileGate from '@/components/security/TurnstileGate.astro'
 import config from '@/site-config'
 
 // Import the global.css file here so that it is included on
@@ -44,7 +45,9 @@ const {
       <Footer />
     </div>
 
-    {/* Cloudflare Turnstile 隐形人机验证 */}
+    {/* 全站首次进入弹层人机验证（localStorage 记忆 12 小时） */}
+    <TurnstileGate />
+    {/* Cloudflare Turnstile 隐形人机验证（表单/友链申请兜底） */}
     <Turnstile />
 
     {/* Set highlight color */}
