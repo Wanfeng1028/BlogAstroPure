@@ -133,6 +133,6 @@ ERA5 提供了广泛的气象和气候变量，包括温度、湿度、风速、
 
 > 图 7 2024 年 1 月全球月平均 10 米极大风速分布图（300dpi）
 
-![](https://i-blog.csdnimg.cn/img_convert/4c339cf294efc6b870818b9adee5056c.png)
+![](https://i-blog.csdnimg.cn/img_convert/4c339cf294efc6b870818b9adee5056c6.png)
 
 > 图 8 2024 年 7 月全球月平均 10 米极大风速分布图（300dpi）

@@ -27,7 +27,7 @@ https://maas.xfyun.cn/modelSquare?ch=MaaS-jgkol-l7P2y
 
 ![在讯飞星辰 MaaS 模型集市找到 Qwen3.6-35B-A3B，并点击 API 调用](./img/xfyun-maas-qwen-01-model-square.png)
 
-这里注意，不要只是点“体验”。如果你想拿到接口信息，需要点的是 **API调用**。
+这里注意，不要只是点"体验"。如果你想拿到接口信息，需要点的是 **API调用**。
 
 ## 二、进入模型详情页，确认模型信息
 
@@ -176,7 +176,7 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content)
 ```
 
-如果能正常返回内容，就说明下面三项都没问题：
+如果能正常返回内容，就说明下面三项都正确：
 
 - API Key 正确
 - Base URL 正确

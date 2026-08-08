@@ -38,7 +38,7 @@ tags:
 
 ![](https://i-blog.csdnimg.cn/blog_migrate/cc6e619fc87d1436b1cc06bb78322ae6.png)
 
-![](https://i-blog.csdnimg.cn/blog_migrate/dd83e85eaabda188133679668bb8e2bc.png)
+![](https://i-blog.csdnimg.cn/blog_migrate/dd83e85eaabda188133679668bb8e2bc2.png)
 
 ### 删除 `GROUP = LEVEL1_PROCESSING_RECORD` 到 `END_GROUP = LEVEL1_PROCESSING_RECORD` 这部分的代码
 

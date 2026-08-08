@@ -85,7 +85,7 @@ const paginationProps = {
                   {
                     post.data.tags.length > 0 && (
                       <ul class='murmur-feed__tags'>
-                        {post.data.tags.map((tag) => (
+                        {post.data.tags.map((tag: string) => (
                           <li>
                             <a
                               href={`/tags/${tag}`}
