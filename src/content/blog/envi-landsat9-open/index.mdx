@@ -1,0 +1,58 @@
+---
+title: '【ENVI】Landsat9 影像数据打开方式'
+description: '针对 ENVI 5.3 无法直接打开 Landsat 9 影像的问题，通过修改 Landsat 9 原始 MTL.txt 元数据头文件，使其被 ENVI 识别为 Landsat 8 格式进行打开。'
+publishDate: '2024-03-25'
+lang: zh-CN
+tags:
+  - ENVI
+  - Landsat
+  - Landsat9
+  - 遥感影像
+  - 元数据
+---
+
+## 1. 环境准备
+
+- 版本：**ENVI 5.3**
+- Landsat 影像数据来源：美国地质勘探局（可能需要魔法）
+- 在线图库：[USGS.gov | Science for a changing world](https://www.usgs.gov/)
+
+## 2. 打开方式
+
+**方法：修改头文件（MTL.txt）。**
+
+首先，打开下载数据的 **Landsat 9 数据的 TXT 格式**元数据文件，下图中 `LC09_L1TP_119039_20240303_20240303_02_T1_MTL.txt` 文件：
+
+![](https://i-blog.csdnimg.cn/blog_migrate/ff5d3ff5503d6d6a379ef7dbd0c002dc.png)
+
+进入后将首行 `GROUP = LANDSAT_METADATA_FILE` 改为 `GROUP = L1_METADATA_FILE`：
+
+![](https://i-blog.csdnimg.cn/blog_migrate/f9a1705286958c8e987529ff5c526e87.png)
+
+更改为：
+
+![](https://i-blog.csdnimg.cn/blog_migrate/ecfca52671b0213a57f0b63201e962b5.png)
+
+`Ctrl + F` 查找 `GROUP = LEVEL1_PROCESSING_RECORD`，分别在第 110 行和 153 行左右出现两处：
+
+![](https://i-blog.csdnimg.cn/blog_migrate/cc6e619fc87d1436b1cc06bb78322ae6.png)
+
+![](https://i-blog.csdnimg.cn/blog_migrate/dd83e85eaabda188133679668bb8e2bc.png)
+
+### 删除 `GROUP = LEVEL1_PROCESSING_RECORD` 到 `END_GROUP = LEVEL1_PROCESSING_RECORD` 这部分的代码
+
+![](https://i-blog.csdnimg.cn/blog_migrate/14f0bf37ffafee68aca5fda917885a14.png)
+
+`Ctrl + F` 查找 `SPACECRAFT_ID = "LANDSAT_9"` 更改为 `SPACECRAFT_ID = "LANDSAT_8"`：
+
+![](https://i-blog.csdnimg.cn/blog_migrate/e8445c5ee2989f96228b26290b76cc29.png)
+
+![](https://i-blog.csdnimg.cn/blog_migrate/8d27e48e00be77fb472af095f8e3be69.png)
+
+找到文件最后的 `END_GROUP = LANDSAT_METADATA_FILE` 改为 `END_GROUP = L1_METADATA_FILE`：
+
+![](https://i-blog.csdnimg.cn/blog_migrate/442b86ce7ceaa3ed8fbb874753ce83f0.png)
+
+![](https://i-blog.csdnimg.cn/blog_migrate/02f6c65bcdf61fe7aa4782c84c43f59b.png)
+
+然后就可以在 ENVI 中正常打开啦。
