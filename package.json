@@ -14,7 +14,7 @@
     "format": "prettier --write  '**/*.{js,jsx,ts,tsx,md,mdx,astro}'",
     "lint": "eslint --fix 'src/**/*.{js,ts,jsx,tsx,astro}'",
     "yijiansilian": "bun lint && bun sync && bun check && bun format",
-    "clean": "rm -rf .astro .vercel .wrangler dist node_modules/.vite",
+    "clean": "node -e \"const fs=require('fs');['.astro','.vercel','.wrangler','dist','node_modules/.vite'].forEach(p=>fs.rmSync(p,{recursive:true,force:true}))\"",
     "cache:avatars": "tsx preset/scripts/cacheAvatars.ts"
   },
   "dependencies": {
