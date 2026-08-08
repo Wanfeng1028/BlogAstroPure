@@ -3,7 +3,14 @@
     {
       "id_name": "cf-links",
       "desc": "Common links included in circle friends",
-      "link_list": []
+      "link_list": [
+        {
+          "name": "Keavy",
+          "intro": "欢迎来到Keavy的主页！",
+          "link": "https://github.com/keavy-561",
+          "avatar": "https://github.com/keavy-561.png"
+        }
+      ]
     },
     {
       "id_name": "inactive-links",
