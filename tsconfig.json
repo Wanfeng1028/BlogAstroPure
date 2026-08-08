@@ -32,5 +32,5 @@
       "@/data/*": ["./src/data/*"]
     }
   },
-  "exclude": ["./node_modules", "./**/node_modules/*", "./.vscode", "./dist", "./public/scripts/*", "./test/*", "./backup/*", "./src/content/docs/*"]
+  "exclude": ["./node_modules", "./**/node_modules/*", "./.vscode", "./dist", "./public/scripts/*", "./test/*", "./backup/*", "./src/content/docs/*", "./src/content/blog/*"]
 }
