@@ -1,5 +1,5 @@
 import { rehypeHeadingIds } from '@astrojs/markdown-remark'
-import cloudflare from '@astrojs/cloudflare'
+// import cloudflare from '@astrojs/cloudflare' // 纯静态模式不需要适配器
 // import vercel from '@astrojs/vercel' // 保留 Vercel 配置，需要时切换
 import AstroPureIntegration from 'astro-pure'
 import { defineConfig, fontProviders, svgoOptimizer } from 'astro/config'
@@ -83,13 +83,11 @@ export default defineConfig({
 
   // [Adapter]
   // https://docs.astro.build/en/guides/deploy/
-  // Cloudflare（当前部署目标）
-  // 开发环境使用本地 sharp 处理图片，避免 /cdn-cgi/image/ 端点本地不可用导致图片加载失败；
-  // 生产环境（Cloudflare 部署）启用 Cloudflare 图片服务以获得边缘优化。
-  adapter: cloudflare({
-    imageService: isDev ? undefined : 'cloudflare'
-  }),
-  output: 'static',
+  // 纯静态模式：Cloudflare Pages 直接托管 HTML，不需要 Worker/适配器
+  // output: 'static' 是 Astro 默认值，无需显式设置
+  // Cloudflare 适配器已移除：SSR Worker 配置复杂且博客不需要动态渲染
+  // adapter: cloudflare({ imageService: isDev ? undefined : 'cloudflare' }),
+  // output: 'static',
   // Vercel（保留备用，需要时把上面换成这行）
   // adapter: vercel({ imageService: true }),
   // output: 'server',
