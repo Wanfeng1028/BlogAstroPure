@@ -247,6 +247,11 @@ const years = [currentYear, currentYear - 1, currentYear - 2]
     width: 28px;
     flex-shrink: 0;
   }
+  @media (max-width: 640px) {
+    .gh-days {
+      display: none;
+    }
+  }
   .gh-days span {
     height: 12px;
     line-height: 12px;

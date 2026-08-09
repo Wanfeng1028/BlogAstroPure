@@ -1,3 +1,8 @@
+/* [Mobile] 防止任何元素导致整页横向滚动 */
+body {
+  overflow-x: clip;
+}
+
 /* [Animation] */
 @keyframes fade-in-up {
   0% {

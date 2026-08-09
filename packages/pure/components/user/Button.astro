@@ -17,7 +17,7 @@ const { as: Tag = 'a', class: className, title, href, variant = 'button', ...pro
 
 <Tag
   class={cn(
-    'gemini-btn group inline-flex items-center gap-x-1 rounded-full px-4 py-2 text-sm font-medium text-white no-underline',
+    'gemini-btn group inline-flex items-center gap-x-1 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium text-white no-underline max-sm:px-3',
     !href && 'cursor-default',
     className
   )}
