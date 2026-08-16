@@ -23,12 +23,6 @@ interface FriendList {
   link_list: Friend[]
 }
 
-function shuffle(arr: Friend[]) {
-  return arr.sort(() => {
-    return Math.random() - 0.5
-  })
-}
-
 interface Props {
   title?: string
   list: FriendList
@@ -45,7 +39,7 @@ const getAvatarSrc = (friend: Friend) =>
 <div class='grid gap-3.5 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3' {...props}>
   {
     friendList.link_list.length > 0 ? (
-      shuffle(friendList.link_list).map((frd: Friend) => (
+      friendList.link_list.map((frd: Friend) => (
         <a href={frd.link} target='_blank' class='no-underline'>
           <div class='group relative h-full overflow-hidden rounded-2xl border bg-background px-2.5 py-1.5 transition-colors hover:bg-muted sm:px-4 sm:py-2'>
             <div class='relative z-10 flex h-full items-center gap-3'>
