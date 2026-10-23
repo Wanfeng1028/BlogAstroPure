@@ -192,6 +192,7 @@ export default defineConfig({
       },
       // 博客已有自己的 404 页（src/pages/404.astro），不要让 Starlight 接管
       disable404Route: true,
+      customCss: ['./src/styles/starlight-unlayered.css'],
       sidebar: [
         {
           label: '全部文章',
