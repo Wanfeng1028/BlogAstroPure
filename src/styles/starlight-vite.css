@@ -1,0 +1,250 @@
+/* Vite 文档（vite3-cn）1:1 复刻主题 —— 写在 Starlight 上（2026-10-23）
+ * 真值来源：https://vitejs.cn/vite3-cn/guide/why.html 的官方样式表与实测 computed style：
+ * 品牌色 #646cff（该站对 --vp-c-brand 的定版覆盖）、标题 #213547、正文行高 28px、
+ * 顶栏 72px、侧栏 272px/#f9f9f9、正文列 688px、h2 顶边线 rgba(60,60,60,.12)。
+ * 全部数值照抄，不自创。本文件在 customCss 中排在 starlight-unlayered.css 之后。 */
+
+/* ---------- 设计变量（浅色 = Vite 浅色真值） ---------- */
+:root {
+	--sl-font: "Inter var experimental", "Inter var", -apple-system, BlinkMacSystemFont,
+		"Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans",
+		"Helvetica Neue", sans-serif;
+	--sl-font-mono: Menlo, Monaco, Consolas, "Courier New", monospace;
+
+	--sl-color-bg: #ffffff;
+	--sl-color-bg-nav: #ffffff;
+	--sl-color-bg-sidebar: #f9f9f9;
+	--sl-color-text: #213547;
+	--sl-color-white: #213547;
+	--sl-color-text-accent: #646cff;
+	--sl-color-accent: #646cff;
+	--sl-color-accent-high: #535bf2;
+	--sl-color-accent-low: rgba(100, 108, 255, 0.08);
+	--sl-color-hairline: rgba(60, 60, 60, 0.12);
+	--sl-color-hairline-light: rgba(60, 60, 60, 0.12);
+	--sl-color-hairline-shade: rgba(60, 60, 60, 0.29);
+	--sl-color-bg-inline-code: #f1f1f1;
+
+	--sl-sidebar-width: 17rem; /* 272px */
+	--sl-content-width: 43rem; /* 688px */
+	--sl-text-h1: 2rem; /* 32px */
+	--sl-text-h2: 1.5rem; /* 24px */
+	--sl-text-h3: 1.25rem; /* 20px */
+	--sl-line-height-headings: 1.25;
+}
+@media (min-width: 50rem) {
+	:root {
+		--sl-nav-height: 4.5rem; /* 桌面顶栏 72px；移动端保持 Starlight 的 56px = Vite 移动真值 */
+	}
+}
+
+/* ---------- 设计变量（深色 = Vite 深色真值） ---------- */
+:root[data-theme="dark"] {
+	--sl-color-bg: #242424;
+	--sl-color-bg-nav: #242424;
+	--sl-color-bg-sidebar: #2f2f2f;
+	--sl-color-text: rgba(255, 255, 255, 0.87);
+	--sl-color-white: rgba(255, 255, 255, 0.87);
+	--sl-color-text-accent: #646cff;
+	--sl-color-accent: #646cff;
+	--sl-color-accent-high: #747bff;
+	--sl-color-accent-low: rgba(100, 108, 255, 0.14);
+	--sl-color-hairline: rgba(84, 84, 84, 0.48);
+	--sl-color-hairline-light: rgba(84, 84, 84, 0.48);
+	--sl-color-hairline-shade: rgba(84, 84, 84, 0.65);
+	--sl-color-bg-inline-code: #3a3a3a;
+}
+
+/* ---------- 页标题（Vite .vp-doc h1 真值） ---------- */
+h1#_top {
+	font-size: 2rem;
+	line-height: 40px;
+	letter-spacing: -0.02em;
+	font-weight: 600;
+}
+
+/* ---------- 正文排版（.vp-doc 真值） ---------- */
+.sl-markdown-content {
+	line-height: 1.75; /* 16px 下即 28px */
+}
+.sl-markdown-content :is(h1, h2, h3, h4, h5, h6):not(:where(.not-content *)) {
+	letter-spacing: -0.02em;
+	font-weight: 600;
+}
+.sl-markdown-content h2:not(:where(.not-content *)) {
+	margin-top: 48px !important; /* 压过 unlayered 修复文件里的兄弟间距规则 */
+	border-top: 1px solid rgba(60, 60, 60, 0.12);
+	padding-top: 24px;
+	line-height: 32px;
+}
+:root[data-theme="dark"] .sl-markdown-content h2:not(:where(.not-content *)) {
+	border-top-color: rgba(84, 84, 84, 0.48);
+}
+.sl-markdown-content h3:not(:where(.not-content *)) {
+	margin-top: 32px;
+	line-height: 28px;
+	letter-spacing: -0.01em;
+}
+.sl-markdown-content a:not(:where(.not-content *)) {
+	color: #646cff;
+	font-weight: 500;
+	text-decoration-style: dotted;
+}
+.sl-markdown-content a:hover:not(:where(.not-content *)) {
+	color: #535bf2;
+}
+.sl-markdown-content code:not(:where(.not-content *)) {
+	color: #476582;
+	border-radius: 4px;
+	padding: 3px 6px;
+}
+:root[data-theme="dark"] .sl-markdown-content code:not(:where(.not-content *)) {
+	color: #c9def1;
+}
+.sl-markdown-content blockquote:not(:where(.not-content *)) {
+	border-inline-start: 2px solid rgba(60, 60, 60, 0.29);
+	padding-inline-start: 16px;
+}
+:root[data-theme="dark"] .sl-markdown-content blockquote:not(:where(.not-content *)) {
+	border-inline-start-color: rgba(84, 84, 84, 0.65);
+}
+.sl-markdown-content th:not(:where(.not-content *)),
+.sl-markdown-content td:not(:where(.not-content *)) {
+	border: 1px solid rgba(60, 60, 60, 0.29);
+	padding: 12px 16px;
+}
+.sl-markdown-content th:not(:where(.not-content *)) {
+	background-color: #f9f9f9;
+}
+:root[data-theme="dark"] .sl-markdown-content :is(th, td):not(:where(.not-content *)) {
+	border-color: rgba(84, 84, 84, 0.65);
+}
+:root[data-theme="dark"] .sl-markdown-content th:not(:where(.not-content *)) {
+	background-color: #2f2f2f;
+}
+
+/* 代码块：Vite 浅色用深紫灰 #292d3e，深色用 bg-alt #1a1a1a */
+.expressive-code {
+	--ec-brdRad: 8px;
+}
+/* Vite 深色模式下代码块底色改为 bg-alt #1a1a1a（语法配色仍是 Palenight） */
+:root[data-theme="dark"] .expressive-code {
+	--ec-codeBg: #1a1a1a;
+}
+
+/* ---------- 左侧栏（Vite .VPSidebar 真值） ---------- */
+.sidebar-pane .group-label .large {
+	font-size: 14px;
+	font-weight: 700;
+	line-height: 32px;
+	color: #213547;
+}
+:root[data-theme="dark"] .sidebar-pane .group-label .large {
+	color: rgba(255, 255, 255, 0.87);
+}
+.sidebar-pane li > a {
+	font-size: 14px;
+	line-height: 32px;
+	padding: 0 12px;
+	border-radius: 6px;
+	color: rgba(60, 60, 60, 0.7);
+	font-weight: 500;
+}
+.sidebar-pane li > a:hover {
+	color: #646cff;
+	background-color: #f1f1f1;
+}
+.sidebar-pane li > a[aria-current="page"] {
+	color: #646cff;
+	background-color: transparent;
+	font-weight: 600;
+}
+:root[data-theme="dark"] .sidebar-pane li > a {
+	color: rgba(235, 235, 235, 0.6);
+}
+:root[data-theme="dark"] .sidebar-pane li > a:hover {
+	color: #646cff;
+	background-color: #3a3a3a;
+}
+:root[data-theme="dark"] .sidebar-pane li > a[aria-current="page"] {
+	color: #646cff;
+	background-color: transparent;
+}
+
+/* ---------- 右侧大纲（Vite outline 真值） ---------- */
+.right-sidebar starlight-toc a {
+	font-size: 13px;
+	line-height: 28px;
+	color: rgba(60, 60, 60, 0.7);
+}
+.right-sidebar starlight-toc a[aria-current="true"] {
+	color: #213547;
+	font-weight: 600;
+}
+:root[data-theme="dark"] .right-sidebar starlight-toc a {
+	color: rgba(235, 235, 235, 0.6);
+}
+:root[data-theme="dark"] .right-sidebar starlight-toc a[aria-current="true"] {
+	color: rgba(255, 255, 255, 0.87);
+}
+
+/* ---------- 顶栏 ---------- */
+a.site-title {
+	font-weight: 600;
+	color: #213547;
+}
+:root[data-theme="dark"] a.site-title {
+	color: rgba(255, 255, 255, 0.87);
+}
+site-search button[data-open-modal] {
+	background-color: #f9f9f9;
+	border: 1px solid rgba(60, 60, 60, 0.12);
+	border-radius: 8px;
+	color: rgba(60, 60, 60, 0.7);
+}
+:root[data-theme="dark"] site-search button[data-open-modal] {
+	background-color: #2f2f2f;
+	border-color: rgba(84, 84, 84, 0.48);
+	color: rgba(235, 235, 235, 0.6);
+}
+
+/* ---------- 上下页 ---------- */
+.pagination-links a {
+	border-color: rgba(60, 60, 60, 0.12);
+	border-radius: 8px;
+}
+.pagination-links a:hover {
+	border-color: #646cff;
+}
+:root[data-theme="dark"] .pagination-links a {
+	border-color: rgba(84, 84, 84, 0.48);
+}
+
+/* ---------- 细节对齐（对照参考页实拍） ---------- */
+/* Vite 侧栏分组是静态标题，没有展开箭头 */
+.sidebar-pane .caret {
+	display: none;
+}
+/* Vite 侧栏链接单行省略 */
+.sidebar-pane li > a {
+	white-space: nowrap;
+	overflow: hidden;
+}
+.sidebar-pane li > a > span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+/* 搜索框靠右（Vite 顶栏右侧布局）：顶栏中段是 flex 容器，整段右对齐 */
+.header > div:nth-of-type(2) {
+	justify-content: flex-end;
+}
+/* 右侧大纲标题 */
+.right-sidebar-panel h2 {
+	font-size: 14px;
+	font-weight: 700;
+	color: #213547;
+}
+:root[data-theme="dark"] .right-sidebar-panel h2 {
+	color: rgba(255, 255, 255, 0.87);
+}

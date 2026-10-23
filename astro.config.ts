@@ -178,7 +178,7 @@ export default defineConfig({
     // 内容在 src/content/docs/docs/（内层 docs = /docs/ 网址前缀），其余路由仍归 Astro Pure
     starlight({
       title: '@晚风',
-      description: '晚风的文档站 —— 折腾笔记、工具手册与项目文档。',
+      description: '每个优秀的人都有一段沉默的时光，那段时光是付出了很多努力，却得不到结果的日子，我们把它叫做扎根。',
       favicon: '/favicon/favicon.ico',
       defaultLocale: 'root',
       locales: {
@@ -190,9 +190,11 @@ export default defineConfig({
       editLink: {
         baseUrl: 'https://github.com/Wanfeng1028/BlogAstroPure/edit/main/'
       },
+      // 代码块 1:1 对齐 Vite 文档：Material Palenight 主题（底色 #292d3e），明暗模式都用它
+      expressiveCode: { themes: ['material-theme-palenight'] },
       // 博客已有自己的 404 页（src/pages/404.astro），不要让 Starlight 接管
       disable404Route: true,
-      customCss: ['./src/styles/starlight-unlayered.css'],
+      customCss: ['./src/styles/starlight-unlayered.css', './src/styles/starlight-vite.css'],
       sidebar: [
         {
           label: '全部文章',
