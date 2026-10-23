@@ -194,15 +194,21 @@ export default defineConfig({
       disable404Route: true,
       sidebar: [
         {
-          label: '入门',
-          items: [
-            { label: '文档首页', slug: 'docs' },
-            { label: '开始使用', slug: 'docs/getting-started' }
-          ]
+          label: '概览',
+          items: [{ label: '文档首页', slug: 'docs' }]
         },
         {
-          label: '指南',
-          items: [{ autogenerate: { directory: 'docs/guides' } }]
+          // 博客即文章：文档侧边栏直接索引博客原文，不另建示例文章
+          label: '全部文章',
+          items: [
+            { label: 'ENVI 打开 Landsat 9 影像', link: '/blog/001-envi-landsat9-open' },
+            { label: 'ERA5 全球极大风速分布图', link: '/blog/002-era5-wind-gust-2024' },
+            { label: '讯飞 MaaS 免费领 Qwen API', link: '/blog/003-xfyun-maas-qwen-free-api' },
+            {
+              label: 'OneDrive 内存泄漏排查与禁用',
+              link: '/blog/004-windows-onedrive-memory-leak-disable'
+            }
+          ]
         }
       ]
     }),

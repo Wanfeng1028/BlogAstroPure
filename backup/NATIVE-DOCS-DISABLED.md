@@ -10,5 +10,5 @@ Starlight（@astrojs/starlight）承载，入口为站内 `/docs/`。
 - 本目录下的 `docs/`（原生文档路由页：index / [...id] / DocsContents）与
   `demo-docs/`（主题示例文档）仅作历史存档保留，**不参与路由、不参与构建**，
   不要再往里添加内容。
-- 新文档一律写到 `src/content/docs/`（Starlight 规范），写作说明见站内
-  `/docs/getting-started`。
+- 文档内容一律写到 `src/content/docs/`（Starlight 规范）；博客文章仍在
+  `src/content/blog/`，文档首页 `/docs` 只做文章索引，不另建示例文章。
