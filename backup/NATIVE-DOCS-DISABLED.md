@@ -1,14 +1,11 @@
-# 原生文档系统已停用（2026-10-23）
+# 原生文章/文档界面已停用（2026-10-23）
 
-Astro Pure 主题自带的原生文档系统已于 2026-10-23 正式停用，文档改由
-Starlight（@astrojs/starlight）承载，入口为站内 `/docs/`。
+博客文章页自 2026-10-23 起由 **Starlight** 渲染，网址不变（仍为 /blog/<slug>）：
 
-停用范围：
-
-- `src/content.config.ts` 中原生的 `docs` 集合定义（手写 zod schema）已移除，
-  改为 Starlight 官方的 `docsLoader()` + `docsSchema()`。
-- 本目录下的 `docs/`（原生文档路由页：index / [...id] / DocsContents）与
-  `demo-docs/`（主题示例文档）仅作历史存档保留，**不参与路由、不参与构建**，
-  不要再往里添加内容。
-- 文档内容一律写到 `src/content/docs/`（Starlight 规范）；博客文章仍在
-  `src/content/blog/`，文档首页 `/docs` 只做文章索引，不另建示例文章。
+- 实现方式：Starlight 的 docs 集合直接加载博客源文件（`src/content/blog`），
+  用 generateId 给每篇加 `blog/` 前缀，Starlight 便把文章路由到 /blog/ 下。
+  文章源文件只有一份，博客列表/归档/标签仍由 blog 集合照常读取。
+- 本目录存档的原生实现均已停用、不参与构建：
+  - `backup/blog-article-native/[...id].astro`：原生的博客文章页
+  - `backup/docs/`、`backup/demo-docs/`：主题自带的原生文档页与示例文档
+- 顶栏没有单独的「文档」入口；博客文章本身即由 Starlight 文档界面展示。

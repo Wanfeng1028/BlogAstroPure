@@ -54,7 +54,6 @@ export const theme: ThemeUserConfig = {
       { title: '分类', link: '/categories' },
       { title: '标签', link: '/tags' },
       { title: '项目', link: '/projects' },
-      { title: '文档', link: '/docs' },
       { title: '友链', link: '/links' },
       { title: '关于', link: '/about' }
     ]

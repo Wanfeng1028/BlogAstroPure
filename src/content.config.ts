@@ -1,4 +1,3 @@
-import { docsLoader } from '@astrojs/starlight/loaders'
 import { docsSchema } from '@astrojs/starlight/schema'
 import { defineCollection } from 'astro:content'
 import { glob } from 'astro/loaders'
@@ -44,11 +43,16 @@ const blog = defineCollection({
     })
 })
 
-// Define docs collection — Starlight 托管（2026-10-23 起）
-// 原生文档系统（Astro Pure 自带的手写 schema + backup/docs 路由页）已停用，见 backup/NATIVE-DOCS-DISABLED.md
-// 内容放在 src/content/docs/docs/ 下：外层 docs 是集合根，内层 docs 是网址的 /docs/ 前缀
+// Starlight 托管的文章集合（2026-10-23 起）：直接加载博客源文件 src/content/blog，
+// generateId 给每篇加上 blog/ 前缀 —— Starlight 因此把文章渲染在 /blog/<slug>，
+// 网址与原来一致，文章源文件只有一份（博客集合照常读同一批文件做列表/归档）。
+// 原生文章页 src/pages/blog/[...id].astro 已停用存档，见 backup/NATIVE-DOCS-DISABLED.md
 const docs = defineCollection({
-  loader: docsLoader(),
+  loader: glob({
+    base: './src/content/blog',
+    pattern: '**/index.{md,mdx}',
+    generateId: ({ entry }) => 'blog/' + entry.replace(/\/index\.mdx?$/, '')
+  }),
   schema: docsSchema({
     // 补回旧原生 schema 的字段：astro-pure 的列表工具（server.ts）按集合联合类型读这些字段，
     // 缺了会在 astro check 里多出一串类型错误；Starlight 本身不使用它们
