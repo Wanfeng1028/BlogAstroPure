@@ -1,6 +1,7 @@
 import { rehypeHeadingIds } from '@astrojs/markdown-remark'
 // import cloudflare from '@astrojs/cloudflare' // 纯静态模式不需要适配器
 // import vercel from '@astrojs/vercel' // 保留 Vercel 配置，需要时切换
+import starlight from '@astrojs/starlight'
 import AstroPureIntegration from 'astro-pure'
 import { defineConfig, fontProviders, svgoOptimizer } from 'astro/config'
 import type { Plugin } from 'vite'
@@ -172,6 +173,39 @@ export default defineConfig({
 
   // [Integrations]
   integrations: [
+    // 文档系统：Starlight（2026-10-23 起，原生文档系统已停用）
+    // 版本锁定 0.40.0：0.41+ 要求 Astro 7，本站是 Astro 6；升级 Astro 7 后再放开
+    // 内容在 src/content/docs/docs/（内层 docs = /docs/ 网址前缀），其余路由仍归 Astro Pure
+    starlight({
+      title: '晚风文档',
+      description: '晚风的文档站 —— 折腾笔记、工具手册与项目文档。',
+      favicon: '/favicon/favicon.ico',
+      defaultLocale: 'root',
+      locales: {
+        root: { label: '简体中文', lang: 'zh-CN' }
+      },
+      social: [
+        { icon: 'github', label: 'GitHub', href: 'https://github.com/Wanfeng1028/BlogAstroPure' }
+      ],
+      editLink: {
+        baseUrl: 'https://github.com/Wanfeng1028/BlogAstroPure/edit/main/'
+      },
+      // 博客已有自己的 404 页（src/pages/404.astro），不要让 Starlight 接管
+      disable404Route: true,
+      sidebar: [
+        {
+          label: '入门',
+          items: [
+            { label: '文档首页', slug: 'docs' },
+            { label: '开始使用', slug: 'docs/getting-started' }
+          ]
+        },
+        {
+          label: '指南',
+          items: [{ autogenerate: { directory: 'docs/guides' } }]
+        }
+      ]
+    }),
     // astro-pure will automatically add sitemap, mdx & unocss
     // sitemap(),
     // mdx(),

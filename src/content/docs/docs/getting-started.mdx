@@ -1,0 +1,32 @@
+---
+title: 开始使用
+description: 这个文档站的组织方式，以及怎么往里新增一篇文档。
+sidebar:
+  order: 1
+---
+
+文档站由 [Starlight](https://starlight.astro.build/) 驱动，和博客共用同一个仓库
+`Wanfeng1028/BlogAstroPure`，构建后挂在主站的 `/docs/` 路径下。
+
+## 新增一篇文档
+
+1. 在 `src/content/docs/docs/` 下新建 `.md` 或 `.mdx` 文件，路径即网址：
+   `src/content/docs/docs/guides/example.mdx` 对应 `/docs/guides/example`
+2. 文件头写好 frontmatter，只需要标题和简介：
+
+   ```md
+   ---
+   title: 示例文档
+   description: 一句话说明这篇文档解决什么问题。
+   ---
+   ```
+
+3. 需要调整侧边栏顺序时，在 frontmatter 里加 `sidebar: { order: 数字 }`
+4. 提交并 push，Cloudflare Pages 自动构建上线
+
+## 分组约定
+
+- 侧边栏分组按目录划分，新增分组先在 `astro.config.ts` 的 Starlight
+  `sidebar` 配置里登记，再建对应目录
+- `guides/` 放操作指南，长期有效的说明类内容都往这里放
+- 草稿在 frontmatter 里标 `draft: true`，构建时不会发布
