@@ -201,12 +201,12 @@ export default defineConfig({
           // 博客即文章：文档侧边栏直接索引博客原文，不另建示例文章
           label: '全部文章',
           items: [
-            { label: 'ENVI 打开 Landsat 9 影像', link: '/blog/001-envi-landsat9-open' },
-            { label: 'ERA5 全球极大风速分布图', link: '/blog/002-era5-wind-gust-2024' },
-            { label: '讯飞 MaaS 免费领 Qwen API', link: '/blog/003-xfyun-maas-qwen-free-api' },
+            { label: 'ENVI 打开 Landsat 9 影像', link: '/docs/001-envi-landsat9-open' },
+            { label: 'ERA5 全球极大风速分布图', link: '/docs/002-era5-wind-gust-2024' },
+            { label: '讯飞 MaaS 免费领 Qwen API', link: '/docs/003-xfyun-maas-qwen-free-api' },
             {
               label: 'OneDrive 内存泄漏排查与禁用',
-              link: '/blog/004-windows-onedrive-memory-leak-disable'
+              link: '/docs/004-windows-onedrive-memory-leak-disable'
             }
           ]
         }
